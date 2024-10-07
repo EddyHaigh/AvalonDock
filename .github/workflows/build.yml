@@ -50,7 +50,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: Avalondock.sln
+      Solution_Name: AvalonDock.sln
 
     steps:
     - name: Checkout
@@ -70,7 +70,7 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Restore the application
-      run: dotnet restore Solution_Name
+      run: dotnet restore $Solution_Name
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
