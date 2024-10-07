@@ -70,10 +70,10 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Restore the application
-      run: dotnet restore Source/$env:Solution_Name
+      run: dotnet restore $env:Solution_Name
 
     - name: Build Solution
-      run: dotnet build Source/$env:Solution_Name
+      run: dotnet build $env:Solution_Name
       
     - name: Execute unit tests
-      run: dotnet test Source/$env:Solution_Name    
+      run: dotnet test $env:Solution_Name    
