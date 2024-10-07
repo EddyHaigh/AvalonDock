@@ -2,7 +2,7 @@
 
 A WPF Document and Tool Window layout library
 
-[![License: MIT](https://img.shields.io/badge/License-MS%2D-PL-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MS%2D-PL-yellow.svg)](https://opensource.org/licenses/ms-pl)
 [![Build status](https://ci.appveyor.com/api/projects/status/kq2wyupx5hm7fok2/branch/master?svg=true)](https://ci.appveyor.com/project/Dirkster99/avalondock/branch/master)
 [![Release](https://img.shields.io/github/release/Dirkster99/avalondock.svg)](https://github.com/Dirkster99/avalondock/releases/latest)
  [![AvalonDock Open Issues](https://img.shields.io/github/issues-raw/Dirkster99/AvalonDock.svg?style=flat-square)](https://github.com/Dirkster99/AvalonDock/issues)
