@@ -84,10 +84,18 @@ namespace AvalonDock.Layout
 			get => _autohideMinWidth;
 			set
 			{
-				if (value == _autohideMinWidth) return;
-				RaisePropertyChanging(nameof(AutoHideMinWidth));
-				if (value < 0) throw new ArgumentOutOfRangeException("Negative value is not allowed.", nameof(value));
-				_autohideMinWidth = value;
+				if (value == _autohideMinWidth)
+                {
+                    return;
+                }
+
+                RaisePropertyChanging(nameof(AutoHideMinWidth));
+				if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Negative value is not allowed.");
+                }
+
+                _autohideMinWidth = value;
 				RaisePropertyChanged(nameof(AutoHideMinWidth));
 			}
 		}
@@ -112,11 +120,18 @@ namespace AvalonDock.Layout
 			get => _autohideMinHeight;
 			set
 			{
-				if (value == _autohideMinHeight) return;
-				RaisePropertyChanging(nameof(AutoHideMinHeight));
-				if (value < 0) throw new ArgumentOutOfRangeException("Negative value is not allowed.", nameof(value));
+				if (value == _autohideMinHeight)
+                {
+                    return;
+                }
 
-				_autohideMinHeight = value;
+                RaisePropertyChanging(nameof(AutoHideMinHeight));
+				if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Negative value is not allowed.");
+                }
+
+                _autohideMinHeight = value;
 				RaisePropertyChanged(nameof(AutoHideMinHeight));
 			}
 		}

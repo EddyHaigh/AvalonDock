@@ -38,9 +38,11 @@ namespace AvalonDock.Controls
 		{
 			get
 			{
-				V valueToReturn;
-				if (!GetValue(key, out valueToReturn))
-					throw new ArgumentException();
+                if (!GetValue(key, out V valueToReturn))
+                {
+                    throw new KeyNotFoundException($"The key '{key}' could not be found");
+                }
+
 				return valueToReturn;
 			}
 			set
