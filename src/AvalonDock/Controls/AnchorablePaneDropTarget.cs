@@ -92,7 +92,7 @@ namespace AvalonDock.Controls
 
 						if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Vertical)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
+							var layoutAnchorablePaneGroup = floatingWindow.RootPanel;
 							if (layoutAnchorablePaneGroup != null &&
 								(layoutAnchorablePaneGroup.Children.Count == 1 ||
 									layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Vertical))
@@ -138,7 +138,7 @@ namespace AvalonDock.Controls
 
 						if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Vertical)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
+							var layoutAnchorablePaneGroup = floatingWindow.RootPanel;
 							if (layoutAnchorablePaneGroup != null &&
 								(layoutAnchorablePaneGroup.Children.Count == 1 ||
 									layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Vertical))
@@ -185,7 +185,7 @@ namespace AvalonDock.Controls
 
 						if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Horizontal)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
+							var layoutAnchorablePaneGroup = floatingWindow.RootPanel;
 							if (layoutAnchorablePaneGroup != null &&
 								(layoutAnchorablePaneGroup.Children.Count == 1 ||
 									layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Horizontal))
@@ -232,7 +232,7 @@ namespace AvalonDock.Controls
 
 						if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Horizontal)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
+							var layoutAnchorablePaneGroup = floatingWindow.RootPanel;
 							if (layoutAnchorablePaneGroup != null &&
 								(layoutAnchorablePaneGroup.Children.Count == 1 ||
 									layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Horizontal))

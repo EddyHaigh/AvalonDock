@@ -201,7 +201,9 @@ namespace AvalonDock
             DetachAnchorablesSource(oldLayout, AnchorablesSource);
 
             if (oldLayout != null && oldLayout.Manager == this)
+            {
                 oldLayout.Manager = null;
+            }
 
             ClearLogicalChildrenList();
             DetachLayoutItems();
@@ -221,8 +223,12 @@ namespace AvalonDock
                 BottomSidePanel = CreateUIElementForModel(Layout.BottomSide) as LayoutAnchorSideControl;
 
                 foreach (var fw in Layout.FloatingWindows.ToArray())
+                {
                     if (fw.IsValid)
+                    {
                         _fwList.Add(CreateUIElementForModel(fw) as LayoutFloatingWindowControl);
+                    }
+                }
 
                 foreach (var fw in _fwList.ToArray())
                 {
@@ -234,10 +240,16 @@ namespace AvalonDock
                     }
                     else
                     {
-                        if (fw.Content != null || (fw.Model as LayoutAnchorableFloatingWindow)?.IsVisible == true)
+                        if (fw.Content != null
+                            || (fw.Model is LayoutAnchorableFloatingWindow layoutAnchorableFloatingWindow
+                            && layoutAnchorableFloatingWindow.IsVisible))
+                        {
                             fw.Show();
+                        }
                         else
+                        {
                             fw.Hide();
+                        }
                     }
 
                     //fw.Owner = Window.GetWindow(this);
