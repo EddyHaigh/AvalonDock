@@ -112,14 +112,14 @@ namespace AvalonDock.Controls
 		{
 			base.OnMouseLeftButtonDown(e);
 
-			// Start a drag & drop action for a LayoutAnchorable
-			var anchorAble = this.Model as LayoutAnchorable;
-			if (anchorAble != null)
-			{
-				if (anchorAble.CanMove == false) return;
-			}
+            // Start a drag & drop action for a LayoutAnchorable
+            if (this.Model is LayoutAnchorable layoutAnchorable
+                && layoutAnchorable.CanMove == false)
+            {
+                return;
+            }
 
-			_isMouseDown = true;
+            _isMouseDown = true;
 			_draggingItem = this;
 		}
 
