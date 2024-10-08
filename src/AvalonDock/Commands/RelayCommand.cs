@@ -69,7 +69,7 @@ namespace AvalonDock.Commands
 		{
 			if (execute == null)
 			{
-				throw new ArgumentNullException("execute");
+				throw new ArgumentNullException(nameof(execute));
 			}
 
 			_execute = new WeakAction<T>(execute);
