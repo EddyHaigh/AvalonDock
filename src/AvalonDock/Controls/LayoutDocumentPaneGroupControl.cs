@@ -19,8 +19,8 @@ namespace AvalonDock.Controls
 	/// This Grid based control can host multiple other controls in its Children collection
 	/// (<see cref="LayoutAnchorableControl"/>, <see cref="LayoutDocumentControl"/> etc).
 	/// </summary>
-	public class LayoutDocumentPaneGroupControl : LayoutGridControl<ILayoutDocumentPane>, ILayoutControl
-	{
+	public class LayoutDocumentPaneGroupControl : LayoutGridControl<ILayoutDocumentPane>
+    {
 		#region fields
 
 		private readonly LayoutDocumentPaneGroup _model;

@@ -19,7 +19,7 @@ namespace AvalonDock.Controls
 	/// This Grid based control can host multiple other controls in its Children collection
 	/// (<see cref="LayoutAnchorableControl"/>).
 	/// </summary>
-	public class LayoutAnchorablePaneGroupControl : LayoutGridControl<ILayoutAnchorablePane>, ILayoutControl
+	public class LayoutAnchorablePaneGroupControl : LayoutGridControl<ILayoutAnchorablePane>
 	{
 		#region fields
 
