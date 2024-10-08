@@ -169,9 +169,7 @@ namespace AvalonDock.Layout
 #if TRACE
 		public override void ConsoleDump(int tab)
 		{
-			System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-			System.Diagnostics.Trace.WriteLine("FloatingDocumentWindow()");
-
+            System.Diagnostics.Trace.TraceInformation("{0}FloatingDocumentWindow()", new string(' ', tab * 4));
 			RootPanel.ConsoleDump(tab + 1);
 		}
 #endif

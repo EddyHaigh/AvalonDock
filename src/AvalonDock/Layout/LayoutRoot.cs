@@ -295,22 +295,23 @@ namespace AvalonDock.Layout
 #if TRACE
         public override void ConsoleDump(int tab)
         {
-            System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-            System.Diagnostics.Trace.WriteLine("RootPanel()");
+            System.Diagnostics.Trace.TraceInformation(format: "{0}RootPanel()", new string(' ', tab * 4));
 
             RootPanel.ConsoleDump(tab + 1);
 
-            System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-            System.Diagnostics.Trace.WriteLine("FloatingWindows()");
+            System.Diagnostics.Trace.TraceInformation(format: "{0}FloatingWindows()", new string(' ', tab * 4));
 
             foreach (var fw in FloatingWindows)
+            {
                 fw.ConsoleDump(tab + 1);
+            }
 
-            System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-            System.Diagnostics.Trace.WriteLine("Hidden()");
+            System.Diagnostics.Trace.TraceInformation(format: "{0}Hidden()", new string(' ', tab * 4));
 
             foreach (var hidden in Hidden)
+            {
                 hidden.ConsoleDump(tab + 1);
+            }
         }
 #endif
 

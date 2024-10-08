@@ -191,12 +191,13 @@ namespace AvalonDock.Layout
 		/// <inheritdoc/>
 		public override void ConsoleDump(int tab)
 		{
-			System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-			System.Diagnostics.Trace.WriteLine("DocumentPane()");
+            System.Diagnostics.Trace.TraceInformation("{0}DocumentPane()", new string(' ', tab * 4));
 
 			foreach (LayoutElement child in Children)
-				child.ConsoleDump(tab + 1);
-		}
+            {
+                child.ConsoleDump(tab + 1);
+            }
+        }
 #endif
 
 		#endregion Overrides

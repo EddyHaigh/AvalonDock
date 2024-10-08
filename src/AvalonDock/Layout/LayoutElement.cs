@@ -106,8 +106,7 @@ namespace AvalonDock.Layout
 #if TRACE
 		public virtual void ConsoleDump(int tab)
 		{
-			System.Diagnostics.Trace.Write(new String(' ', tab * 4));
-			System.Diagnostics.Trace.WriteLine(this.ToString());
+            System.Diagnostics.Trace.TraceInformation("{0}{1}", new string(' ', tab * 4), this.ToString());
 		}
 #endif
 
