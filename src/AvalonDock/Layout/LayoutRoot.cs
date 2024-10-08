@@ -436,7 +436,11 @@ namespace AvalonDock.Layout
 					foreach (var emptyLayoutDocumentPane in this.Descendents().OfType<LayoutDocumentPane>().Where(p => p.ChildrenCount == 0))
 					{
 						var parentGroup = emptyLayoutDocumentPane.Parent;
-						if (!(parentGroup.Parent is LayoutDocumentFloatingWindow)) continue;
+                        if (parentGroup.Parent is not LayoutDocumentFloatingWindow)
+                        {
+                            continue;
+                        }
+
 						var index = RootPanel.IndexOfChild(this.Descendents().OfType<LayoutDocumentPaneGroup>().First());
 						parentGroup.RemoveChild(emptyLayoutDocumentPane);
 						if (!this.Descendents().OfType<LayoutDocumentPane>().Any())
@@ -887,12 +891,20 @@ namespace AvalonDock.Layout
 			{
 				if (isFloatingWindow)
 				{
-					if (!(ReadElement(reader) is LayoutFloatingWindow result)) break;
+                    if (ReadElement(reader) is not LayoutFloatingWindow result)
+                    {
+                        break;
+                    }
+
 					resultList.Add(result);
 				}
 				else
 				{
-					if (!(ReadElement(reader) is LayoutAnchorable result)) break;
+                    if (ReadElement(reader) is not LayoutAnchorable result)
+                    {
+                        break;
+                    }
+
 					resultList.Add(result);
 				}
 			}
@@ -983,11 +995,12 @@ namespace AvalonDock.Layout
 				Debug.Write($"{indent}{(indent.Length > 0 ? isLastChild ? " └─ " : " ├─ " : "")}{childID:D2} 0x{element.GetHashCode():X8} " +
 								$"{element.GetType().Name} {(shortPropertyNames ? "P" : "Parent")}:0x{element.Parent?.GetHashCode() ?? 0:X8} " +
 								$"{(shortPropertyNames ? "R" : "Root")}:0x{element.Root?.GetHashCode() ?? 0:X8}");
-				if (!(element is ILayoutContainer containerElement))
+				if (element is not ILayoutContainer containerElement)
 				{
 					Debug.WriteLine("");
 					return;
 				}
+
 				Debug.WriteLine($" {(shortPropertyNames ? "C" : "Children")}:{containerElement.ChildrenCount}");
 				var nrChild = 0;
 				indent.Append(isLastChild ? "   " : " │ ");

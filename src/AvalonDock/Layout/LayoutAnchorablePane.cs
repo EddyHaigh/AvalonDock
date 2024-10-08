@@ -187,7 +187,11 @@ namespace AvalonDock.Layout
 		/// <param name="content"></param>
 		public int IndexOf(LayoutContent content)
 		{
-			if (!(content is LayoutAnchorable anchorableChild)) return -1;
+            if (content is not LayoutAnchorable anchorableChild)
+            {
+                return -1;
+            }
+
 			return Children.IndexOf(anchorableChild);
 		}
 

@@ -182,7 +182,7 @@ namespace AvalonDock.Layout
 		[XmlIgnore]
 		public bool IsVisible
 		{
-			get => Parent != null && !(Parent is LayoutRoot);
+			get => Parent != null && Parent is not LayoutRoot;
 			set { if (value) Show(); else Hide(); }
 		}
 
@@ -336,9 +336,9 @@ namespace AvalonDock.Layout
 
 			RaisePropertyChanging(nameof(IsHidden));
 			RaisePropertyChanging(nameof(IsVisible));
-			if (Parent is ILayoutGroup)
+			if (Parent is ILayoutGroup layoutGroup)
 			{
-				var parentAsGroup = Parent as ILayoutGroup;
+				var parentAsGroup = layoutGroup;
 				PreviousContainer = parentAsGroup;
 				PreviousContainerIndex = parentAsGroup.IndexOfChild(this);
 			}
@@ -597,18 +597,17 @@ namespace AvalonDock.Layout
 
 			#region Anchorable is docked
 
-			else if (Parent is LayoutAnchorablePane)
+			else if (Parent is LayoutAnchorablePane layoutAnchorablePane)
 			{
 				var root = Root;
-				var parentPane = Parent as LayoutAnchorablePane;
 				var newAnchorGroup = new LayoutAnchorGroup();
-				((ILayoutPreviousContainer)newAnchorGroup).PreviousContainer = parentPane;
+				((ILayoutPreviousContainer)newAnchorGroup).PreviousContainer = layoutAnchorablePane;
 
-				foreach (var anchorableToImport in parentPane.Children.ToArray())
+				foreach (var anchorableToImport in layoutAnchorablePane.Children.ToArray())
 					newAnchorGroup.Children.Add(anchorableToImport);
 
 				//detect anchor side for the pane
-				var anchorSide = parentPane.GetSide();
+				var anchorSide = layoutAnchorablePane.GetSide();
 
 				switch (anchorSide)
 				{
