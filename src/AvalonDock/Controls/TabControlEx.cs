@@ -162,14 +162,19 @@ namespace AvalonDock.Controls
 
             // Code below is required only if virtualization is turned ON
             if (_IsVirtualizing)
+            {
                 return selectedItem as TabItem;
+            }
 
             if (selectedItem == null)
+            {
                 return null;
+            }
 
-            TabItem item = selectedItem as TabItem;
-            if (item == null)
+            if (selectedItem is not TabItem item)
+            {
                 item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
+            }
 
             return item;
         }
