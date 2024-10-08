@@ -50,7 +50,7 @@ namespace AvalonDock.Controls
 
 		protected override Size ArrangeOverride(Size finalSize)
 		{
-			var visibleChildren = Children.Cast<UIElement>().Where(ch => ch.Visibility != System.Windows.Visibility.Collapsed);
+			var visibleChildren = Children.Cast<TabItem>().Where(ch => ch.Visibility != Visibility.Collapsed);
 			var offset = 0.0;
 			var skipAllOthers = false;
 			foreach (TabItem doc in visibleChildren)

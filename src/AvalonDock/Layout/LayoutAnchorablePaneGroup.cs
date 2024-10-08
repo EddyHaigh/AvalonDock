@@ -122,7 +122,7 @@ namespace AvalonDock.Layout
 		{
             System.Diagnostics.Trace.TraceInformation("{0}AnchorablePaneGroup({1})", new string(' ', tab * 4), Orientation);
 
-			foreach (LayoutElement child in Children)
+			foreach (var child in Children.Cast<LayoutElement>())
             {
                 child.ConsoleDump(tab + 1);
             }
