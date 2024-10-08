@@ -18,7 +18,7 @@ namespace AvalonDock.Controls
 	/// Implements a <see cref="Grid"/> based panel base class
 	/// that hosts a <see cref="LayoutPanel"/> as its model.
 	/// </summary>
-	public class LayoutPanelControl : LayoutGridControl<ILayoutPanelElement>, ILayoutControl
+	public class LayoutPanelControl : LayoutGridControl<ILayoutPanelElement>
 	{
 		#region fields
 
