@@ -221,7 +221,7 @@ namespace Standard
 			// I'd rather not duplicate their code.
 			using (var memstm = new MemoryStream())
 			{
-				BitmapEncoder enc = new PngBitmapEncoder();
+				var enc = new PngBitmapEncoder();
 				enc.Frames.Add(bf);
 				enc.Save(memstm);
 				using (var istm = new ManagedIStream(memstm))
