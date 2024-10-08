@@ -1621,122 +1621,143 @@ namespace AvalonDock
 		/// <returns></returns>
 		internal UIElement CreateUIElementForModel(ILayoutElement model)
 		{
-			if (model is LayoutPanel)
-				return new LayoutPanelControl(model as LayoutPanel);
-			if (model is LayoutAnchorablePaneGroup)
-				return new LayoutAnchorablePaneGroupControl(model as LayoutAnchorablePaneGroup);
-			if (model is LayoutDocumentPaneGroup)
-				return new LayoutDocumentPaneGroupControl(model as LayoutDocumentPaneGroup);
+            return model switch
+            {
+                LayoutPanel layoutPanel => new LayoutPanelControl(layoutPanel),
+                LayoutAnchorablePaneGroup layoutAnchorablePaneGroup => new LayoutAnchorablePaneGroupControl(layoutAnchorablePaneGroup),
+                LayoutDocumentPaneGroup layoutDocumentPaneGroup => new LayoutDocumentPaneGroupControl(layoutDocumentPaneGroup),
+                LayoutAnchorSide layoutAnchorSide => CreateLayoutAnchorSideControl(layoutAnchorSide),
+                LayoutAnchorGroup layoutAnchorGroup => CreateLayoutAnchorGroupControl(layoutAnchorGroup),
+                LayoutDocumentPane layoutDocumentPane => CreateLayoutDocumentPaneControl(layoutDocumentPane),
+                LayoutAnchorablePane layoutAnchorablePane => CreateLayoutAnchorablePaneControl(layoutAnchorablePane),
+                LayoutAnchorableFloatingWindow layoutAnchorableFloatingWindow => CreateLayoutAnchorableFloatingWindowControl(layoutAnchorableFloatingWindow),
+                LayoutDocumentFloatingWindow layoutDocumentFloatingWindow => CreateLayoutDocumentFloatingWindowControl(layoutDocumentFloatingWindow),
+                LayoutDocument layoutDocument => new LayoutDocumentControl { Model = layoutDocument },
+                _ => null,
+            };
 
-			if (model is LayoutAnchorSide)
-			{
-				var templateModelView = new LayoutAnchorSideControl(model as LayoutAnchorSide);
-				templateModelView.SetBinding(TemplateProperty, new Binding(AnchorSideTemplateProperty.Name) { Source = this });
-				return templateModelView;
-			}
-			if (model is LayoutAnchorGroup)
-			{
-				var templateModelView = new LayoutAnchorGroupControl(model as LayoutAnchorGroup);
-				templateModelView.SetBinding(TemplateProperty, new Binding(AnchorGroupTemplateProperty.Name) { Source = this });
-				return templateModelView;
-			}
+            LayoutAnchorSideControl CreateLayoutAnchorSideControl(LayoutAnchorSide model)
+            {
+                var templateModelView = new LayoutAnchorSideControl(model);
+                templateModelView.SetBinding(TemplateProperty, new Binding(AnchorSideTemplateProperty.Name) { Source = this });
+                return templateModelView;
+            }
 
-			if (model is LayoutDocumentPane)
-			{
-				var templateModelView = new LayoutDocumentPaneControl(model as LayoutDocumentPane, IsVirtualizingDocument);
-				templateModelView.SetBinding(StyleProperty, new Binding(DocumentPaneControlStyleProperty.Name) { Source = this });
-				return templateModelView;
-			}
-			if (model is LayoutAnchorablePane)
-			{
-				var templateModelView = new LayoutAnchorablePaneControl(model as LayoutAnchorablePane, IsVirtualizingAnchorable);
-				templateModelView.SetBinding(StyleProperty, new Binding(AnchorablePaneControlStyleProperty.Name) { Source = this });
-				return templateModelView;
-			}
+            LayoutAnchorGroupControl CreateLayoutAnchorGroupControl(LayoutAnchorGroup model)
+            {
+                var templateModelView = new LayoutAnchorGroupControl(model);
+                templateModelView.SetBinding(TemplateProperty, new Binding(AnchorGroupTemplateProperty.Name) { Source = this });
+                return templateModelView;
+            }
 
-			if (model is LayoutAnchorableFloatingWindow)
-			{
-				if (DesignerProperties.GetIsInDesignMode(this)) return null;
-				var modelFW = model as LayoutAnchorableFloatingWindow;
-				var newFW = new LayoutAnchorableFloatingWindowControl(modelFW)
-				{
-					//Owner = Window.GetWindow(this)
-				};
+            LayoutDocumentPaneControl CreateLayoutDocumentPaneControl(LayoutDocumentPane model)
+            {
+                var templateModelView = new LayoutDocumentPaneControl(model, IsVirtualizingDocument);
+                templateModelView.SetBinding(StyleProperty, new Binding(DocumentPaneControlStyleProperty.Name) { Source = this });
+                return templateModelView;
+            }
 
-				newFW.UpdateOwnership();
+            LayoutAnchorablePaneControl CreateLayoutAnchorablePaneControl(LayoutAnchorablePane model)
+            {
+                var templateModelView = new LayoutAnchorablePaneControl(model, IsVirtualizingAnchorable);
+                templateModelView.SetBinding(StyleProperty, new Binding(AnchorablePaneControlStyleProperty.Name) { Source = this });
+                return templateModelView;
+            }
 
-				// Fill list before calling Show (issue #254)
-				_fwList.Add(newFW);
+            LayoutAnchorableFloatingWindowControl CreateLayoutAnchorableFloatingWindowControl(LayoutAnchorableFloatingWindow model)
+            {
+                if (DesignerProperties.GetIsInDesignMode(this))
+                {
+                    return null;
+                }
 
-				// Floating Window can also contain only Pane Groups at its base (issue #27) so we check for
-				// RootPanel (which is a LayoutAnchorablePaneGroup) and make sure the window is positioned back
-				// in current (or nearest) monitor
-				var panegroup = modelFW.RootPanel;
-				if (panegroup != null)
-				{
-					panegroup.KeepInsideNearestMonitor();  // Check position is valid in current setup
+                var newFW = new LayoutAnchorableFloatingWindowControl(model)
+                {
+                    //Owner = Window.GetWindow(this)
+                };
 
-					newFW.Left = panegroup.FloatingLeft;   // Position the window to previous or nearest valid position
-					newFW.Top = panegroup.FloatingTop;
-					newFW.Width = panegroup.FloatingWidth;
-					newFW.Height = panegroup.FloatingHeight;
-				}
+                newFW.UpdateOwnership();
 
-				newFW.ShowInTaskbar = false;
+                // Fill list before calling Show (issue #254)
+                _fwList.Add(newFW);
 
-				Dispatcher.BeginInvoke(new Action(() =>
-				{
-					if (newFW.Content != null || (newFW.Model as LayoutAnchorableFloatingWindow)?.IsVisible == true)
-						newFW.Show();
-					else
-						newFW.Hide();
-				}), DispatcherPriority.Send);
+                // Floating Window can also contain only Pane Groups at its base (issue #27) so we check for
+                // RootPanel (which is a LayoutAnchorablePaneGroup) and make sure the window is positioned back
+                // in current (or nearest) monitor
+                var panegroup = model.RootPanel;
+                if (panegroup != null)
+                {
+                    panegroup.KeepInsideNearestMonitor();  // Check position is valid in current setup
 
-				if (panegroup != null && panegroup.IsMaximized)
-					newFW.WindowState = WindowState.Maximized;
-				return newFW;
-			}
+                    newFW.Left = panegroup.FloatingLeft;   // Position the window to previous or nearest valid position
+                    newFW.Top = panegroup.FloatingTop;
+                    newFW.Width = panegroup.FloatingWidth;
+                    newFW.Height = panegroup.FloatingHeight;
+                }
 
-			if (model is LayoutDocumentFloatingWindow)
-			{
-				if (DesignerProperties.GetIsInDesignMode(this))
-					return null;
-				var modelFW = model as LayoutDocumentFloatingWindow;
-				var newFW = new LayoutDocumentFloatingWindowControl(modelFW)
-				{
-					//Owner = Window.GetWindow(this)
-				};
+                newFW.ShowInTaskbar = false;
 
-				newFW.UpdateOwnership();
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (newFW.Content != null || newFW.Model is LayoutAnchorableFloatingWindow { IsVisible: true })
+                    {
+                        newFW.Show();
+                    }
+                    else
+                    {
+                        newFW.Hide();
+                    }
+                }), DispatcherPriority.Send);
 
-				// Fill list before calling Show (issue #254)
-				_fwList.Add(newFW);
+                if (panegroup != null && panegroup.IsMaximized)
+                {
+                    newFW.WindowState = WindowState.Maximized;
+                }
 
-				var paneForExtensions = modelFW.RootPanel;
-				if (paneForExtensions != null)
-				{
-					//ensure that floating window position is inside current (or nearest) monitor
-					paneForExtensions.KeepInsideNearestMonitor();
+                return newFW;
+            }
 
-					newFW.Left = paneForExtensions.FloatingLeft;
-					newFW.Top = paneForExtensions.FloatingTop;
-					newFW.Width = paneForExtensions.FloatingWidth;
-					newFW.Height = paneForExtensions.FloatingHeight;
-				}
-				newFW.ShowInTaskbar = false;
-				newFW.Show();
-				// Do not set the WindowState before showing or it will be lost
-				if (paneForExtensions != null && paneForExtensions.IsMaximized)
-					newFW.WindowState = WindowState.Maximized;
-				return newFW;
-			}
-			if (model is LayoutDocument layoutDocument)
-			{
-				var templateModelView = new LayoutDocumentControl { Model = layoutDocument };
-				return templateModelView;
-			}
-			return null;
-		}
+            LayoutDocumentFloatingWindowControl CreateLayoutDocumentFloatingWindowControl(LayoutDocumentFloatingWindow model)
+            {
+                if (DesignerProperties.GetIsInDesignMode(this))
+                {
+                    return null;
+                }
+
+                var newFW = new LayoutDocumentFloatingWindowControl(model)
+                {
+                    //Owner = Window.GetWindow(this)
+                };
+
+                newFW.UpdateOwnership();
+
+                // Fill list before calling Show (issue #254)
+                _fwList.Add(newFW);
+
+                var paneForExtensions = model.RootPanel;
+                if (paneForExtensions != null)
+                {
+                    //ensure that floating window position is inside current (or nearest) monitor
+                    paneForExtensions.KeepInsideNearestMonitor();
+
+                    newFW.Left = paneForExtensions.FloatingLeft;
+                    newFW.Top = paneForExtensions.FloatingTop;
+                    newFW.Width = paneForExtensions.FloatingWidth;
+                    newFW.Height = paneForExtensions.FloatingHeight;
+                }
+
+                newFW.ShowInTaskbar = false;
+                newFW.Show();
+
+                // Do not set the WindowState before showing or it will be lost
+                if (paneForExtensions != null && paneForExtensions.IsMaximized)
+                {
+                    newFW.WindowState = WindowState.Maximized;
+                }
+
+                return newFW;
+            }
+        }
 
 		/// <summary>Method is invoked to pop put an Anchorable that was in AutoHide mode.</summary>
 		/// <param name="anchor"><see cref="LayoutAnchorControl"/> to pop out of the side panel.</param>
