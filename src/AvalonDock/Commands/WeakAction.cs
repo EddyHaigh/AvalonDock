@@ -226,38 +226,29 @@ namespace AvalonDock.Commands
 
 			var actionTarget = ActionTarget;
 
-			if (IsAlive)
-			{
-				if (Method != null
-					&& ActionReference != null
-					&& actionTarget != null)
-				{
-					var paras = Method.GetParameters().Count();
-					try
-					{
-						if (paras > 0)
-						{
-							Method.Invoke(actionTarget, new object[] { param });
-						}
-						else
-						{
-							Method.Invoke(actionTarget, null);
-						}
-					}
-					catch { }
-					// ReSharper disable RedundantJumpStatement
-					return;
-					// ReSharper restore RedundantJumpStatement
-				}
-
-#if SILVERLIGHT
-                if (_action != null)
+            if (IsAlive
+                && Method != null
+                && ActionReference != null
+                && actionTarget != null)
+            {
+                var paras = Method.GetParameters().Count();
+                try
                 {
-                    _action();
+                    if (paras > 0)
+                    {
+                        Method.Invoke(actionTarget, new object[] { param });
+                    }
+                    else
+                    {
+                        Method.Invoke(actionTarget, null);
+                    }
                 }
-#endif
-			}
-		}
+                catch { }
+                // ReSharper disable RedundantJumpStatement
+                return;
+                // ReSharper restore RedundantJumpStatement
+            }
+        }
 
 		/// <summary>
 		/// Sets the reference that this instance stores to null.
