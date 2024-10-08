@@ -22,8 +22,7 @@ namespace Microsoft.Windows.Shell
 	using System.Windows;
 	using System.Windows.Media;
 
-	[SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
-	public class SystemParameters2 : INotifyPropertyChanged
+    public class SystemParameters2 : INotifyPropertyChanged
 	{
 		private delegate void _SystemMetricUpdate(IntPtr wParam, IntPtr lParam);
 
@@ -148,8 +147,7 @@ namespace Microsoft.Windows.Shell
 			WindowCaptionButtonsLocation = captionRect;
 		}
 
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		private void _InitializeCaptionButtonLocation()
+        private void _InitializeCaptionButtonLocation()
 		{
 			// There is a completely different way to do this on XP.
 			if (!Utility.IsOSVistaOrNewer || !NativeMethods.IsThemeActive())
@@ -427,9 +425,7 @@ namespace Microsoft.Windows.Shell
 			}
 		}
 
-		[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ux")]
-		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ux")]
-		public string UxThemeName
+        public string UxThemeName
 		{
 			get => _uxThemeName;
 			private set
@@ -440,9 +436,7 @@ namespace Microsoft.Windows.Shell
 			}
 		}
 
-		[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ux")]
-		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ux")]
-		public string UxThemeColor
+        public string UxThemeColor
 		{
 			get => _uxThemeColor;
 			private set

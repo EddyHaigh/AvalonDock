@@ -37,8 +37,7 @@ namespace Standard
 		private static readonly Version _osVersion = Environment.OSVersion.Version;
 		private static readonly Version _presentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		private static bool _MemCmp(IntPtr left, IntPtr right, long cb)
+        private static bool _MemCmp(IntPtr left, IntPtr right, long cb)
 		{
 			var offset = 0;
 			for (; offset < cb - sizeof(Int64); offset += sizeof(Int64))
@@ -58,32 +57,25 @@ namespace Standard
 			return true;
 		}
 
-		/// <summary>The native RGB macro.</summary>
-		/// <param name="c"></param>
-		/// <returns></returns>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static int RGB(Color c) => c.R | (c.G << 8) | (c.B << 16);
+        /// <summary>The native RGB macro.</summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static int RGB(Color c) => c.R | (c.G << 8) | (c.B << 16);
 
 		/// <summary>Convert a native integer that represent a color with an alpha channel into a Color struct.</summary>
 		/// <param name="color">The integer that represents the color.  Its bits are of the format 0xAARRGGBB.</param>
 		/// <returns>A Color representation of the parameter.</returns>
 		public static Color ColorFromArgbDword(uint color) => Color.FromArgb((byte)((color & 0xFF000000) >> 24), (byte)((color & 0x00FF0000) >> 16), (byte)((color & 0x0000FF00) >> 8), (byte)((color & 0x000000FF) >> 0));
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static int GET_X_LPARAM(IntPtr lParam) => LOWORD(lParam.ToInt32());
+        public static int GET_X_LPARAM(IntPtr lParam) => LOWORD(lParam.ToInt32());
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static int GET_Y_LPARAM(IntPtr lParam) => HIWORD(lParam.ToInt32());
+        public static int GET_Y_LPARAM(IntPtr lParam) => HIWORD(lParam.ToInt32());
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static int HIWORD(int i) => (short)(i >> 16);
+        public static int HIWORD(int i) => (short)(i >> 16);
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static int LOWORD(int i) => (short)(i & 0xFFFF);
+        public static int LOWORD(int i) => (short)(i & 0xFFFF);
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public static bool AreStreamsEqual(Stream left, Stream right)
+        public static bool AreStreamsEqual(Stream left, Stream right)
 		{
 			if (left == null) return right == null;
 			if (right == null) return false;
@@ -141,8 +133,7 @@ namespace Standard
 			}
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool GuidTryParse(string guidString, out Guid guid)
+        public static bool GuidTryParse(string guidString, out Guid guid)
 		{
 			Verify.IsNeitherNullNorEmpty(guidString, nameof(guidString));
 			try
@@ -161,26 +152,19 @@ namespace Standard
 			return false;
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool IsFlagSet(int value, int mask) => (value & mask) != 0;
+        public static bool IsFlagSet(int value, int mask) => (value & mask) != 0;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool IsFlagSet(uint value, uint mask) => (value & mask) != 0;
+        public static bool IsFlagSet(uint value, uint mask) => (value & mask) != 0;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool IsFlagSet(long value, long mask) => (value & mask) != 0;
+        public static bool IsFlagSet(long value, long mask) => (value & mask) != 0;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool IsFlagSet(ulong value, ulong mask) => (value & mask) != 0;
+        public static bool IsFlagSet(ulong value, ulong mask) => (value & mask) != 0;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool IsOSVistaOrNewer => _osVersion >= new Version(6, 0);
+        public static bool IsOSVistaOrNewer => _osVersion >= new Version(6, 0);
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool IsOSWindows7OrNewer => _osVersion >= new Version(6, 1);
+        public static bool IsOSWindows7OrNewer => _osVersion >= new Version(6, 1);
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool IsOSWindows8OrNewer => _osVersion >= new Version(6, 2);
+        public static bool IsOSWindows8OrNewer => _osVersion >= new Version(6, 2);
 
 		/// <summary>
 		/// Is this using WPF4?
@@ -191,11 +175,9 @@ namespace Standard
 		/// </remarks>
 		public static bool IsPresentationFrameworkVersionLessThan4 => _presentationFrameworkVersion < new Version(4, 0);
 
-		// Caller is responsible for destroying the HICON
-		// Caller is responsible to ensure that GDI+ has been initialized.
-		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static IntPtr GenerateHICON(ImageSource image, Size dimensions)
+        // Caller is responsible for destroying the HICON
+        // Caller is responsible to ensure that GDI+ has been initialized.
+        public static IntPtr GenerateHICON(ImageSource image, Size dimensions)
 		{
 			if (image == null) return IntPtr.Zero;
 
@@ -319,47 +301,42 @@ namespace Standard
 			return s_bitDepth;
 		}
 
-		/// <summary>
-		/// Simple guard against the exceptions that File.Delete throws on null and empty strings.
-		/// </summary>
-		/// <param name="path">The path to delete.  Unlike File.Delete, this can be null or empty.</param>
-		/// <remarks>
-		/// Note that File.Delete, and by extension SafeDeleteFile, does not throw an exception
-		/// if the file does not exist.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void SafeDeleteFile(string path)
+        /// <summary>
+        /// Simple guard against the exceptions that File.Delete throws on null and empty strings.
+        /// </summary>
+        /// <param name="path">The path to delete.  Unlike File.Delete, this can be null or empty.</param>
+        /// <remarks>
+        /// Note that File.Delete, and by extension SafeDeleteFile, does not throw an exception
+        /// if the file does not exist.
+        /// </remarks>
+        public static void SafeDeleteFile(string path)
 		{
 			if (!string.IsNullOrEmpty(path)) File.Delete(path);
 		}
 
-		/// <summary>GDI's DeleteObject</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void SafeDeleteObject(ref IntPtr gdiObject)
+        /// <summary>GDI's DeleteObject</summary>
+        public static void SafeDeleteObject(ref IntPtr gdiObject)
 		{
 			var p = gdiObject;
 			gdiObject = IntPtr.Zero;
 			if (p != IntPtr.Zero) NativeMethods.DeleteObject(p);
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void SafeDestroyIcon(ref IntPtr hicon)
+        public static void SafeDestroyIcon(ref IntPtr hicon)
 		{
 			var p = hicon;
 			hicon = IntPtr.Zero;
 			if (p != IntPtr.Zero) NativeMethods.DestroyIcon(p);
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void SafeDestroyWindow(ref IntPtr hwnd)
+        public static void SafeDestroyWindow(ref IntPtr hwnd)
 		{
 			var p = hwnd;
 			hwnd = IntPtr.Zero;
 			if (NativeMethods.IsWindow(p)) NativeMethods.DestroyWindow(p);
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void SafeDispose<T>(ref T disposable) where T : IDisposable
+        public static void SafeDispose<T>(ref T disposable) where T : IDisposable
 		{
 			// Dispose can safely be called on an object multiple times.
 			IDisposable t = disposable;
@@ -367,37 +344,30 @@ namespace Standard
 			t?.Dispose();
 		}
 
-		/// <summary>GDI+'s DisposeImage</summary>
-		/// <param name="gdipImage"></param>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void SafeDisposeImage(ref IntPtr gdipImage)
+        /// <summary>GDI+'s DisposeImage</summary>
+        /// <param name="gdipImage"></param>
+        public static void SafeDisposeImage(ref IntPtr gdipImage)
 		{
 			var p = gdipImage;
 			gdipImage = IntPtr.Zero;
 			if (p != IntPtr.Zero) NativeMethods.GdipDisposeImage(p);
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public static void SafeCoTaskMemFree(ref IntPtr ptr)
+        public static void SafeCoTaskMemFree(ref IntPtr ptr)
 		{
 			var p = ptr;
 			ptr = IntPtr.Zero;
 			if (p != IntPtr.Zero) Marshal.FreeCoTaskMem(p);
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public static void SafeFreeHGlobal(ref IntPtr hglobal)
+        public static void SafeFreeHGlobal(ref IntPtr hglobal)
 		{
 			var p = hglobal;
 			hglobal = IntPtr.Zero;
 			if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public static void SafeRelease<T>(ref T comObject) where T : class
+        public static void SafeRelease<T>(ref T comObject) where T : class
 		{
 			var t = comObject;
 			comObject = default(T);
@@ -406,14 +376,13 @@ namespace Standard
 			Marshal.ReleaseComObject(t);
 		}
 
-		/// <summary>
-		/// Utility to help classes concatenate their properties for implementing ToString().
-		/// </summary>
-		/// <param name="source">The <see cref="StringBuilder"/> to concatenate the results into.</param>
-		/// <param name="propertyName">The name of the property to be concatenated.</param>
-		/// <param name="value">The value of the property to be concatenated.</param>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void GeneratePropertyString(StringBuilder source, string propertyName, string value)
+        /// <summary>
+        /// Utility to help classes concatenate their properties for implementing ToString().
+        /// </summary>
+        /// <param name="source">The <see cref="StringBuilder"/> to concatenate the results into.</param>
+        /// <param name="propertyName">The name of the property to be concatenated.</param>
+        /// <param name="value">The value of the property to be concatenated.</param>
+        public static void GeneratePropertyString(StringBuilder source, string propertyName, string value)
 		{
 			Assert.IsNotNull(source);
 			Assert.IsFalse(string.IsNullOrEmpty(propertyName));
@@ -430,17 +399,16 @@ namespace Standard
 			}
 		}
 
-		/// <summary>
-		/// Generates ToString functionality for a struct.  This is an expensive way to do it,
-		/// it exists for the sake of debugging while classes are in flux.
-		/// Eventually this should just be removed and the classes should
-		/// do this without reflection.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="object"></param>
-		/// <returns></returns>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		[Obsolete]
+        /// <summary>
+        /// Generates ToString functionality for a struct.  This is an expensive way to do it,
+        /// it exists for the sake of debugging while classes are in flux.
+        /// Eventually this should just be removed and the classes should
+        /// do this without reflection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="object"></param>
+        /// <returns></returns>
+        [Obsolete]
 		public static string GenerateToString<T>(T @object) where T : struct
 		{
 			var sbRet = new StringBuilder();
@@ -455,8 +423,7 @@ namespace Standard
 			return sbRet.ToString();
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void CopyStream(Stream destination, Stream source)
+        public static void CopyStream(Stream destination, Stream source)
 		{
 			Assert.IsNotNull(source);
 			Assert.IsNotNull(destination);
@@ -482,8 +449,7 @@ namespace Standard
 			destination.Position = 0;
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static string HashStreamMD5(Stream stm)
+        public static string HashStreamMD5(Stream stm)
 		{
 			stm.Position = 0;
 			var hashBuilder = new StringBuilder();
@@ -494,14 +460,12 @@ namespace Standard
 			}
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static void EnsureDirectory(string path)
+        public static void EnsureDirectory(string path)
 		{
 			if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static bool MemCmp(byte[] left, byte[] right, int cb)
+        public static bool MemCmp(byte[] left, byte[] right, int cb)
 		{
 			Assert.IsNotNull(left);
 			Assert.IsNotNull(right);
@@ -527,42 +491,36 @@ namespace Standard
 			private int _byteCount;
 			private int _charCount;
 
-			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-			public _UrlDecoder(int size, Encoding encoding)
+            public _UrlDecoder(int size, Encoding encoding)
 			{
 				_encoding = encoding;
 				_charBuffer = new char[size];
 				_byteBuffer = new byte[size];
 			}
 
-			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-			public void AddByte(byte b) => _byteBuffer[_byteCount++] = b;
+            public void AddByte(byte b) => _byteBuffer[_byteCount++] = b;
 
-			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-			public void AddChar(char ch)
+            public void AddChar(char ch)
 			{
 				_FlushBytes();
 				_charBuffer[_charCount++] = ch;
 			}
 
-			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-			private void _FlushBytes()
+            private void _FlushBytes()
 			{
 				if (_byteCount <= 0) return;
 				_charCount += _encoding.GetChars(_byteBuffer, 0, _byteCount, _charBuffer, _charCount);
 				_byteCount = 0;
 			}
 
-			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-			public string GetString()
+            public string GetString()
 			{
 				_FlushBytes();
 				return _charCount > 0 ? new string(_charBuffer, 0, _charCount) : "";
 			}
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static string UrlDecode(string url)
+        public static string UrlDecode(string url)
 		{
 			if (url == null) return null;
 
@@ -619,20 +577,19 @@ namespace Standard
 			return decoder.GetString();
 		}
 
-		/// <summary>
-		/// Encodes a URL string.  Duplicated functionality from System.Web.HttpUtility.UrlEncode.
-		/// </summary>
-		/// <param name="url"></param>
-		/// <returns></returns>
-		/// <remarks>
-		/// Duplicated from System.Web.HttpUtility because System.Web isn't part of the client profile.
-		/// URL Encoding replaces ' ' with '+' and unsafe ASCII characters with '%XX'.
-		/// Safe characters are defined in RFC2396 (http://www.ietf.org/rfc/rfc2396.txt).
-		/// They are the 7-bit ASCII alphanumerics and the mark characters "-_.!~*'()".
-		/// This implementation does not treat '~' as a safe character to be consistent with the System.Web version.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static string UrlEncode(string url)
+        /// <summary>
+        /// Encodes a URL string.  Duplicated functionality from System.Web.HttpUtility.UrlEncode.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Duplicated from System.Web.HttpUtility because System.Web isn't part of the client profile.
+        /// URL Encoding replaces ' ' with '+' and unsafe ASCII characters with '%XX'.
+        /// Safe characters are defined in RFC2396 (http://www.ietf.org/rfc/rfc2396.txt).
+        /// They are the 7-bit ASCII alphanumerics and the mark characters "-_.!~*'()".
+        /// This implementation does not treat '~' as a safe character to be consistent with the System.Web version.
+        /// </remarks>
+        public static string UrlEncode(string url)
 		{
 			if (url == null) return null;
 			var bytes = Encoding.UTF8.GetBytes(url);
@@ -670,13 +627,12 @@ namespace Standard
 			return Encoding.ASCII.GetString(bytes);
 		}
 
-		// HttpUtility's UrlEncode is slightly different from the RFC.
-		// RFC2396 describes unreserved characters as alphanumeric or
-		// the list "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
-		// The System.Web version unnecessarily escapes '~', which should be okay...
-		// Keeping that same pattern here just to be consistent.
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		private static bool _UrlEncodeIsSafe(byte b)
+        // HttpUtility's UrlEncode is slightly different from the RFC.
+        // RFC2396 describes unreserved characters as alphanumeric or
+        // the list "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
+        // The System.Web version unnecessarily escapes '~', which should be okay...
+        // Keeping that same pattern here just to be consistent.
+        private static bool _UrlEncodeIsSafe(byte b)
 		{
 			if (_IsAsciiAlphaNumeric(b)) return true;
 
@@ -697,18 +653,15 @@ namespace Standard
 			}
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		private static bool _IsAsciiAlphaNumeric(byte b) => b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9';
+        private static bool _IsAsciiAlphaNumeric(byte b) => b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9';
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		private static byte _IntToHex(int n)
+        private static byte _IntToHex(int n)
 		{
 			Assert.BoundedInteger(0, n, 16);
 			return n <= 9 ? (byte)(n + '0') : (byte)(n - 10 + 'A');
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		private static int _HexToInt(char h)
+        private static int _HexToInt(char h)
 		{
 			if (h >= '0' && h <= '9') return h - '0';
 			if (h >= 'a' && h <= 'f') return h - 'a' + 10;

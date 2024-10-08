@@ -29,88 +29,68 @@ namespace Standard
 		[FieldOffset(0)]
 		private readonly int _value;
 
-		// NOTE: These public static field declarations are automatically
-		// picked up by (HRESULT's) ToString through reflection.
+        // NOTE: These public static field declarations are automatically
+        // picked up by (HRESULT's) ToString through reflection.
 
-		/// <summary>The operation completed successfully.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_SUCCESS = new Win32Error(0);
+        /// <summary>The operation completed successfully.</summary>
+        public static readonly Win32Error ERROR_SUCCESS = new Win32Error(0);
 
-		/// <summary>Incorrect function.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_INVALID_FUNCTION = new Win32Error(1);
+        /// <summary>Incorrect function.</summary>
+        public static readonly Win32Error ERROR_INVALID_FUNCTION = new Win32Error(1);
 
-		/// <summary>The system cannot find the file specified.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_FILE_NOT_FOUND = new Win32Error(2);
+        /// <summary>The system cannot find the file specified.</summary>
+        public static readonly Win32Error ERROR_FILE_NOT_FOUND = new Win32Error(2);
 
-		/// <summary>The system cannot find the path specified.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_PATH_NOT_FOUND = new Win32Error(3);
+        /// <summary>The system cannot find the path specified.</summary>
+        public static readonly Win32Error ERROR_PATH_NOT_FOUND = new Win32Error(3);
 
-		/// <summary>The system cannot open the file.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_TOO_MANY_OPEN_FILES = new Win32Error(4);
+        /// <summary>The system cannot open the file.</summary>
+        public static readonly Win32Error ERROR_TOO_MANY_OPEN_FILES = new Win32Error(4);
 
-		/// <summary>Access is denied.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_ACCESS_DENIED = new Win32Error(5);
+        /// <summary>Access is denied.</summary>
+        public static readonly Win32Error ERROR_ACCESS_DENIED = new Win32Error(5);
 
-		/// <summary>The handle is invalid.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_INVALID_HANDLE = new Win32Error(6);
+        /// <summary>The handle is invalid.</summary>
+        public static readonly Win32Error ERROR_INVALID_HANDLE = new Win32Error(6);
 
-		/// <summary>Not enough storage is available to complete this operation.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_OUTOFMEMORY = new Win32Error(14);
+        /// <summary>Not enough storage is available to complete this operation.</summary>
+        public static readonly Win32Error ERROR_OUTOFMEMORY = new Win32Error(14);
 
-		/// <summary>There are no more files.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_NO_MORE_FILES = new Win32Error(18);
+        /// <summary>There are no more files.</summary>
+        public static readonly Win32Error ERROR_NO_MORE_FILES = new Win32Error(18);
 
-		/// <summary>The process cannot access the file because it is being used by another process.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_SHARING_VIOLATION = new Win32Error(32);
+        /// <summary>The process cannot access the file because it is being used by another process.</summary>
+        public static readonly Win32Error ERROR_SHARING_VIOLATION = new Win32Error(32);
 
-		/// <summary>The parameter is incorrect.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_INVALID_PARAMETER = new Win32Error(87);
+        /// <summary>The parameter is incorrect.</summary>
+        public static readonly Win32Error ERROR_INVALID_PARAMETER = new Win32Error(87);
 
-		/// <summary>The data area passed to a system call is too small.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_INSUFFICIENT_BUFFER = new Win32Error(122);
+        /// <summary>The data area passed to a system call is too small.</summary>
+        public static readonly Win32Error ERROR_INSUFFICIENT_BUFFER = new Win32Error(122);
 
-		/// <summary>Cannot nest calls to LoadModule.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_NESTING_NOT_ALLOWED = new Win32Error(215);
+        /// <summary>Cannot nest calls to LoadModule.</summary>
+        public static readonly Win32Error ERROR_NESTING_NOT_ALLOWED = new Win32Error(215);
 
-		/// <summary>Illegal operation attempted on a registry key that has been marked for deletion.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_KEY_DELETED = new Win32Error(1018);
+        /// <summary>Illegal operation attempted on a registry key that has been marked for deletion.</summary>
+        public static readonly Win32Error ERROR_KEY_DELETED = new Win32Error(1018);
 
-		/// <summary>Element not found.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_NOT_FOUND = new Win32Error(1168);
+        /// <summary>Element not found.</summary>
+        public static readonly Win32Error ERROR_NOT_FOUND = new Win32Error(1168);
 
-		/// <summary>There was no match for the specified key in the index.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_NO_MATCH = new Win32Error(1169);
+        /// <summary>There was no match for the specified key in the index.</summary>
+        public static readonly Win32Error ERROR_NO_MATCH = new Win32Error(1169);
 
-		/// <summary>An invalid device was specified.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_BAD_DEVICE = new Win32Error(1200);
+        /// <summary>An invalid device was specified.</summary>
+        public static readonly Win32Error ERROR_BAD_DEVICE = new Win32Error(1200);
 
-		/// <summary>The operation was canceled by the user.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_CANCELLED = new Win32Error(1223);
+        /// <summary>The operation was canceled by the user.</summary>
+        public static readonly Win32Error ERROR_CANCELLED = new Win32Error(1223);
 
-		/// <summary>The window class was already registered.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_CLASS_ALREADY_EXISTS = new Win32Error(1410);
+        /// <summary>The window class was already registered.</summary>
+        public static readonly Win32Error ERROR_CLASS_ALREADY_EXISTS = new Win32Error(1410);
 
-		/// <summary>The specified datatype is invalid.</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly Win32Error ERROR_INVALID_DATATYPE = new Win32Error(1804);
+        /// <summary>The specified datatype is invalid.</summary>
+        public static readonly Win32Error ERROR_INVALID_DATATYPE = new Win32Error(1804);
 
 		/// <summary>
 		/// Create a new Win32 error.
@@ -134,10 +114,9 @@ namespace Standard
 		/// <returns>The equivalent HRESULT value.</returns>
 		public HRESULT ToHRESULT() => (HRESULT)this;
 
-		/// <summary>Performs the equivalent of Win32's GetLastError()</summary>
-		/// <returns>A Win32Error instance with the result of the native GetLastError</returns>
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public static Win32Error GetLastError() => new Win32Error(Marshal.GetLastWin32Error());
+        /// <summary>Performs the equivalent of Win32's GetLastError()</summary>
+        /// <returns>A Win32Error instance with the result of the native GetLastError</returns>
+        public static Win32Error GetLastError() => new Win32Error(Marshal.GetLastWin32Error());
 
 		public override bool Equals(object obj)
 		{
@@ -213,97 +192,76 @@ namespace Standard
 		[FieldOffset(0)]
 		private readonly uint _value;
 
-		// NOTE: These public static field declarations are automatically
-		// picked up by ToString through reflection.
-		/// <summary>S_OK</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT S_OK = new HRESULT(0x00000000);
+        // NOTE: These public static field declarations are automatically
+        // picked up by ToString through reflection.
+        /// <summary>S_OK</summary>
+        public static readonly HRESULT S_OK = new HRESULT(0x00000000);
 
-		/// <summary>S_FALSE</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT S_FALSE = new HRESULT(0x00000001);
+        /// <summary>S_FALSE</summary>
+        public static readonly HRESULT S_FALSE = new HRESULT(0x00000001);
 
-		/// <summary>E_PENDING</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_PENDING = new HRESULT(0x8000000A);
+        /// <summary>E_PENDING</summary>
+        public static readonly HRESULT E_PENDING = new HRESULT(0x8000000A);
 
-		/// <summary>E_NOTIMPL</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_NOTIMPL = new HRESULT(0x80004001);
+        /// <summary>E_NOTIMPL</summary>
+        public static readonly HRESULT E_NOTIMPL = new HRESULT(0x80004001);
 
-		/// <summary>E_NOINTERFACE</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_NOINTERFACE = new HRESULT(0x80004002);
+        /// <summary>E_NOINTERFACE</summary>
+        public static readonly HRESULT E_NOINTERFACE = new HRESULT(0x80004002);
 
-		/// <summary>E_POINTER</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_POINTER = new HRESULT(0x80004003);
+        /// <summary>E_POINTER</summary>
+        public static readonly HRESULT E_POINTER = new HRESULT(0x80004003);
 
-		/// <summary>E_ABORT</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_ABORT = new HRESULT(0x80004004);
+        /// <summary>E_ABORT</summary>
+        public static readonly HRESULT E_ABORT = new HRESULT(0x80004004);
 
-		/// <summary>E_FAIL</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_FAIL = new HRESULT(0x80004005);
+        /// <summary>E_FAIL</summary>
+        public static readonly HRESULT E_FAIL = new HRESULT(0x80004005);
 
-		/// <summary>E_UNEXPECTED</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_UNEXPECTED = new HRESULT(0x8000FFFF);
+        /// <summary>E_UNEXPECTED</summary>
+        public static readonly HRESULT E_UNEXPECTED = new HRESULT(0x8000FFFF);
 
-		/// <summary>STG_E_INVALIDFUNCTION</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT STG_E_INVALIDFUNCTION = new HRESULT(0x80030001);
+        /// <summary>STG_E_INVALIDFUNCTION</summary>
+        public static readonly HRESULT STG_E_INVALIDFUNCTION = new HRESULT(0x80030001);
 
-		/// <summary>REGDB_E_CLASSNOTREG</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT REGDB_E_CLASSNOTREG = new HRESULT(0x80040154);
+        /// <summary>REGDB_E_CLASSNOTREG</summary>
+        public static readonly HRESULT REGDB_E_CLASSNOTREG = new HRESULT(0x80040154);
 
-		/// <summary>DESTS_E_NO_MATCHING_ASSOC_HANDLER.  Win7 internal error code for Jump Lists.</summary>
-		/// <remarks>There is no Assoc Handler for the given item registered by the specified application.</remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT DESTS_E_NO_MATCHING_ASSOC_HANDLER = new HRESULT(0x80040F03);
+        /// <summary>DESTS_E_NO_MATCHING_ASSOC_HANDLER.  Win7 internal error code for Jump Lists.</summary>
+        /// <remarks>There is no Assoc Handler for the given item registered by the specified application.</remarks>
+        public static readonly HRESULT DESTS_E_NO_MATCHING_ASSOC_HANDLER = new HRESULT(0x80040F03);
 
-		/// <summary>DESTS_E_NORECDOCS.  Win7 internal error code for Jump Lists.</summary>
-		/// <remarks>The given item is excluded from the recent docs folder by the NoRecDocs bit on its registration.</remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT DESTS_E_NORECDOCS = new HRESULT(0x80040F04);
+        /// <summary>DESTS_E_NORECDOCS.  Win7 internal error code for Jump Lists.</summary>
+        /// <remarks>The given item is excluded from the recent docs folder by the NoRecDocs bit on its registration.</remarks>
+        public static readonly HRESULT DESTS_E_NORECDOCS = new HRESULT(0x80040F04);
 
-		/// <summary>DESTS_E_NOTALLCLEARED.  Win7 internal error code for Jump Lists.</summary>
-		/// <remarks>Not all of the items were successfully cleared</remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT DESTS_E_NOTALLCLEARED = new HRESULT(0x80040F05);
+        /// <summary>DESTS_E_NOTALLCLEARED.  Win7 internal error code for Jump Lists.</summary>
+        /// <remarks>Not all of the items were successfully cleared</remarks>
+        public static readonly HRESULT DESTS_E_NOTALLCLEARED = new HRESULT(0x80040F05);
 
-		/// <summary>E_ACCESSDENIED</summary>
-		/// <remarks>Win32Error ERROR_ACCESS_DENIED.</remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_ACCESSDENIED = new HRESULT(0x80070005);
+        /// <summary>E_ACCESSDENIED</summary>
+        /// <remarks>Win32Error ERROR_ACCESS_DENIED.</remarks>
+        public static readonly HRESULT E_ACCESSDENIED = new HRESULT(0x80070005);
 
-		/// <summary>E_OUTOFMEMORY</summary>
-		/// <remarks>Win32Error ERROR_OUTOFMEMORY.</remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_OUTOFMEMORY = new HRESULT(0x8007000E);
+        /// <summary>E_OUTOFMEMORY</summary>
+        /// <remarks>Win32Error ERROR_OUTOFMEMORY.</remarks>
+        public static readonly HRESULT E_OUTOFMEMORY = new HRESULT(0x8007000E);
 
-		/// <summary>E_INVALIDARG</summary>
-		/// <remarks>Win32Error ERROR_INVALID_PARAMETER.</remarks>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT E_INVALIDARG = new HRESULT(0x80070057);
+        /// <summary>E_INVALIDARG</summary>
+        /// <remarks>Win32Error ERROR_INVALID_PARAMETER.</remarks>
+        public static readonly HRESULT E_INVALIDARG = new HRESULT(0x80070057);
 
-		/// <summary>INTSAFE_E_ARITHMETIC_OVERFLOW</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT INTSAFE_E_ARITHMETIC_OVERFLOW = new HRESULT(0x80070216);
+        /// <summary>INTSAFE_E_ARITHMETIC_OVERFLOW</summary>
+        public static readonly HRESULT INTSAFE_E_ARITHMETIC_OVERFLOW = new HRESULT(0x80070216);
 
-		/// <summary>COR_E_OBJECTDISPOSED</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT COR_E_OBJECTDISPOSED = new HRESULT(0x80131622);
+        /// <summary>COR_E_OBJECTDISPOSED</summary>
+        public static readonly HRESULT COR_E_OBJECTDISPOSED = new HRESULT(0x80131622);
 
-		/// <summary>WC_E_GREATERTHAN</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT WC_E_GREATERTHAN = new HRESULT(0xC00CEE23);
+        /// <summary>WC_E_GREATERTHAN</summary>
+        public static readonly HRESULT WC_E_GREATERTHAN = new HRESULT(0xC00CEE23);
 
-		/// <summary>WC_E_SYNTAX</summary>
-		[SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		public static readonly HRESULT WC_E_SYNTAX = new HRESULT(0xC00CEE2D);
+        /// <summary>WC_E_SYNTAX</summary>
+        public static readonly HRESULT WC_E_SYNTAX = new HRESULT(0xC00CEE2D);
 
 		/// <summary>
 		/// Create an HRESULT from an integer value.
@@ -427,9 +385,7 @@ namespace Standard
 
 		public void ThrowIfFailed() => ThrowIfFailed(null);
 
-		[SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes", Justification = "Only recreating Exceptions that were already raised."),
-		 SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public void ThrowIfFailed(string message)
+        public void ThrowIfFailed(string message)
 		{
 			if (!Failed) return;
 			if (string.IsNullOrEmpty(message))

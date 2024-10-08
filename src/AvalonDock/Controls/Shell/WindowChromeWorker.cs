@@ -175,15 +175,13 @@ namespace Microsoft.Windows.Shell
 			_RestoreStandardChromeState(true);
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static WindowChromeWorker GetWindowChromeWorker(Window window)
+        public static WindowChromeWorker GetWindowChromeWorker(Window window)
 		{
 			Verify.IsNotNull(window, nameof(window));
 			return (WindowChromeWorker)window.GetValue(WindowChromeWorkerProperty);
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static void SetWindowChromeWorker(Window window, WindowChromeWorker chrome)
+        public static void SetWindowChromeWorker(Window window, WindowChromeWorker chrome)
 		{
 			Verify.IsNotNull(window, nameof(window));
 			window.SetValue(WindowChromeWorkerProperty, chrome);
@@ -278,17 +276,16 @@ namespace Microsoft.Windows.Shell
 			_isFixedUp = true;
 		}
 
-		// There was a regression in DWM in Windows 7 with regard to handling WM_NCCALCSIZE to effect custom chrome.
-		// When windows with glass are maximized on a multimonitor setup the glass frame tends to turn black.
-		// Also when windows are resized they tend to flicker black, sometimes staying that way until resized again.
-		//
-		// This appears to be a bug in DWM related to device bitmap optimizations.  At least on RTM Win7 we can
-		// evoke a legacy code path that bypasses the bug by calling an esoteric DWM function.  This doesn't affect
-		// the system, just the application.
-		// WPF also tends to call this function anyways during animations, so we're just forcing the issue
-		// consistently and a bit earlier.
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		private void _FixupWindows7Issues()
+        // There was a regression in DWM in Windows 7 with regard to handling WM_NCCALCSIZE to effect custom chrome.
+        // When windows with glass are maximized on a multimonitor setup the glass frame tends to turn black.
+        // Also when windows are resized they tend to flicker black, sometimes staying that way until resized again.
+        //
+        // This appears to be a bug in DWM related to device bitmap optimizations.  At least on RTM Win7 we can
+        // evoke a legacy code path that bypasses the bug by calling an esoteric DWM function.  This doesn't affect
+        // the system, just the application.
+        // WPF also tends to call this function anyways during animations, so we're just forcing the issue
+        // consistently and a bit earlier.
+        private void _FixupWindows7Issues()
 		{
 			if (_blackGlassFixupAttemptCount > 5)
 			{
@@ -843,8 +840,7 @@ namespace Microsoft.Windows.Shell
 				(int)Math.Ceiling(radius));
 		}
 
-		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "HRGNs")]
-		private static void _CreateAndCombineRoundRectRgn(IntPtr hrgnSource, Rect region, double radius)
+        private static void _CreateAndCombineRoundRectRgn(IntPtr hrgnSource, Rect region, double radius)
 		{
 			var hRegion = IntPtr.Zero;
 			try
@@ -912,11 +908,10 @@ namespace Microsoft.Windows.Shell
 			}
 		}
 
-		/// <summary>
-		/// Matrix of the HT values to return when responding to NC window messages.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Member")]
-		private static readonly HT[,] _HitTestBorders = {
+        /// <summary>
+        /// Matrix of the HT values to return when responding to NC window messages.
+        /// </summary>
+        private static readonly HT[,] _HitTestBorders = {
 			{ HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT    },
 			{ HT.LEFT,       HT.CLIENT,  HT.RIGHT       },
 			{ HT.BOTTOMLEFT, HT.BOTTOM,  HT.BOTTOMRIGHT },

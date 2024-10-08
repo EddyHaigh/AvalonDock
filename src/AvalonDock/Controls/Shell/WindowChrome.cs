@@ -85,17 +85,13 @@ namespace Microsoft.Windows.Shell
 			chromeWorker.SetWindowChrome(newChrome);
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static WindowChrome GetWindowChrome(Window window)
+        public static WindowChrome GetWindowChrome(Window window)
 		{
 			Verify.IsNotNull(window, nameof(window));
 			return (WindowChrome)window.GetValue(WindowChromeProperty);
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static void SetWindowChrome(Window window, WindowChrome chrome)
+        public static void SetWindowChrome(Window window, WindowChrome chrome)
 		{
 			Verify.IsNotNull(window, nameof(window));
 			window.SetValue(WindowChromeProperty, chrome);
@@ -105,9 +101,7 @@ namespace Microsoft.Windows.Shell
 			"IsHitTestVisibleInChrome", typeof(bool), typeof(WindowChrome),
 			new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits));
 
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
+        public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
 		{
 			Verify.IsNotNull(inputElement, nameof(inputElement));
 			if (!(inputElement is DependencyObject dobj))
@@ -115,9 +109,7 @@ namespace Microsoft.Windows.Shell
 			return (bool)dobj.GetValue(IsHitTestVisibleInChromeProperty);
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		public static void SetIsHitTestVisibleInChrome(IInputElement inputElement, bool hitTestVisible)
+        public static void SetIsHitTestVisibleInChrome(IInputElement inputElement, bool hitTestVisible)
 		{
 			Verify.IsNotNull(inputElement, nameof(inputElement));
 			if (!(inputElement is DependencyObject dobj))
