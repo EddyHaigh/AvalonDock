@@ -295,8 +295,7 @@ namespace AvalonDock.Layout
 		/// <inheritdoc />
 		public override void ConsoleDump(int tab)
 		{
-			System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-			System.Diagnostics.Trace.WriteLine("Anchorable()");
+			System.Diagnostics.Trace.TraceInformation("{0}Anchorable()", new string(' ', tab * 4));
 		}
 #endif
 

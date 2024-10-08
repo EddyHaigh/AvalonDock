@@ -98,7 +98,7 @@ namespace AvalonDock.Controls
 			//    var contentModel = LayoutDocumentTabItem.GetDraggingItem().Model;
 			//    var manager = contentModel.Root.Manager;
 			//    LayoutDocumentTabItem.ResetDraggingItem();
-			//    System.Diagnostics.Trace.WriteLine("OnMouseLeave()");
+			//    System.Diagnostics.Trace.TraceInformation("OnMouseLeave()");
 
 			//    manager.StartDraggingFloatingWindowForContent(contentModel);
 			//}

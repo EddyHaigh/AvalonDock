@@ -120,12 +120,13 @@ namespace AvalonDock.Layout
 		/// <inheritdoc />
 		public override void ConsoleDump(int tab)
 		{
-			System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-			System.Diagnostics.Trace.WriteLine(string.Format("AnchorablePaneGroup({0})", Orientation));
+            System.Diagnostics.Trace.TraceInformation("{0}AnchorablePaneGroup({1})", new string(' ', tab * 4), Orientation);
 
 			foreach (LayoutElement child in Children)
-				child.ConsoleDump(tab + 1);
-		}
+            {
+                child.ConsoleDump(tab + 1);
+            }
+        }
 #endif
 
 		#endregion Overrides

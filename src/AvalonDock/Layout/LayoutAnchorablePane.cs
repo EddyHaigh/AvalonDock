@@ -168,8 +168,7 @@ namespace AvalonDock.Layout
 		/// <inheritdoc />
 		public override void ConsoleDump(int tab)
 		{
-			System.Diagnostics.Trace.Write(new string(' ', tab * 4));
-			System.Diagnostics.Trace.WriteLine("AnchorablePane()");
+            System.Diagnostics.Trace.TraceInformation("{0}AnchorablePane()", new string(' ', tab * 4));
 
 			foreach (LayoutElement child in Children)
 				child.ConsoleDump(tab + 1);
