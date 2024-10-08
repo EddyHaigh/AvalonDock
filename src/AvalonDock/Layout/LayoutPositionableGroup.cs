@@ -178,7 +178,7 @@ namespace AvalonDock.Layout
 		{
 			var childrenDockMinWidth = 0.0;
 			var visibleChildren = Children.OfType<ILayoutPositionableElement>().Where(child => child.IsVisible).ToList();
-			if (this is ILayoutOrientableGroup orientableGroup && visibleChildren.Any())
+			if (this is ILayoutOrientableGroup orientableGroup && visibleChildren.Count > 0)
 			{
 				childrenDockMinWidth = orientableGroup.Orientation == Orientation.Vertical ?
 					visibleChildren.Max(child => child.CalculatedDockMinWidth())
@@ -210,7 +210,7 @@ namespace AvalonDock.Layout
 		{
 			var childrenDockMinHeight = 0.0;
 			var visibleChildren = Children.OfType<ILayoutPositionableElement>().Where(child => child.IsVisible).ToList();
-			if (this is ILayoutOrientableGroup orientableGroup && visibleChildren.Any())
+			if (this is ILayoutOrientableGroup orientableGroup && visibleChildren.Count > 0)
 			{
 				childrenDockMinHeight = orientableGroup.Orientation == Orientation.Vertical ?
 					visibleChildren.Sum(child => child.CalculatedDockMinHeight() + (Root?.Manager?.GridSplitterHeight ?? 0) * (visibleChildren.Count - 1))

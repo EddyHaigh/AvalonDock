@@ -231,7 +231,7 @@ namespace AvalonDock.Commands
                 && ActionReference != null
                 && actionTarget != null)
             {
-                var paras = Method.GetParameters().Count();
+                var paras = Method.GetParameters().Length;
                 try
                 {
                     if (paras > 0)

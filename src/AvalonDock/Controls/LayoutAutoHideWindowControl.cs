@@ -153,7 +153,7 @@ namespace AvalonDock.Controls
 				if (rectWindow.Contains(new Point(ptMouse.X, ptMouse.Y))) return true;
 
 				var manager = Model?.Root.Manager;
-				var anchor = manager?.FindVisualChildren<LayoutAnchorControl>().Where(c => c.Model == Model).FirstOrDefault();
+				var anchor = manager?.FindVisualChildren<LayoutAnchorControl>().FirstOrDefault(c => c.Model == Model);
 
 				return anchor != null && anchor.IsMouseOver;
 				//location = anchor.PointToScreenDPI(new Point());
@@ -194,7 +194,8 @@ namespace AvalonDock.Controls
 		protected override bool HasFocusWithinCore() => false;
 
 		/// <inheritdoc />
-		protected override System.Collections.IEnumerator LogicalChildren => _internalHostPresenter == null ? new UIElement[] { }.GetEnumerator() : new UIElement[] { _internalHostPresenter }.GetEnumerator();
+		protected override System.Collections.IEnumerator LogicalChildren
+            => _internalHostPresenter == null ? Array.Empty<UIElement>().GetEnumerator() : new UIElement[] { _internalHostPresenter }.GetEnumerator();
 
 		/// <inheritdoc />
 		protected override Size MeasureOverride(Size constraint)
@@ -229,7 +230,7 @@ namespace AvalonDock.Controls
 			{
 				var viewboxes = _manager.GetParents().OfType<Viewbox>().ToList();
 
-				if (viewboxes.Any())
+				if (viewboxes.Count > 0)
 				{
 					if (_manager.TransformToAncestor(viewboxes[viewboxes.Count - 1]) is Transform transform)
 					{

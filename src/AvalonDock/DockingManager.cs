@@ -1460,7 +1460,7 @@ namespace AvalonDock
 
         private bool IsNavigatorWindowActive => _navigatorWindow != null;
 
-        private bool CanShowNavigatorWindow => ShowNavigator && _layoutItems.Any();
+        private bool CanShowNavigatorWindow => ShowNavigator && _layoutItems.Count > 0;
 
         #endregion Private Properties
 

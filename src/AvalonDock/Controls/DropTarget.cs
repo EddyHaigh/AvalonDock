@@ -137,7 +137,7 @@ namespace AvalonDock.Controls
 
 		public virtual bool HitTest(Point dragPoint)
 		{
-			return _detectionRect.Any(dr => dr.Contains(dragPoint));
+			return Array.Exists(_detectionRect, dr => dr.Contains(dragPoint));
 		}
 
 		public abstract Geometry GetPreviewPath(OverlayWindow overlayWindow, LayoutFloatingWindow floatingWindow);

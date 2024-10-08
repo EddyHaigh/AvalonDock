@@ -76,7 +76,7 @@ namespace AvalonDock.Layout.Serialization
 			{
 				LayoutAnchorable previousAchorable = null;            //try find the content in replaced layout
 				if (lcToFix.ContentId != null)
-					previousAchorable = _previousAnchorables.FirstOrDefault(a => a.ContentId == lcToFix.ContentId);
+					previousAchorable = Array.Find(_previousAnchorables, a => a.ContentId == lcToFix.ContentId);
 
 				if (previousAchorable != null && previousAchorable.Title != null)
 					lcToFix.Title = previousAchorable.Title;
@@ -107,9 +107,11 @@ namespace AvalonDock.Layout.Serialization
 			{
 				LayoutDocument previousDocument = null;               //try find the content in replaced layout
 				if (lcToFix.ContentId != null)
-					previousDocument = _previousDocuments.FirstOrDefault(a => a.ContentId == lcToFix.ContentId);
+                {
+                    previousDocument = Array.Find(_previousDocuments, a => a.ContentId == lcToFix.ContentId);
+                }
 
-				if (LayoutSerializationCallback != null)
+                if (LayoutSerializationCallback != null)
 				{
 					// Ask client application via callback if this realy should be deserialized
 					var args = new LayoutSerializationCallbackEventArgs(lcToFix, previousDocument?.Content);

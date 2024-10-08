@@ -43,7 +43,7 @@ namespace AvalonDock.Converters
 		/// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
 		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
 		{
-			if ((values.Count() == 2)
+			if ((values.Length == 2)
 			  && (values[0] != DependencyProperty.UnsetValue)
 			  && (values[1] != DependencyProperty.UnsetValue)
 			  && (values[1] is bool boolean))

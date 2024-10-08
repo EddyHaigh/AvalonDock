@@ -257,7 +257,7 @@ namespace AvalonDock.Controls
 			// If any of the content layouts is present in the drop area, then disable the DropTargetInto button.
 			foreach (var content in contentLayoutsOnFloatingWindow)
 			{
-				if (!contentLayoutsOnPositionableElementPane.Any(item =>
+				if (!contentLayoutsOnPositionableElementPane.Exists(item =>
 					item.Title == content.Title &&
 					item.ContentId == content.ContentId))
 				{
@@ -554,7 +554,7 @@ namespace AvalonDock.Controls
 					{
 						areaElement = _gridDocumentPaneDropTargets;
 						var dropAreaDocumentPaneGroup = area as DropArea<LayoutDocumentPaneGroupControl>;
-						var layoutDocumentPane = (dropAreaDocumentPaneGroup.AreaElement.Model as LayoutDocumentPaneGroup).Children.First() as LayoutDocumentPane;
+						var layoutDocumentPane = (dropAreaDocumentPaneGroup.AreaElement.Model as LayoutDocumentPaneGroup).Children[0] as LayoutDocumentPane;
 						var parentDocumentPaneGroup = layoutDocumentPane.Parent as LayoutDocumentPaneGroup;
 						if (parentDocumentPaneGroup.Root.Manager != floatingWindowManager)
 						{
@@ -587,7 +587,7 @@ namespace AvalonDock.Controls
 							SetDropTargetIntoVisibility(layoutDocumentPane);
 
 							if (parentDocumentPaneGroup != null &&
-								parentDocumentPaneGroup.Children.Where(c => c.IsVisible).Count() > 1)
+								parentDocumentPaneGroup.Children.Count(c => c.IsVisible) > 1)
 							{
 								var manager = parentDocumentPaneGroup.Root.Manager;
 								if (!manager.AllowMixedOrientation)
@@ -632,7 +632,7 @@ namespace AvalonDock.Controls
 								_documentPaneDropTargetTopAsAnchorablePane.Visibility = System.Windows.Visibility.Collapsed;
 							}
 							else if (parentDocumentPaneGroup != null &&
-								parentDocumentPaneGroup.Children.Where(c => c.IsVisible).Count() > 1)
+								parentDocumentPaneGroup.Children.Count(c => c.IsVisible) > 1)
 							{
 								int indexOfDocumentPane = parentDocumentPaneGroup.Children.Where(ch => ch.IsVisible).ToList().IndexOf(layoutDocumentPane);
 								bool isFirstChild = indexOfDocumentPane == 0;
@@ -692,7 +692,7 @@ namespace AvalonDock.Controls
 							SetDropTargetIntoVisibility(layoutDocumentPane);
 
 							if (parentDocumentPaneGroup != null &&
-								parentDocumentPaneGroup.Children.Where(c => c.IsVisible).Count() > 1)
+								parentDocumentPaneGroup.Children.Count(c => c.IsVisible) > 1)
 							{
 								var manager = parentDocumentPaneGroup.Root.Manager;
 								if (!manager.AllowMixedOrientation)

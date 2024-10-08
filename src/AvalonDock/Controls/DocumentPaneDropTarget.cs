@@ -8,6 +8,8 @@
  ************************************************************************/
 
 using AvalonDock.Layout;
+
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -239,7 +241,7 @@ namespace AvalonDock.Controls
 						int i = _tabIndex == -1 ? 0 : _tabIndex;
 						foreach (var anchorableToImport in
 							layoutDocumentPaneGroup.Descendents().OfType<LayoutContent>()
-								.Where(item => allowedDropTypes.Any(dropType => dropType.IsInstanceOfType(item))).ToArray())
+								.Where(item => Array.Exists(allowedDropTypes, dropType => dropType.IsInstanceOfType(item))).ToArray())
 						{
 							paneModel.Children.Insert(i, anchorableToImport);
 							i++;
