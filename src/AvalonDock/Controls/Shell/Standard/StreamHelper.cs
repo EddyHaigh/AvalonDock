@@ -51,23 +51,22 @@ namespace Standard
 			if (_source == null) throw new ObjectDisposedException("this");
 		}
 
-		// Comments are taken from MSDN IStream documentation.
+        // Comments are taken from MSDN IStream documentation.
 
-		#region IStream Members
+        #region IStream Members
 
-		/// <summary>
-		/// Creates a new stream object with its own seek pointer that
-		/// references the same bytes as the original stream.
-		/// </summary>
-		/// <param name="ppstm">
-		/// When this method returns, contains the new stream object. This parameter is passed uninitialized.
-		/// </param>
-		/// <remarks>
-		/// For more information, see the existing documentation for IStream::Clone in the MSDN library.
-		/// This class doesn't implement Clone.  A COMException is thrown if it is used.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Standard.HRESULT.ThrowIfFailed(System.String)")]
-		[Obsolete("The method is not implemented", true)]
+        /// <summary>
+        /// Creates a new stream object with its own seek pointer that
+        /// references the same bytes as the original stream.
+        /// </summary>
+        /// <param name="ppstm">
+        /// When this method returns, contains the new stream object. This parameter is passed uninitialized.
+        /// </param>
+        /// <remarks>
+        /// For more information, see the existing documentation for IStream::Clone in the MSDN library.
+        /// This class doesn't implement Clone.  A COMException is thrown if it is used.
+        /// </remarks>
+        [Obsolete("The method is not implemented", true)]
 		public void Clone(out IStream ppstm)
 		{
 			ppstm = null;
@@ -90,29 +89,27 @@ namespace Standard
 			_source.Flush();
 		}
 
-		/// <summary>
-		/// Copies a specified number of bytes from the current seek pointer in the
-		/// stream to the current seek pointer in another stream.
-		/// </summary>
-		/// <param name="pstm">
-		/// A reference to the destination stream.
-		/// </param>
-		/// <param name="cb">
-		/// The number of bytes to copy from the source stream.
-		/// </param>
-		/// <param name="pcbRead">
-		/// On successful return, contains the actual number of bytes read from the source.
-		/// (Note the native signature is to a ULARGE_INTEGER*, so 64 bits are written
-		/// to this parameter on success.)
-		/// </param>
-		/// <param name="pcbWritten">
-		/// On successful return, contains the actual number of bytes written to the destination.
-		/// (Note the native signature is to a ULARGE_INTEGER*, so 64 bits are written
-		/// to this parameter on success.)
-		/// </param>
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public void CopyTo(IStream pstm, long cb, IntPtr pcbRead, IntPtr pcbWritten)
+        /// <summary>
+        /// Copies a specified number of bytes from the current seek pointer in the
+        /// stream to the current seek pointer in another stream.
+        /// </summary>
+        /// <param name="pstm">
+        /// A reference to the destination stream.
+        /// </param>
+        /// <param name="cb">
+        /// The number of bytes to copy from the source stream.
+        /// </param>
+        /// <param name="pcbRead">
+        /// On successful return, contains the actual number of bytes read from the source.
+        /// (Note the native signature is to a ULARGE_INTEGER*, so 64 bits are written
+        /// to this parameter on success.)
+        /// </param>
+        /// <param name="pcbWritten">
+        /// On successful return, contains the actual number of bytes written to the destination.
+        /// (Note the native signature is to a ULARGE_INTEGER*, so 64 bits are written
+        /// to this parameter on success.)
+        /// </param>
+        public void CopyTo(IStream pstm, long cb, IntPtr pcbRead, IntPtr pcbWritten)
 		{
 			Verify.IsNotNull(pstm, nameof(pstm));
 			_Validate();
@@ -150,26 +147,25 @@ namespace Standard
 		/// For more information, see the existing documentation for IStream::LockRegion in the MSDN library.
 		/// This class doesn't implement LockRegion.  A COMException is thrown if it is used.
 		/// </remarks>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Standard.HRESULT.ThrowIfFailed(System.String)"), Obsolete("The method is not implemented", true)]
+		[Obsolete("The method is not implemented", true)]
 		public void LockRegion(long libOffset, long cb, int dwLockType) => HRESULT.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
 
-		/// <summary>
-		/// Reads a specified number of bytes from the stream object into memory starting at the current seek pointer.
-		/// </summary>
-		/// <param name="pv">
-		/// When this method returns, contains the data read from the stream. This parameter is passed uninitialized.
-		/// </param>
-		/// <param name="cb">
-		/// The number of bytes to read from the stream object.
-		/// </param>
-		/// <param name="pcbRead">
-		/// A pointer to a ULONG variable that receives the actual number of bytes read from the stream object.
-		/// </param>
-		/// <remarks>
-		/// For more information, see the existing documentation for ISequentialStream::Read in the MSDN library.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public void Read(byte[] pv, int cb, IntPtr pcbRead)
+        /// <summary>
+        /// Reads a specified number of bytes from the stream object into memory starting at the current seek pointer.
+        /// </summary>
+        /// <param name="pv">
+        /// When this method returns, contains the data read from the stream. This parameter is passed uninitialized.
+        /// </param>
+        /// <param name="cb">
+        /// The number of bytes to read from the stream object.
+        /// </param>
+        /// <param name="pcbRead">
+        /// A pointer to a ULONG variable that receives the actual number of bytes read from the stream object.
+        /// </param>
+        /// <remarks>
+        /// For more information, see the existing documentation for ISequentialStream::Read in the MSDN library.
+        /// </remarks>
+        public void Read(byte[] pv, int cb, IntPtr pcbRead)
 		{
 			_Validate();
 			var cbRead = _source.Read(pv, 0, cb);
@@ -182,29 +178,28 @@ namespace Standard
 		/// <remarks>
 		/// This class doesn't implement Revert.  A COMException is thrown if it is used.
 		/// </remarks>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Standard.HRESULT.ThrowIfFailed(System.String)"), Obsolete("The method is not implemented", true)]
+		[Obsolete("The method is not implemented", true)]
 		public void Revert() => HRESULT.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
 
-		/// <summary>
-		/// Changes the seek pointer to a new location relative to the beginning of the
-		/// stream, to the end of the stream, or to the current seek pointer.
-		/// </summary>
-		/// <param name="dlibMove">
-		/// The displacement to add to dwOrigin.
-		/// </param>
-		/// <param name="dwOrigin">
-		/// The origin of the seek. The origin can be the beginning of the file, the current seek pointer, or the end of the file.
-		/// </param>
-		/// <param name="plibNewPosition">
-		/// On successful return, contains the offset of the seek pointer from the beginning of the stream.
-		/// (Note the native signature is to a ULARGE_INTEGER*, so 64 bits are written
-		/// to this parameter on success.)
-		/// </param>
-		/// <remarks>
-		/// For more information, see the existing documentation for IStream::Seek in the MSDN library.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public void Seek(long dlibMove, int dwOrigin, IntPtr plibNewPosition)
+        /// <summary>
+        /// Changes the seek pointer to a new location relative to the beginning of the
+        /// stream, to the end of the stream, or to the current seek pointer.
+        /// </summary>
+        /// <param name="dlibMove">
+        /// The displacement to add to dwOrigin.
+        /// </param>
+        /// <param name="dwOrigin">
+        /// The origin of the seek. The origin can be the beginning of the file, the current seek pointer, or the end of the file.
+        /// </param>
+        /// <param name="plibNewPosition">
+        /// On successful return, contains the offset of the seek pointer from the beginning of the stream.
+        /// (Note the native signature is to a ULARGE_INTEGER*, so 64 bits are written
+        /// to this parameter on success.)
+        /// </param>
+        /// <remarks>
+        /// For more information, see the existing documentation for IStream::Seek in the MSDN library.
+        /// </remarks>
+        public void Seek(long dlibMove, int dwOrigin, IntPtr plibNewPosition)
 		{
 			_Validate();
 			var position = _source.Seek(dlibMove, (SeekOrigin)dwOrigin);
@@ -246,41 +241,39 @@ namespace Standard
 			pstatstg.grfLocksSupported = LOCK_EXCLUSIVE;
 		}
 
-		/// <summary>
-		/// Removes the access restriction on a range of bytes previously restricted with the LockRegion method.
-		/// </summary>
-		/// <param name="libOffset">The byte offset for the beginning of the range.
-		/// </param>
-		/// <param name="cb">
-		/// The length, in bytes, of the range to restrict.
-		/// </param>
-		/// <param name="dwLockType">
-		/// The access restrictions previously placed on the range.
-		/// </param>
-		/// <remarks>
-		/// For more information, see the existing documentation for IStream::UnlockRegion in the MSDN library.
-		/// This class doesn't implement UnlockRegion.  A COMException is thrown if it is used.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Standard.HRESULT.ThrowIfFailed(System.String)")]
-		[Obsolete("The method is not implemented", true)]
+        /// <summary>
+        /// Removes the access restriction on a range of bytes previously restricted with the LockRegion method.
+        /// </summary>
+        /// <param name="libOffset">The byte offset for the beginning of the range.
+        /// </param>
+        /// <param name="cb">
+        /// The length, in bytes, of the range to restrict.
+        /// </param>
+        /// <param name="dwLockType">
+        /// The access restrictions previously placed on the range.
+        /// </param>
+        /// <remarks>
+        /// For more information, see the existing documentation for IStream::UnlockRegion in the MSDN library.
+        /// This class doesn't implement UnlockRegion.  A COMException is thrown if it is used.
+        /// </remarks>
+        [Obsolete("The method is not implemented", true)]
 		public void UnlockRegion(long libOffset, long cb, int dwLockType) => HRESULT.STG_E_INVALIDFUNCTION.ThrowIfFailed("The method is not implemented.");
 
-		/// <summary>
-		/// Writes a specified number of bytes into the stream object starting at the current seek pointer.
-		/// </summary>
-		/// <param name="pv">
-		/// The buffer to write this stream to.
-		/// </param>
-		/// <param name="cb">
-		/// The number of bytes to write to the stream.
-		/// </param>
-		/// <param name="pcbWritten">
-		/// On successful return, contains the actual number of bytes written to the stream object.
-		/// If the caller sets this pointer to null, this method does not provide the actual number
-		/// of bytes written.
-		/// </param>
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public void Write(byte[] pv, int cb, IntPtr pcbWritten)
+        /// <summary>
+        /// Writes a specified number of bytes into the stream object starting at the current seek pointer.
+        /// </summary>
+        /// <param name="pv">
+        /// The buffer to write this stream to.
+        /// </param>
+        /// <param name="cb">
+        /// The number of bytes to write to the stream.
+        /// </param>
+        /// <param name="pcbWritten">
+        /// On successful return, contains the actual number of bytes written to the stream object.
+        /// If the caller sets this pointer to null, this method does not provide the actual number
+        /// of bytes written.
+        /// </param>
+        public void Write(byte[] pv, int cb, IntPtr pcbWritten)
 		{
 			_Validate();
 			_source.Write(pv, 0, cb);

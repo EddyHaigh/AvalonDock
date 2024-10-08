@@ -22,7 +22,6 @@ namespace Standard
 		private static Matrix _transformToDevice;
 		private static Matrix _transformToDip;
 
-		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
 		static DpiHelper()
 		{
 			using (var desktop = SafeDC.GetDesktop())
@@ -52,8 +51,7 @@ namespace Standard
 		/// <returns>Returns the parameter converted to the device independent coordinate system.</returns>
 		public static Point DevicePixelsToLogical(Point devicePoint) => _transformToDip.Transform(devicePoint);
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static Rect LogicalRectToDevice(Rect logicalRectangle)
+        public static Rect LogicalRectToDevice(Rect logicalRectangle)
 		{
 			var topLeft = LogicalPixelsToDevice(new Point(logicalRectangle.Left, logicalRectangle.Top));
 			var bottomRight = LogicalPixelsToDevice(new Point(logicalRectangle.Right, logicalRectangle.Bottom));
@@ -67,8 +65,7 @@ namespace Standard
 			return new Rect(topLeft, bottomRight);
 		}
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static Size LogicalSizeToDevice(Size logicalSize)
+        public static Size LogicalSizeToDevice(Size logicalSize)
 		{
 			var pt = LogicalPixelsToDevice(new Point(logicalSize.Width, logicalSize.Height));
 			return new Size { Width = pt.X, Height = pt.Y };

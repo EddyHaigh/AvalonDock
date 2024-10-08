@@ -32,17 +32,12 @@ namespace AvalonDock.Commands
 		{
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the WeakFunc class.
-		/// </summary>
-		/// <param name="target">The Func's owner.</param>
-		/// <param name="func">The Func that will be associated to this instance.</param>
-		[SuppressMessage(
-			"Microsoft.Design",
-			"CA1062:Validate arguments of public methods",
-			MessageId = "1",
-			Justification = "Method should fail with an exception if func is null.")]
-		public WeakFunc(object target, Func<T, TResult> func)
+        /// <summary>
+        /// Initializes a new instance of the WeakFunc class.
+        /// </summary>
+        /// <param name="target">The Func's owner.</param>
+        /// <param name="func">The Func that will be associated to this instance.</param>
+        public WeakFunc(object target, Func<T, TResult> func)
 		{
 			if (func.Method.IsStatic)
 			{

@@ -36,8 +36,7 @@ namespace Standard
 			get; private set;
 		}
 
-		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-		public MessageWindow(CS classStyle, WS style, WS_EX exStyle, Rect location, string name, WndProc callback)
+        public MessageWindow(CS classStyle, WS style, WS_EX exStyle, Rect location, string name, WndProc callback)
 		{
 			// A null callback means just use DefWindowProc.
 			_wndProcCallback = callback;
@@ -93,10 +92,9 @@ namespace Standard
 			GC.SuppressFinalize(this);
 		}
 
-		// This isn't right if the Dispatcher has already started shutting down.
-		// It will wind up leaking the class ATOM...
-		[SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "disposing")]
-		private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
+        // This isn't right if the Dispatcher has already started shutting down.
+        // It will wind up leaking the class ATOM...
+        private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
 		{
 			// Block against reentrancy.
 			if (_isDisposed) return;
@@ -118,8 +116,7 @@ namespace Standard
 			Handle = IntPtr.Zero;
 		}
 
-		[SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly")]
-		private static IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
+        private static IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
 		{
 			var ret = IntPtr.Zero;
 			MessageWindow hwndWrapper = null;

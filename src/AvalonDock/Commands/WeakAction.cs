@@ -30,17 +30,12 @@ namespace AvalonDock.Commands
 		{
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WeakAction" /> class.
-		/// </summary>
-		/// <param name="target">The action's owner.</param>
-		/// <param name="action">The action that will be associated to this instance.</param>
-		[SuppressMessage(
-			"Microsoft.Design",
-			"CA1062:Validate arguments of public methods",
-			MessageId = "1",
-			Justification = "Method should fail with an exception if action is null.")]
-		public WeakAction(object target, Action action)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeakAction" /> class.
+        /// </summary>
+        /// <param name="target">The action's owner.</param>
+        /// <param name="action">The action that will be associated to this instance.</param>
+        public WeakAction(object target, Action action)
 		{
 			if (action.Method.IsStatic)
 			{
