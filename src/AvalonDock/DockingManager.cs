@@ -1548,17 +1548,24 @@ namespace AvalonDock
         /// <returns></returns>
         private IEnumerable<LayoutAnchorable> GetAnchorableInFloatingWindow(LayoutFloatingWindowControl draggingWindow)
         {
-            if (!(draggingWindow.Model is LayoutAnchorableFloatingWindow layoutAnchorableFloatingWindow)) yield break;
-            //big part of code for getting type
-
-            if (layoutAnchorableFloatingWindow.SinglePane is LayoutAnchorablePane layoutAnchorablePane && (layoutAnchorableFloatingWindow.IsSinglePane && layoutAnchorablePane.SelectedContent != null))
+            if (draggingWindow.Model is not LayoutAnchorableFloatingWindow layoutAnchorableFloatingWindow)
             {
-                var layoutAnchorable = ((LayoutAnchorablePane)layoutAnchorableFloatingWindow.SinglePane).SelectedContent as LayoutAnchorable;
-                yield return layoutAnchorable;
+                yield break;
+            }
+
+            //big part of code for getting type
+            if (layoutAnchorableFloatingWindow.SinglePane is LayoutAnchorablePane layoutAnchorablePane
+                && (layoutAnchorableFloatingWindow.IsSinglePane && layoutAnchorablePane.SelectedContent != null))
+            {
+                yield return layoutAnchorablePane.SelectedContent as LayoutAnchorable;
             }
             else
+            {
                 foreach (var item in GetLayoutAnchorable(layoutAnchorableFloatingWindow.RootPanel))
+                {
                     yield return item;
+                }
+            }
         }
 
         /// <summary>
@@ -1907,12 +1914,17 @@ namespace AvalonDock
 
         internal void ExecuteCloseCommand(LayoutAnchorable anchorable)
         {
-            if (!(anchorable is LayoutAnchorable model)) return;
+            if (anchorable is not LayoutAnchorable model)
+            {
+                return;
+            }
 
             AnchorableClosingEventArgs closingArgs = null;
             AnchorableClosing?.Invoke(this, closingArgs = new AnchorableClosingEventArgs(model));
             if (closingArgs?.Cancel == true)
+            {
                 return;
+            }
 
             if (model.CloseAnchorable())
             {
@@ -1979,7 +1991,10 @@ namespace AvalonDock
 
         internal void ExecuteHideCommand(LayoutAnchorable anchorable)
         {
-            if (!(anchorable is LayoutAnchorable model)) return;
+            if (anchorable is not LayoutAnchorable model)
+            {
+                return;
+            }
 
             AnchorableHidingEventArgs hidingArgs = null;
             AnchorableHiding?.Invoke(this, hidingArgs = new AnchorableHidingEventArgs(model));

@@ -90,7 +90,11 @@ namespace AvalonDock.Layout
 			get
 			{
 				var parent = Parent;
-				while (parent != null && (!(parent is ILayoutRoot))) parent = parent.Parent;
+                while (parent != null && (parent is not ILayoutRoot))
+                {
+                    parent = parent.Parent;
+                }
+
 				return parent as ILayoutRoot;
 			}
 		}
