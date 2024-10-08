@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVVM.CommunityToolkit.Demo", "samples\MVVM.CommunityToolkit.Demo\MVVM.CommunityToolkit.Demo.csproj", "{90B38473-8172-46F9-B20D-B323891F9A5D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,10 @@ Global
 		{549E5AD9-8606-4672-8884-998EC593D0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{549E5AD9-8606-4672-8884-998EC593D0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{549E5AD9-8606-4672-8884-998EC593D0BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90B38473-8172-46F9-B20D-B323891F9A5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90B38473-8172-46F9-B20D-B323891F9A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90B38473-8172-46F9-B20D-B323891F9A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90B38473-8172-46F9-B20D-B323891F9A5D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +127,7 @@ Global
 		{D46FDF0E-03E7-4635-94D7-56429D8FF72A} = {9A88C9C7-86D5-4FE6-8987-AE25688195C4}
 		{67A15925-5010-4C8C-AE44-47BA6D7D5752} = {9A88C9C7-86D5-4FE6-8987-AE25688195C4}
 		{549E5AD9-8606-4672-8884-998EC593D0BA} = {9A88C9C7-86D5-4FE6-8987-AE25688195C4}
+		{90B38473-8172-46F9-B20D-B323891F9A5D} = {9A88C9C7-86D5-4FE6-8987-AE25688195C4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {841EBFB4-EFB1-4D03-8353-BB745231DB5B}

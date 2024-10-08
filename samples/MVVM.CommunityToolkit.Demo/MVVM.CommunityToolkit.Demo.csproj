@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>net6.0-windows;net8.0-windows;net462</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\document.png" />
+    <None Remove="Assets\property-blue.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="PolySharp" Version="1.14.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="9.32.0.97167">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AvalonDock.Themes.Aero\AvalonDock.Themes.Aero.csproj" />
+    <ProjectReference Include="..\..\src\AvalonDock.Themes.Expression\AvalonDock.Themes.Expression.csproj" />
+    <ProjectReference Include="..\..\src\AvalonDock.Themes.Metro\AvalonDock.Themes.Metro.csproj" />
+    <ProjectReference Include="..\..\src\AvalonDock.Themes.VS2010\AvalonDock.Themes.VS2010.csproj" />
+    <ProjectReference Include="..\..\src\AvalonDock.Themes.VS2013\AvalonDock.Themes.VS2013.csproj" />
+    <ProjectReference Include="..\..\src\AvalonDock\AvalonDock.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\document.png" />
+    <Resource Include="Assets\property-blue.png" />
+  </ItemGroup>
+
+</Project>
