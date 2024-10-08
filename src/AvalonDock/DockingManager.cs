@@ -1077,15 +1077,18 @@ namespace AvalonDock
 				}
 			}
 
-			if (e.NewValue as Theme != null) // Add new theme into resource dictionary if present
+			if (e.NewValue is Theme theme) // Add new theme into resource dictionary if present
 			{
-				if (e.NewValue as Theme is DictionaryTheme theme)
-				{
-					currentThemeResourceDictionary = theme.ThemeResourceDictionary;
-					resources.MergedDictionaries.Add(currentThemeResourceDictionary);
-				}
-				else                              // We are using standard ResourceDictionaries -> Add new theme resource
-					resources.MergedDictionaries.Add(new ResourceDictionary { Source = (e.NewValue as Theme).GetResourceUri() });
+                if (Theme is DictionaryTheme dictionaryTheme)
+                {
+                    currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
+                    resources.MergedDictionaries.Add(currentThemeResourceDictionary);
+                }
+                else
+                {
+                    // We are using standard ResourceDictionaries -> Add new theme resource
+                    resources.MergedDictionaries.Add(new ResourceDictionary { Source = (theme).GetResourceUri() });
+                }
 			}
 
 			foreach (var fwc in _fwList)               // Update theme resources in floating window controls
@@ -2641,14 +2644,23 @@ namespace AvalonDock
 		/// <param name="e"></param>
 		private void Layout_ElementAdded(object sender, LayoutElementEventArgs e)
 		{
-			if (_suspendLayoutItemCreation) return;
-			foreach (var content in Layout.Descendents().OfType<LayoutContent>().ToList())
+			if (_suspendLayoutItemCreation)
+            {
+                return;
+            }
+
+            foreach (var content in Layout.Descendents().OfType<LayoutContent>().ToList())
 			{
-				if (content is LayoutDocument)
-					CreateDocumentLayoutItem(content as LayoutDocument);
-				else //if (content is LayoutAnchorable)
-					CreateAnchorableLayoutItem(content as LayoutAnchorable);
+                if (content is LayoutDocument layoutDocument)
+                {
+                    CreateDocumentLayoutItem(layoutDocument);
+                }
+                else //if (content is LayoutAnchorable)
+                {
+                    CreateAnchorableLayoutItem(content as LayoutAnchorable);
+                }
 			}
+
 			CollectLayoutItemsDeleted();
 		}
 
@@ -2877,12 +2889,11 @@ namespace AvalonDock
 
 			LayoutFloatingWindow fw;
 			LayoutFloatingWindowControl fwc;
-			if (contentModel is LayoutAnchorable)
+			if (contentModel is LayoutAnchorable layoutAnchorable)
 			{
-				var anchorableContent = contentModel as LayoutAnchorable;
 				fw = new LayoutAnchorableFloatingWindow
 				{
-					RootPanel = new LayoutAnchorablePaneGroup(new LayoutAnchorablePane(anchorableContent)
+					RootPanel = new LayoutAnchorablePaneGroup(new LayoutAnchorablePane(layoutAnchorable)
 					{
 						DockWidth = parentPaneAsPositionableElement.DockWidth,
 						DockHeight = parentPaneAsPositionableElement.DockHeight,
