@@ -77,12 +77,13 @@ namespace AvalonDock.Controls
 			var targetModel = (ILayoutDocumentPane)_targetPane.Model;
 			var documentActive = floatingWindow.Descendents().OfType<LayoutDocument>().FirstOrDefault();
 
-			var paneGroup = targetModel.Parent as LayoutDocumentPaneGroup;
-			var requiredOrientation = Type == DropTargetType.DocumentPaneDockBottom || Type == DropTargetType.DocumentPaneDockTop ?
-				System.Windows.Controls.Orientation.Vertical : System.Windows.Controls.Orientation.Horizontal;
-			var allowMixedOrientation = targetModel.Root.Manager.AllowMixedOrientation;
+            var requiredOrientation =
+                Type == DropTargetType.DocumentPaneDockBottom
+                || Type == DropTargetType.DocumentPaneDockTop ?
+                    System.Windows.Controls.Orientation.Vertical : System.Windows.Controls.Orientation.Horizontal;
+            var allowMixedOrientation = targetModel.Root.Manager.AllowMixedOrientation;
 
-			if(paneGroup == null)
+			if(targetModel.Parent is not LayoutDocumentPaneGroup paneGroup)
 			{
 				var targetModelAsPositionableElement = (ILayoutPositionableElement)targetModel;
 				var layoutGroup = (ILayoutGroup)targetModel.Parent;
@@ -273,12 +274,11 @@ namespace AvalonDock.Controls
 					#region DropTargetType.DocumentPaneDockBottom
 
 					{
-						var parentModel = targetModel.Parent as LayoutDocumentPaneGroup;
-						var newLayoutDocumentPane = new LayoutDocumentPane();
+                        var newLayoutDocumentPane = new LayoutDocumentPane();
 
-						if (parentModel == null)
+                        if (targetModel.Parent is not LayoutDocumentPaneGroup parentModel)
 						{
-							var parentContainer = targetModel.Parent as ILayoutContainer;
+							var parentContainer = targetModel.Parent;
 							var newParentModel = new LayoutDocumentPaneGroup() { Orientation = System.Windows.Controls.Orientation.Vertical };
 							parentContainer.ReplaceChild(targetModel, newParentModel);
 							newParentModel.Children.Add(targetModel as LayoutDocumentPane);
@@ -315,12 +315,11 @@ namespace AvalonDock.Controls
 					#region DropTargetType.DocumentPaneDockTop
 
 					{
-						var parentModel = targetModel.Parent as LayoutDocumentPaneGroup;
-						var newLayoutDocumentPane = new LayoutDocumentPane();
+                        var newLayoutDocumentPane = new LayoutDocumentPane();
 
-						if (parentModel == null)
+                        if (targetModel.Parent is not LayoutDocumentPaneGroup parentModel)
 						{
-							var parentContainer = targetModel.Parent as ILayoutContainer;
+							var parentContainer = targetModel.Parent;
 							var newParentModel = new LayoutDocumentPaneGroup() { Orientation = System.Windows.Controls.Orientation.Vertical };
 							parentContainer.ReplaceChild(targetModel, newParentModel);
 							newParentModel.Children.Add(newLayoutDocumentPane);
@@ -357,12 +356,11 @@ namespace AvalonDock.Controls
 					#region DropTargetType.DocumentPaneDockLeft
 
 					{
-						var parentModel = targetModel.Parent as LayoutDocumentPaneGroup;
-						var newLayoutDocumentPane = new LayoutDocumentPane();
+                        var newLayoutDocumentPane = new LayoutDocumentPane();
 
-						if (parentModel == null)
+                        if (targetModel.Parent is not LayoutDocumentPaneGroup parentModel)
 						{
-							var parentContainer = targetModel.Parent as ILayoutContainer;
+							var parentContainer = targetModel.Parent;
 							var newParentModel = new LayoutDocumentPaneGroup() { Orientation = System.Windows.Controls.Orientation.Horizontal };
 							parentContainer.ReplaceChild(targetModel, newParentModel);
 							newParentModel.Children.Add(newLayoutDocumentPane);
@@ -399,12 +397,11 @@ namespace AvalonDock.Controls
 					#region DropTargetType.DocumentPaneDockRight
 
 					{
-						var parentModel = targetModel.Parent as LayoutDocumentPaneGroup;
-						var newLayoutDocumentPane = new LayoutDocumentPane();
+                        var newLayoutDocumentPane = new LayoutDocumentPane();
 
-						if (parentModel == null)
+                        if (targetModel.Parent is not LayoutDocumentPaneGroup parentModel)
 						{
-							var parentContainer = targetModel.Parent as ILayoutContainer;
+							var parentContainer = targetModel.Parent;
 							var newParentModel = new LayoutDocumentPaneGroup() { Orientation = System.Windows.Controls.Orientation.Horizontal };
 							parentContainer.ReplaceChild(targetModel, newParentModel);
 							newParentModel.Children.Add(targetModel as LayoutDocumentPane);

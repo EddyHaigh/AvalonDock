@@ -71,7 +71,7 @@ namespace AvalonDock.Controls
 
 						if (_manager.Layout.RootPanel.Orientation == System.Windows.Controls.Orientation.Horizontal)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
+							var layoutAnchorablePaneGroup = floatingWindow.RootPanel;
 							if (layoutAnchorablePaneGroup != null &&
 								layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Horizontal)
 							{
@@ -110,7 +110,7 @@ namespace AvalonDock.Controls
 
 						if (_manager.Layout.RootPanel.Orientation == System.Windows.Controls.Orientation.Horizontal)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
+							var layoutAnchorablePaneGroup = floatingWindow.RootPanel;
 							if (layoutAnchorablePaneGroup != null &&
 								layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Horizontal)
 							{
@@ -149,7 +149,7 @@ namespace AvalonDock.Controls
 
 						if (_manager.Layout.RootPanel.Orientation == System.Windows.Controls.Orientation.Vertical)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
+							var layoutAnchorablePaneGroup = floatingWindow.RootPanel;
 							if (layoutAnchorablePaneGroup != null &&
 								layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Vertical)
 							{
@@ -184,21 +184,26 @@ namespace AvalonDock.Controls
 					{
 						if (_manager.Layout.RootPanel.Orientation != System.Windows.Controls.Orientation.Vertical &&
 							_manager.Layout.RootPanel.Children.Count == 1)
-							_manager.Layout.RootPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
+                        {
+                            _manager.Layout.RootPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
+                        }
 
-						if (_manager.Layout.RootPanel.Orientation == System.Windows.Controls.Orientation.Vertical)
+                        if (_manager.Layout.RootPanel.Orientation == System.Windows.Controls.Orientation.Vertical)
 						{
-							var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
-							if (layoutAnchorablePaneGroup != null &&
-								layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Vertical)
+							if (floatingWindow.RootPanel is LayoutAnchorablePaneGroup layoutAnchorablePaneGroup
+                                && layoutAnchorablePaneGroup.Orientation == System.Windows.Controls.Orientation.Vertical)
 							{
 								var childrenToTransfer = layoutAnchorablePaneGroup.Children.ToArray();
 								for (int i = 0; i < childrenToTransfer.Length; i++)
-									_manager.Layout.RootPanel.Children.Add(childrenToTransfer[i]);
-							}
+                                {
+                                    _manager.Layout.RootPanel.Children.Add(childrenToTransfer[i]);
+                                }
+                            }
 							else
-								_manager.Layout.RootPanel.Children.Add(floatingWindow.RootPanel);
-						}
+                            {
+                                _manager.Layout.RootPanel.Children.Add(floatingWindow.RootPanel);
+                            }
+                        }
 						else
 						{
 							var newOrientedPanel = new LayoutPanel()

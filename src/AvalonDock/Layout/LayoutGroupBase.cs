@@ -45,10 +45,11 @@ namespace AvalonDock.Layout
 		internal void RaiseChildrenTreeChanged()
 		{
 			OnChildrenTreeChanged(ChildrenTreeChange.DirectChildrenChanged);
-			var parentGroup = Parent as LayoutGroupBase;
-			if (parentGroup != null)
-				parentGroup.RaiseChildrenTreeChanged();
-		}
+            if (Parent is LayoutGroupBase parentGroup)
+            {
+                parentGroup.RaiseChildrenTreeChanged();
+            }
+        }
 
 		/// <summary>Raise an event to inform supscribers that the children collection down the tree of this object has changed.</summary>
 		protected virtual void OnChildrenCollectionChanged()
@@ -68,9 +69,10 @@ namespace AvalonDock.Layout
 		protected void NotifyChildrenTreeChanged(ChildrenTreeChange change)
 		{
 			OnChildrenTreeChanged(change);
-			var parentGroup = Parent as LayoutGroupBase;
-			if (parentGroup != null)
-				parentGroup.NotifyChildrenTreeChanged(ChildrenTreeChange.TreeChanged);
+            if (Parent is LayoutGroupBase layoutGroupBase)
+            {
+                layoutGroupBase.NotifyChildrenTreeChanged(ChildrenTreeChange.TreeChanged);
+            }
 		}
 
 		#endregion Internal Methods
