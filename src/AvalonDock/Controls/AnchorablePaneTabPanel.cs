@@ -36,7 +36,7 @@ namespace AvalonDock.Controls
 			double totWidth = 0;
 			double maxHeight = 0;
 			var visibleChildren = Children.Cast<UIElement>().Where(ch => ch.Visibility != System.Windows.Visibility.Collapsed);
-			foreach (FrameworkElement child in visibleChildren)
+			foreach (var child in visibleChildren)
 			{
 				child.Measure(new Size(double.PositiveInfinity, availableSize.Height));
 				totWidth += child.DesiredSize.Width;
@@ -46,7 +46,7 @@ namespace AvalonDock.Controls
 			if (totWidth > availableSize.Width)
 			{
 				double childFinalDesideredWidth = availableSize.Width / visibleChildren.Count();
-				foreach (FrameworkElement child in visibleChildren)
+				foreach (var child in visibleChildren)
 				{
 					child.Measure(new Size(childFinalDesideredWidth, availableSize.Height));
 				}
@@ -65,7 +65,7 @@ namespace AvalonDock.Controls
 
 			if (finalWidth > desideredWidth)
 			{
-				foreach (FrameworkElement child in visibleChildren)
+				foreach (var child in visibleChildren)
 				{
 					double childFinalWidth = child.DesiredSize.Width;
 					child.Arrange(new Rect(offsetX, 0, childFinalWidth, finalSize.Height));
@@ -76,7 +76,7 @@ namespace AvalonDock.Controls
 			else
 			{
 				double childFinalWidth = finalWidth / visibleChildren.Count();
-				foreach (FrameworkElement child in visibleChildren)
+				foreach (var child in visibleChildren)
 				{
 					child.Arrange(new Rect(offsetX, 0, childFinalWidth, finalSize.Height));
 
