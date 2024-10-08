@@ -1425,7 +1425,7 @@ namespace AvalonDock
 
 		internal void InternalRemoveLogicalChild(object element)
 		{
-			var wrToRemove = _logicalChildren.FirstOrDefault(ch => ch.GetValueOrDefault<object>() == element);
+			var wrToRemove = _logicalChildren.Find(ch => ch.GetValueOrDefault<object>() == element);
 			if (wrToRemove != null)
 				_logicalChildren.Remove(wrToRemove);
 			RemoveLogicalChild(element);
@@ -1583,7 +1583,7 @@ namespace AvalonDock
 		/// <returns>Either a <see cref="LayoutAnchorableItem"/> or <see cref="LayoutDocumentItem"/> which contains the <see cref="LayoutContent"/> passed as argument.</returns>
 		public LayoutItem GetLayoutItemFromModel(LayoutContent content)
 		{
-			return _layoutItems.FirstOrDefault(item => item.LayoutElement == content);
+			return _layoutItems.Find(item => item.LayoutElement == content);
 		}
 
 		public LayoutFloatingWindowControl CreateFloatingWindow(LayoutContent contentModel, bool isContentImmutable)
@@ -1838,7 +1838,7 @@ namespace AvalonDock
 			var currentHandle = Win32Helper.GetWindow(windowParentHandle, (uint)Win32Helper.GetWindow_Cmd.GW_HWNDFIRST);
 			while (currentHandle != IntPtr.Zero)
 			{
-				var ctrl = _fwList.FirstOrDefault(fw => new WindowInteropHelper(fw).Handle == currentHandle);
+				var ctrl = _fwList.Find(fw => new WindowInteropHelper(fw).Handle == currentHandle);
 				if (ctrl != null && ctrl.Model.Root != null && ctrl.Model.Root.Manager == this)
 					yield return ctrl;
 
@@ -2131,7 +2131,7 @@ namespace AvalonDock
 			_fwHiddenList.Clear();
 
 			// load floating windows not already loaded! (issue #59 & #254 & #426)
-			foreach (var fw in Layout.FloatingWindows.Where(fw => !_fwList.Any(fwc => fwc.Model == fw)))
+			foreach (var fw in Layout.FloatingWindows.Where(fw => !_fwList.Exists(fwc => fwc.Model == fw)))
 				CreateUIElementForModel(fw);
 
 			//create the overlaywindow if it's possible
@@ -2615,7 +2615,7 @@ namespace AvalonDock
 		{
 			// BugFix for first issue in #59
 			var list = Layout.Descendents().OfType<LayoutContent>().ToList();
-			var layoutContent = list.FirstOrDefault(lc => lc == contentObject || lc.Content == contentObject);
+			var layoutContent = list.Find(lc => lc == contentObject || lc.Content == contentObject);
 			_insideInternalSetActiveContent = true;
 			Layout.ActiveContent = layoutContent;
 			_insideInternalSetActiveContent = false;
@@ -2724,7 +2724,7 @@ namespace AvalonDock
 		/// <param name="contentToAttach"></param>
 		private void CreateAnchorableLayoutItem(LayoutAnchorable contentToAttach)
 		{
-			if (_layoutItems.Any(item => item.LayoutElement == contentToAttach))
+			if (_layoutItems.Exists(item => item.LayoutElement == contentToAttach))
 			{
 				foreach (var item in _layoutItems) ApplyStyleToLayoutItem(item);
 				return;
@@ -2744,7 +2744,7 @@ namespace AvalonDock
 		/// <param name="contentToAttach"></param>
 		private void CreateDocumentLayoutItem(LayoutDocument contentToAttach)
 		{
-			if (_layoutItems.Any(item => item.LayoutElement == contentToAttach))
+			if (_layoutItems.Exists(item => item.LayoutElement == contentToAttach))
 			{
 				foreach (var item in _layoutItems) ApplyStyleToLayoutItem(item);
 				return;
