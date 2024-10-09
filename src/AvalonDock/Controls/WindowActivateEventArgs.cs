@@ -11,13 +11,13 @@ using System;
 
 namespace AvalonDock.Controls
 {
-	internal class WindowActivateEventArgs : EventArgs
-	{
-		public WindowActivateEventArgs(IntPtr hwndActivating)
-		{
-			HwndActivating = hwndActivating;
-		}
+    internal class WindowActivateEventArgs : EventArgs
+    {
+        public WindowActivateEventArgs(IntPtr hwndActivating)
+        {
+            HwndActivating = hwndActivating;
+        }
 
-		public IntPtr HwndActivating { get; private set; }
-	}
+        public IntPtr HwndActivating { get; private set; }
+    }
 }
