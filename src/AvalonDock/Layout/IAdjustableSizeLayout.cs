@@ -11,8 +11,8 @@ using System.Windows;
 
 namespace AvalonDock.Layout
 {
-	public interface IAdjustableSizeLayout
-	{
-		void AdjustFixedChildrenPanelSizes(Size? parentSize = null);
-	}
+    public interface IAdjustableSizeLayout
+    {
+        void AdjustFixedChildrenPanelSizes(Size? parentSize = null);
+    }
 }

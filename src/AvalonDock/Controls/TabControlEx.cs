@@ -76,16 +76,19 @@ namespace AvalonDock.Controls
             // exchange ContentPresenter for Grid
             var topGrid = (Grid)GetVisualChild(0);
 
-            if (topGrid != null
-                && topGrid.Children != null
-                && topGrid.Children.Count > 2)
+            if (topGrid != null)
             {
-                for (int i = 1; i <= 2; i++)
+                if (topGrid.Children != null && topGrid.Children.Count > 2)
                 {
-                    if (topGrid.Children[i] is Border border)
+                    if (topGrid.Children[1] is Border)
                     {
+                        var border = (Border)topGrid.Children[1];
                         border.Child = ItemsHolderPanel;
-                        break;
+                    }
+                    else if (topGrid.Children[2] is Border)
+                    {
+                        var border = (Border)topGrid.Children[2];
+                        border.Child = ItemsHolderPanel;
                     }
                 }
             }
@@ -162,19 +165,14 @@ namespace AvalonDock.Controls
 
             // Code below is required only if virtualization is turned ON
             if (_IsVirtualizing)
-            {
                 return selectedItem as TabItem;
-            }
 
             if (selectedItem == null)
-            {
                 return null;
-            }
 
-            if (selectedItem is not TabItem item)
-            {
+            TabItem item = selectedItem as TabItem;
+            if (item == null)
                 item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
-            }
 
             return item;
         }
@@ -246,27 +244,19 @@ namespace AvalonDock.Controls
 
         private ContentPresenter FindChildContentPresenter(object data)
         {
-            if (data is TabItem tabItem)
-            {
-                data = tabItem.Content;
-            }
+            if (data is TabItem)
+                data = (data as TabItem).Content;
 
             if (data == null)
-            {
                 return null;
-            }
 
             if (ItemsHolderPanel == null)
-            {
                 return null;
-            }
 
             foreach (ContentPresenter cp in ItemsHolderPanel.Children)
             {
                 if (cp.Content == data)
-                {
                     return cp;
-                }
             }
 
             return null;

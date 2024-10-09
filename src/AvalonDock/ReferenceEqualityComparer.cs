@@ -12,11 +12,11 @@ using System.Collections.Generic;
 
 namespace AvalonDock
 {
-	public sealed class ReferenceEqualityComparer : IEqualityComparer, IEqualityComparer<object>
-	{
-		public static ReferenceEqualityComparer Default { get; } = new ReferenceEqualityComparer();
+    public sealed class ReferenceEqualityComparer : IEqualityComparer, IEqualityComparer<object>
+    {
+        public static ReferenceEqualityComparer Default { get; } = new ReferenceEqualityComparer();
 
-		public new bool Equals(object x, object y) => ReferenceEquals(x, y);
-		public int GetHashCode(object obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
-	}
+        public new bool Equals(object x, object y) => ReferenceEquals(x, y);
+        public int GetHashCode(object obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
+    }
 }

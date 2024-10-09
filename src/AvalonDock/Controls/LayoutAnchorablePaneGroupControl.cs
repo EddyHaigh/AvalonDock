@@ -7,70 +7,71 @@
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
 
-using AvalonDock.Layout;
 using System.Windows;
 using System.Windows.Controls;
 
+using AvalonDock.Layout;
+
 namespace AvalonDock.Controls
 {
-	/// <summary>
-	/// Implements a group control that hosts a <see cref="LayoutAnchorablePaneGroup"/> model.
-	///
-	/// This Grid based control can host multiple other controls in its Children collection
-	/// (<see cref="LayoutAnchorableControl"/>).
-	/// </summary>
-	public class LayoutAnchorablePaneGroupControl : LayoutGridControl<ILayoutAnchorablePane>
-	{
-		#region fields
+    /// <summary>
+    /// Implements a group control that hosts a <see cref="LayoutAnchorablePaneGroup"/> model.
+    ///
+    /// This Grid based control can host multiple other controls in its Children collection
+    /// (<see cref="LayoutAnchorableControl"/>).
+    /// </summary>
+    public class LayoutAnchorablePaneGroupControl : LayoutGridControl<ILayoutAnchorablePane>, ILayoutControl
+    {
+        #region fields
 
-		private LayoutAnchorablePaneGroup _model;
+        private LayoutAnchorablePaneGroup _model;
 
-		#endregion fields
+        #endregion fields
 
-		#region Constructors
+        #region Constructors
 
-		/// <summary>
-		/// Class constructor from layout model.
-		/// </summary>
-		/// <param name="model"></param>
-		internal LayoutAnchorablePaneGroupControl(LayoutAnchorablePaneGroup model)
-			: base(model, model.Orientation)
-		{
-			_model = model;
-		}
+        /// <summary>
+        /// Class constructor from layout model.
+        /// </summary>
+        /// <param name="model"></param>
+        internal LayoutAnchorablePaneGroupControl(LayoutAnchorablePaneGroup model)
+            : base(model, model.Orientation)
+        {
+            _model = model;
+        }
 
-		#endregion Constructors
+        #endregion Constructors
 
-		#region Overrides
+        #region Overrides
 
-		protected override void OnFixChildrenDockLengths()
-		{
-			if (_model.Orientation == Orientation.Horizontal)
-			{
-				// Setup DockWidth for children
-				for (int i = 0; i < _model.Children.Count; i++)
-				{
-					var childModel = _model.Children[i] as ILayoutPositionableElement;
-					if (!childModel.DockWidth.IsStar)
-					{
-						childModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
-					}
-				}
-			}
-			else
-			{
-				// Setup DockHeight for children
-				for (int i = 0; i < _model.Children.Count; i++)
-				{
-					var childModel = _model.Children[i] as ILayoutPositionableElement;
-					if (!childModel.DockHeight.IsStar)
-					{
-						childModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
-					}
-				}
-			}
-		}
+        protected override void OnFixChildrenDockLengths()
+        {
+            if (_model.Orientation == Orientation.Horizontal)
+            {
+                // Setup DockWidth for children
+                for (int i = 0; i < _model.Children.Count; i++)
+                {
+                    var childModel = _model.Children[i] as ILayoutPositionableElement;
+                    if (!childModel.DockWidth.IsStar)
+                    {
+                        childModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
+                    }
+                }
+            }
+            else
+            {
+                // Setup DockHeight for children
+                for (int i = 0; i < _model.Children.Count; i++)
+                {
+                    var childModel = _model.Children[i] as ILayoutPositionableElement;
+                    if (!childModel.DockHeight.IsStar)
+                    {
+                        childModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
+                    }
+                }
+            }
+        }
 
-		#endregion Overrides
-	}
+        #endregion Overrides
+    }
 }

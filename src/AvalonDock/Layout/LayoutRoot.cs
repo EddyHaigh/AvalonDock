@@ -295,23 +295,22 @@ namespace AvalonDock.Layout
 #if TRACE
         public override void ConsoleDump(int tab)
         {
-            System.Diagnostics.Trace.TraceInformation(format: "{0}RootPanel()", new string(' ', tab * 4));
+            System.Diagnostics.Trace.Write(new string(' ', tab * 4));
+            System.Diagnostics.Trace.WriteLine("RootPanel()");
 
             RootPanel.ConsoleDump(tab + 1);
 
-            System.Diagnostics.Trace.TraceInformation(format: "{0}FloatingWindows()", new string(' ', tab * 4));
+            System.Diagnostics.Trace.Write(new string(' ', tab * 4));
+            System.Diagnostics.Trace.WriteLine("FloatingWindows()");
 
             foreach (var fw in FloatingWindows)
-            {
                 fw.ConsoleDump(tab + 1);
-            }
 
-            System.Diagnostics.Trace.TraceInformation(format: "{0}Hidden()", new string(' ', tab * 4));
+            System.Diagnostics.Trace.Write(new string(' ', tab * 4));
+            System.Diagnostics.Trace.WriteLine("Hidden()");
 
             foreach (var hidden in Hidden)
-            {
                 hidden.ConsoleDump(tab + 1);
-            }
         }
 #endif
 
@@ -398,11 +397,9 @@ namespace AvalonDock.Layout
 
                     //...if this pane is the only documentpane present in the layout of the main window (not floating) then skip it
                     if (emptyPane is LayoutDocumentPane &&
-                         emptyPane.FindParent<LayoutDocumentFloatingWindow>() == null
-                         && !this.Descendents().OfType<LayoutDocumentPane>().Any(c => c != emptyPane && c.FindParent<LayoutDocumentFloatingWindow>() == null))
-                    {
+                         emptyPane.FindParent<LayoutDocumentFloatingWindow>() == null &&
+                         this.Descendents().OfType<LayoutDocumentPane>().Count(c => c != emptyPane && c.FindParent<LayoutDocumentFloatingWindow>() == null) == 0)
                         continue;
-                    }
 
                     //...if this empty pane is not referenced by anyone, then remove it from its parent container
                     if (!this.Descendents().OfType<ILayoutPreviousContainer>().Any(c => c.PreviousContainer == emptyPane))
@@ -439,11 +436,7 @@ namespace AvalonDock.Layout
                     foreach (var emptyLayoutDocumentPane in this.Descendents().OfType<LayoutDocumentPane>().Where(p => p.ChildrenCount == 0))
                     {
                         var parentGroup = emptyLayoutDocumentPane.Parent;
-                        if (parentGroup.Parent is not LayoutDocumentFloatingWindow)
-                        {
-                            continue;
-                        }
-
+                        if (!(parentGroup.Parent is LayoutDocumentFloatingWindow)) continue;
                         var index = RootPanel.IndexOfChild(this.Descendents().OfType<LayoutDocumentPaneGroup>().First());
                         parentGroup.RemoveChild(emptyLayoutDocumentPane);
                         if (!this.Descendents().OfType<LayoutDocumentPane>().Any())
@@ -894,20 +887,12 @@ namespace AvalonDock.Layout
             {
                 if (isFloatingWindow)
                 {
-                    if (ReadElement(reader) is not LayoutFloatingWindow result)
-                    {
-                        break;
-                    }
-
+                    if (!(ReadElement(reader) is LayoutFloatingWindow result)) break;
                     resultList.Add(result);
                 }
                 else
                 {
-                    if (ReadElement(reader) is not LayoutAnchorable result)
-                    {
-                        break;
-                    }
-
+                    if (!(ReadElement(reader) is LayoutAnchorable result)) break;
                     resultList.Add(result);
                 }
             }
@@ -998,12 +983,11 @@ namespace AvalonDock.Layout
                 Debug.Write($"{indent}{(indent.Length > 0 ? isLastChild ? " └─ " : " ├─ " : "")}{childID:D2} 0x{element.GetHashCode():X8} " +
                                 $"{element.GetType().Name} {(shortPropertyNames ? "P" : "Parent")}:0x{element.Parent?.GetHashCode() ?? 0:X8} " +
                                 $"{(shortPropertyNames ? "R" : "Root")}:0x{element.Root?.GetHashCode() ?? 0:X8}");
-                if (element is not ILayoutContainer containerElement)
+                if (!(element is ILayoutContainer containerElement))
                 {
                     Debug.WriteLine("");
                     return;
                 }
-
                 Debug.WriteLine($" {(shortPropertyNames ? "C" : "Children")}:{containerElement.ChildrenCount}");
                 var nrChild = 0;
                 indent.Append(isLastChild ? "   " : " │ ");

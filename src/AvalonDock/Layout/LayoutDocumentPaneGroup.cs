@@ -8,90 +8,88 @@
  ************************************************************************/
 
 using System;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Markup;
 
 namespace AvalonDock.Layout
 {
-	/// <summary>
-	/// Implements an element in the layout model that can contain and organize multiple
-	/// <see cref="LayoutDocumentPane"/> elements, which in turn contain <see cref="LayoutDocument"/> elements.
-	/// </summary>
-	[ContentProperty(nameof(Children))]
-	[Serializable]
-	public class LayoutDocumentPaneGroup : LayoutPositionableGroup<ILayoutDocumentPane>, ILayoutDocumentPane, ILayoutOrientableGroup
-	{
-		#region fields
+    /// <summary>
+    /// Implements an element in the layout model that can contain and organize multiple
+    /// <see cref="LayoutDocumentPane"/> elements, which in turn contain <see cref="LayoutDocument"/> elements.
+    /// </summary>
+    [ContentProperty(nameof(Children))]
+    [Serializable]
+    public class LayoutDocumentPaneGroup : LayoutPositionableGroup<ILayoutDocumentPane>, ILayoutDocumentPane, ILayoutOrientableGroup
+    {
+        #region fields
 
-		private Orientation _orientation;
+        private Orientation _orientation;
 
-		#endregion fields
+        #endregion fields
 
-		#region Constructors
+        #region Constructors
 
-		/// <summary>Class constructor</summary>
-		public LayoutDocumentPaneGroup()
-		{
-		}
+        /// <summary>Class constructor</summary>
+        public LayoutDocumentPaneGroup()
+        {
+        }
 
-		/// <summary>Class constructor from <paramref name="documentPane"/> that is added into the children collection of this object.</summary>
-		public LayoutDocumentPaneGroup(LayoutDocumentPane documentPane)
-		{
-			Children.Add(documentPane);
-		}
+        /// <summary>Class constructor from <paramref name="documentPane"/> that is added into the children collection of this object.</summary>
+        public LayoutDocumentPaneGroup(LayoutDocumentPane documentPane)
+        {
+            Children.Add(documentPane);
+        }
 
-		#endregion Constructors
+        #endregion Constructors
 
-		#region Properties
+        #region Properties
 
-		/// <summary>Gets/sets the (Horizontal, Vertical) <see cref="System.Windows.Controls.Orientation"/> of this group.</summary>
-		public Orientation Orientation
-		{
-			get => _orientation;
-			set
-			{
-				if (value == _orientation) return;
-				RaisePropertyChanging(nameof(Orientation));
-				_orientation = value;
-				RaisePropertyChanged(nameof(Orientation));
-			}
-		}
+        /// <summary>Gets/sets the (Horizontal, Vertical) <see cref="System.Windows.Controls.Orientation"/> of this group.</summary>
+        public Orientation Orientation
+        {
+            get => _orientation;
+            set
+            {
+                if (value == _orientation) return;
+                RaisePropertyChanging(nameof(Orientation));
+                _orientation = value;
+                RaisePropertyChanged(nameof(Orientation));
+            }
+        }
 
-		#endregion Properties
+        #endregion Properties
 
-		#region Overrides
+        #region Overrides
 
-		/// <inheritdoc />
-		protected override bool GetVisibility() => true;
+        /// <inheritdoc />
+        protected override bool GetVisibility() => true;
 
-		/// <inheritdoc />
-		public override void WriteXml(System.Xml.XmlWriter writer)
-		{
-			writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
-			base.WriteXml(writer);
-		}
+        /// <inheritdoc />
+        public override void WriteXml(System.Xml.XmlWriter writer)
+        {
+            writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
+            base.WriteXml(writer);
+        }
 
-		/// <inheritdoc />
-		public override void ReadXml(System.Xml.XmlReader reader)
-		{
-			if (reader.MoveToAttribute(nameof(Orientation))) Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
-			base.ReadXml(reader);
-		}
+        /// <inheritdoc />
+        public override void ReadXml(System.Xml.XmlReader reader)
+        {
+            if (reader.MoveToAttribute(nameof(Orientation))) Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
+            base.ReadXml(reader);
+        }
 
 #if TRACE
-		/// <inheritdoc />
-		public override void ConsoleDump(int tab)
-		{
-            System.Diagnostics.Trace.TraceInformation("{0}DocumentPaneGroup({1})", new string(' ', tab * 4), Orientation);
+        /// <inheritdoc />
+        public override void ConsoleDump(int tab)
+        {
+            System.Diagnostics.Trace.Write(new string(' ', tab * 4));
+            System.Diagnostics.Trace.WriteLine(string.Format("DocumentPaneGroup({0})", Orientation));
 
-			foreach (var child in Children.Cast<LayoutElement>())
-            {
+            foreach (LayoutElement child in Children)
                 child.ConsoleDump(tab + 1);
-            }
         }
 #endif
 
-		#endregion Overrides
-	}
+        #endregion Overrides
+    }
 }

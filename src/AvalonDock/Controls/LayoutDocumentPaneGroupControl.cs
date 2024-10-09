@@ -7,68 +7,69 @@
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
 
-using AvalonDock.Layout;
 using System.Windows;
 using System.Windows.Controls;
 
+using AvalonDock.Layout;
+
 namespace AvalonDock.Controls
 {
-	/// <summary>
-	/// Implements a group control that hosts a <see cref="LayoutDocumentPaneGroup"/> model.
-	///
-	/// This Grid based control can host multiple other controls in its Children collection
-	/// (<see cref="LayoutAnchorableControl"/>, <see cref="LayoutDocumentControl"/> etc).
-	/// </summary>
-	public class LayoutDocumentPaneGroupControl : LayoutGridControl<ILayoutDocumentPane>
+    /// <summary>
+    /// Implements a group control that hosts a <see cref="LayoutDocumentPaneGroup"/> model.
+    ///
+    /// This Grid based control can host multiple other controls in its Children collection
+    /// (<see cref="LayoutAnchorableControl"/>, <see cref="LayoutDocumentControl"/> etc).
+    /// </summary>
+    public class LayoutDocumentPaneGroupControl : LayoutGridControl<ILayoutDocumentPane>, ILayoutControl
     {
-		#region fields
+        #region fields
 
-		private readonly LayoutDocumentPaneGroup _model;
+        private readonly LayoutDocumentPaneGroup _model;
 
-		#endregion fields
+        #endregion fields
 
-		#region Constructors
+        #region Constructors
 
-		internal LayoutDocumentPaneGroupControl(LayoutDocumentPaneGroup model)
-			: base(model, model.Orientation)
-		{
-			_model = model;
-		}
+        internal LayoutDocumentPaneGroupControl(LayoutDocumentPaneGroup model)
+            : base(model, model.Orientation)
+        {
+            _model = model;
+        }
 
-		#endregion Constructors
+        #endregion Constructors
 
-		#region Overrides
+        #region Overrides
 
-		protected override void OnFixChildrenDockLengths()
-		{
-			#region Setup DockWidth/Height for children
+        protected override void OnFixChildrenDockLengths()
+        {
+            #region Setup DockWidth/Height for children
 
-			if (_model.Orientation == Orientation.Horizontal)
-			{
-				for (int i = 0; i < _model.Children.Count; i++)
-				{
-					var childModel = _model.Children[i] as ILayoutPositionableElement;
-					if (!childModel.DockWidth.IsStar)
-					{
-						childModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
-					}
-				}
-			}
-			else
-			{
-				for (int i = 0; i < _model.Children.Count; i++)
-				{
-					var childModel = _model.Children[i] as ILayoutPositionableElement;
-					if (!childModel.DockHeight.IsStar)
-					{
-						childModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
-					}
-				}
-			}
+            if (_model.Orientation == Orientation.Horizontal)
+            {
+                for (int i = 0; i < _model.Children.Count; i++)
+                {
+                    var childModel = _model.Children[i] as ILayoutPositionableElement;
+                    if (!childModel.DockWidth.IsStar)
+                    {
+                        childModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < _model.Children.Count; i++)
+                {
+                    var childModel = _model.Children[i] as ILayoutPositionableElement;
+                    if (!childModel.DockHeight.IsStar)
+                    {
+                        childModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
+                    }
+                }
+            }
 
-			#endregion Setup DockWidth/Height for children
-		}
+            #endregion Setup DockWidth/Height for children
+        }
 
-		#endregion Overrides
-	}
+        #endregion Overrides
+    }
 }

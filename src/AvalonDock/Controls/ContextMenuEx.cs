@@ -12,37 +12,37 @@ using System.Windows.Data;
 
 namespace AvalonDock.Controls
 {
-	/// <summary>
-	/// Implements an extended <see cref="ContextMenu"/> for the <see cref="LayoutDocumentPaneControl"/>.
-	/// </summary>
-	public class ContextMenuEx : ContextMenu
-	{
-		#region Constructors
+    /// <summary>
+    /// Implements an extended <see cref="ContextMenu"/> for the <see cref="LayoutDocumentPaneControl"/>.
+    /// </summary>
+    public class ContextMenuEx : ContextMenu
+    {
+        #region Constructors
 
-		static ContextMenuEx()
-		{
-		}
+        static ContextMenuEx()
+        {
+        }
 
-		public ContextMenuEx()
-		{
-		}
+        public ContextMenuEx()
+        {
+        }
 
-		#endregion Constructors
+        #endregion Constructors
 
-		#region Overrides
+        #region Overrides
 
-		protected override System.Windows.DependencyObject GetContainerForItemOverride()
-		{
-			return new MenuItemEx();
-		}
+        protected override System.Windows.DependencyObject GetContainerForItemOverride()
+        {
+            return new MenuItemEx();
+        }
 
-		protected override void OnOpened(System.Windows.RoutedEventArgs e)
-		{
-			BindingOperations.GetBindingExpression(this, ItemsSourceProperty).UpdateTarget();
+        protected override void OnOpened(System.Windows.RoutedEventArgs e)
+        {
+            BindingOperations.GetBindingExpression(this, ItemsSourceProperty).UpdateTarget();
 
-			base.OnOpened(e);
-		}
+            base.OnOpened(e);
+        }
 
-		#endregion Overrides
-	}
+        #endregion Overrides
+    }
 }
