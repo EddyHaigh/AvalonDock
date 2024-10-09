@@ -7,10 +7,6 @@
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
 
-using AvalonDock.Controls;
-using AvalonDock.Layout;
-using AvalonDock.Themes;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,6 +21,10 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Threading;
+
+using AvalonDock.Controls;
+using AvalonDock.Layout;
+using AvalonDock.Themes;
 
 namespace AvalonDock
 {

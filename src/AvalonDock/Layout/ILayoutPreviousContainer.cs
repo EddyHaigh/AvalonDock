@@ -9,10 +9,10 @@
 
 namespace AvalonDock.Layout
 {
-	internal interface ILayoutPreviousContainer
-	{
-		ILayoutContainer PreviousContainer { get; set; }
+    internal interface ILayoutPreviousContainer
+    {
+        ILayoutContainer PreviousContainer { get; set; }
 
-		string PreviousContainerId { get; set; }
-	}
+        string PreviousContainerId { get; set; }
+    }
 }
