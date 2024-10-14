@@ -31,6 +31,11 @@ namespace Standard
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
 
+    using AvalonDock.Controls.Shell.Standard;
+
+    using Windows.Win32;
+    using Windows.Win32.Graphics.Gdi;
+
     internal static partial class Utility
     {
         private static readonly Version _osVersion = Environment.OSVersion.Version;
@@ -295,8 +300,14 @@ namespace Standard
         private static int _GetBitDepth()
         {
             if (s_bitDepth != 0) return s_bitDepth;
-            using (var dc = SafeDC.GetDesktop())
-                s_bitDepth = NativeMethods.GetDeviceCaps(dc, DeviceCap.BITSPIXEL) * NativeMethods.GetDeviceCaps(dc, DeviceCap.PLANES);
+            using (var safeDC = SafeDC.GetDesktop())
+            {
+
+                s_bitDepth =
+                    PInvoke.GetDeviceCaps(safeDC.HDC, GET_DEVICE_CAPS_INDEX.BITSPIXEL)
+                    * PInvoke.GetDeviceCaps(safeDC.HDC, GET_DEVICE_CAPS_INDEX.PLANES);
+            }
+
             return s_bitDepth;
         }
 
