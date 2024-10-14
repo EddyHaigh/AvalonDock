@@ -10,9 +10,13 @@
 namespace Microsoft.Windows.Shell
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Interop;
+
+    using global::Windows.Win32;
+    using global::Windows.Win32.Foundation;
 
     using Standard;
 
@@ -35,9 +39,13 @@ namespace Microsoft.Windows.Shell
 
         private static void _PostSystemCommand(Window window, SC command)
         {
-            var hWnd = new WindowInteropHelper(window).Handle;
-            if (hWnd == IntPtr.Zero || !NativeMethods.IsWindow(hWnd)) return;
-            NativeMethods.PostMessage(hWnd, WM.SYSCOMMAND, new IntPtr((int)command), IntPtr.Zero);
+            var hWnd = new HWND(new WindowInteropHelper(window).Handle);
+            if (hWnd == IntPtr.Zero || !PInvoke.IsWindow(hWnd))
+            {
+                return;
+            }
+
+            PInvoke.PostMessage(hWnd, (uint)WM.SYSCOMMAND, new WPARAM((uint)command), IntPtr.Zero);
         }
 
         public static void CloseWindow(Window window)
@@ -79,11 +87,28 @@ namespace Microsoft.Windows.Shell
             const uint TPM_LEFTBUTTON = 0x0;
 
             Verify.IsNotNull(window, nameof(window));
-            var hWnd = new WindowInteropHelper(window).Handle;
-            if (hWnd == IntPtr.Zero || !NativeMethods.IsWindow(hWnd)) return;
-            var hMenu = NativeMethods.GetSystemMenu(hWnd, false);
-            var cmd = NativeMethods.TrackPopupMenuEx(hMenu, TPM_LEFTBUTTON | TPM_RETURNCMD, (int)physicalScreenLocation.X, (int)physicalScreenLocation.Y, hWnd, IntPtr.Zero);
-            if (cmd != 0) NativeMethods.PostMessage(hWnd, WM.SYSCOMMAND, new IntPtr(cmd), IntPtr.Zero);
+            var hWnd = new HWND(new WindowInteropHelper(window).Handle);
+            if (hWnd == IntPtr.Zero || !PInvoke.IsWindow(hWnd))
+            {
+                return;
+            }
+
+            // Reseting seems to fix an issue where the system menu would not open a second time
+            // TODO: Figure out why the state is not being reset properly
+            using var _ = PInvoke.GetSystemMenu_SafeHandle(hWnd, true);
+            using SafeHandle hMenu = PInvoke.GetSystemMenu_SafeHandle(hWnd, false);
+            var cmd = PInvoke.TrackPopupMenuEx(
+                hMenu,
+                TPM_LEFTBUTTON | TPM_RETURNCMD,
+                (int)physicalScreenLocation.X,
+                (int)physicalScreenLocation.Y,
+                hWnd,
+                null).Value;
+
+            if (cmd != 0)
+            {
+                PInvoke.PostMessage(hWnd, (uint)WM.SYSCOMMAND, new WPARAM((nuint)cmd), IntPtr.Zero);
+            }
         }
     }
 }

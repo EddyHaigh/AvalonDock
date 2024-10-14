@@ -2,3 +2,7 @@ GetDC
 ReleaseDC
 DeleteDC
 GetDeviceCaps
+IsWindow
+GetSystemMenu
+TrackPopupMenuEx
+PostMessage
