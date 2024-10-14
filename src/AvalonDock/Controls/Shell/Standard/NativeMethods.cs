@@ -773,7 +773,7 @@ namespace Standard
     /// <summary>
     /// Window message values, WM_*
     /// </summary>
-    internal enum WM
+    internal enum WM : uint
     {
         NULL = 0x0000,
         CREATE = 0x0001,
@@ -1132,7 +1132,7 @@ namespace Standard
         FORCEMINIMIZE = 11,
     }
 
-    internal enum SC
+    internal enum SC : uint
     {
         SIZE = 0xF000,
         MOVE = 0xF010,
