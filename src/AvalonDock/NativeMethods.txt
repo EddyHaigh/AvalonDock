@@ -1,0 +1,4 @@
+GetDC
+ReleaseDC
+DeleteDC
+GetDeviceCaps

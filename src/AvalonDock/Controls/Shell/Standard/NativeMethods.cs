@@ -22,7 +22,12 @@ namespace Standard
     using System.Security.Permissions;
     using System.Text;
 
+    using AvalonDock.Controls.Shell.Standard;
+
     using Microsoft.Win32.SafeHandles;
+
+    using Windows.Win32.Foundation;
+    using Windows.Win32.Graphics.Gdi;
     // Some COM interfaces and Win32 structures are already declared in the framework.
     // Interesting ones to remember in System.Runtime.InteropServices.ComTypes are:
     using IStream = System.Runtime.InteropServices.ComTypes.IStream;
@@ -962,31 +967,6 @@ namespace Standard
         PALETTEWINDOW = (WINDOWEDGE | TOOLWINDOW | TOPMOST),
     }
 
-    /// <summary>
-    /// GetDeviceCaps nIndex values.
-    /// </summary>
-    internal enum DeviceCap
-    {
-        /// <summary>Number of bits per pixel
-        /// </summary>
-        BITSPIXEL = 12,
-
-        /// <summary>
-        /// Number of planes
-        /// </summary>
-        PLANES = 14,
-
-        /// <summary>
-        /// Logical pixels inch in X
-        /// </summary>
-        LOGPIXELSX = 88,
-
-        /// <summary>
-        /// Logical pixels inch in Y
-        /// </summary>
-        LOGPIXELSY = 90,
-    }
-
     internal enum FO : int
     {
         MOVE = 0x0001,
@@ -1366,118 +1346,6 @@ namespace Standard
 
         /// <inheritdoc />
         protected override bool ReleaseHandle() => NativeMethods.FindClose(handle);
-    }
-
-    internal sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
-    {
-        private static class NativeMethods
-        {
-            [DllImport("user32.dll")]
-            public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
-
-            [DllImport("user32.dll")]
-            public static extern SafeDC GetDC(IntPtr hwnd);
-
-            // Weird legacy function, documentation is unclear about how to use it...
-            [DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
-            public static extern SafeDC CreateDC([MarshalAs(UnmanagedType.LPWStr)] string lpszDriver, [MarshalAs(UnmanagedType.LPWStr)] string lpszDevice, IntPtr lpszOutput, IntPtr lpInitData);
-
-            [DllImport("gdi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern SafeDC CreateCompatibleDC(IntPtr hdc);
-
-            [DllImport("gdi32.dll")]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            public static extern bool DeleteDC(IntPtr hdc);
-        }
-
-        private IntPtr? _hwnd;
-        private bool _created;
-
-        public IntPtr Hwnd
-        {
-            set
-            {
-                Assert.NullableIsNull(_hwnd);
-                _hwnd = value;
-            }
-        }
-
-        private SafeDC() : base(true)
-        {
-        }
-
-        /// <inheritdoc />
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        protected override bool ReleaseHandle()
-        {
-            if (_created) return NativeMethods.DeleteDC(handle);
-            if (!_hwnd.HasValue || _hwnd.Value == IntPtr.Zero) return true;
-            return NativeMethods.ReleaseDC(_hwnd.Value, handle) == 1;
-        }
-
-        public static SafeDC CreateDC(string deviceName)
-        {
-            SafeDC dc = null;
-            try
-            {
-                // Should this really be on the driver parameter?
-                dc = NativeMethods.CreateDC(deviceName, null, IntPtr.Zero, IntPtr.Zero);
-            }
-            finally
-            {
-                if (dc != null) dc._created = true;
-            }
-            if (!dc.IsInvalid) return dc;
-            dc.Dispose();
-            throw new SystemException("Unable to create a device context from the specified device information.");
-        }
-
-        public static SafeDC CreateCompatibleDC(SafeDC hdc)
-        {
-            SafeDC dc = null;
-            try
-            {
-                var hPtr = IntPtr.Zero;
-                if (hdc != null) hPtr = hdc.handle;
-                dc = NativeMethods.CreateCompatibleDC(hPtr);
-                if (dc == null) HRESULT.ThrowLastError();
-            }
-            finally
-            {
-                if (dc != null) dc._created = true;
-            }
-            if (!dc.IsInvalid) return dc;
-            dc.Dispose();
-            throw new SystemException("Unable to create a device context from the specified device information.");
-        }
-
-        public static SafeDC GetDC(IntPtr hwnd)
-        {
-            SafeDC dc = null;
-            try
-            {
-                dc = NativeMethods.GetDC(hwnd);
-            }
-            finally
-            {
-                if (dc != null) dc.Hwnd = hwnd;
-            }
-
-            // GetDC does not set the last error...
-            if (dc.IsInvalid) HRESULT.E_FAIL.ThrowIfFailed();
-            return dc;
-        }
-
-        public static SafeDC GetDesktop()
-        {
-            return GetDC(IntPtr.Zero);
-        }
-
-        public static SafeDC WrapDC(IntPtr hdc)
-        {
-            // This won't actually get released by the class, but it allows an IntPtr to be converted for signatures.
-            return new SafeDC { handle = hdc, _created = false, _hwnd = IntPtr.Zero };
-        }
     }
 
     internal sealed class SafeHBITMAP : SafeHandleZeroOrMinusOneIsInvalid
@@ -2616,9 +2484,6 @@ namespace Standard
         public static void GetDC()
         {
         }
-
-        [DllImport("gdi32.dll")]
-        public static extern int GetDeviceCaps(SafeDC hdc, DeviceCap nIndex);
 
         [DllImport("kernel32.dll", EntryPoint = "GetModuleFileName", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern int _GetModuleFileName(IntPtr hModule, StringBuilder lpFilename, int nSize);

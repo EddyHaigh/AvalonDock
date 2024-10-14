@@ -14,6 +14,11 @@
 using System.Windows;
 using System.Windows.Media;
 
+using AvalonDock.Controls.Shell.Standard;
+
+using Windows.Win32;
+using Windows.Win32.Graphics.Gdi;
+
 namespace Standard
 {
     internal static class DpiHelper
@@ -27,8 +32,8 @@ namespace Standard
             {
                 // Can get these in the static constructor.  They shouldn't vary window to window,
                 // and changing the system DPI requires a restart.
-                var pixelsPerInchX = NativeMethods.GetDeviceCaps(desktop, DeviceCap.LOGPIXELSX);
-                var pixelsPerInchY = NativeMethods.GetDeviceCaps(desktop, DeviceCap.LOGPIXELSY);
+                var pixelsPerInchX = PInvoke.GetDeviceCaps(desktop.HDC, GET_DEVICE_CAPS_INDEX.LOGPIXELSX);
+                var pixelsPerInchY = PInvoke.GetDeviceCaps(desktop.HDC, GET_DEVICE_CAPS_INDEX.LOGPIXELSY);
                 _transformToDip = Matrix.Identity;
                 _transformToDip.Scale(96d / pixelsPerInchX, 96d / pixelsPerInchY);
                 _transformToDevice = Matrix.Identity;
