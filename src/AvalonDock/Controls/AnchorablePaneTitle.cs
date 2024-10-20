@@ -64,9 +64,13 @@ namespace AvalonDock.Controls
         protected virtual void OnModelChanged(DependencyPropertyChangedEventArgs e)
         {
             if (Model != null)
+            {
                 SetLayoutItem(Model?.Root?.Manager?.GetLayoutItemFromModel(Model));
+            }
             else
+            {
                 SetLayoutItem(null);
+            }
         }
 
         #endregion Model
@@ -97,7 +101,11 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (e.LeftButton != MouseButtonState.Pressed) _isMouseDown = false;
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                _isMouseDown = false;
+            }
+
             base.OnMouseMove(e);
         }
 
@@ -131,10 +139,17 @@ namespace AvalonDock.Controls
             base.OnMouseLeftButtonDown(e);
 
             // Start a drag & drop action for a LayoutAnchorable
-            if (e.Handled || Model.CanMove == false) return;
+            if (e.Handled || Model.CanMove == false)
+            {
+                return;
+            }
+
             var attachFloatingWindow = false;
             var parentFloatingWindow = Model.FindParent<LayoutAnchorableFloatingWindow>();
-            if (parentFloatingWindow != null) attachFloatingWindow = parentFloatingWindow.Descendents().OfType<LayoutAnchorablePane>().Count() == 1;
+            if (parentFloatingWindow != null)
+            {
+                attachFloatingWindow = parentFloatingWindow.Descendents().OfType<LayoutAnchorablePane>().Count() == 1;
+            }
 
             if (attachFloatingWindow)
             {
@@ -143,7 +158,9 @@ namespace AvalonDock.Controls
                 floatingWndControl.AttachDrag(false);
             }
             else
+            {
                 _isMouseDown = true;//normal drag
+            }
         }
 
         /// <inheritdoc />
@@ -151,7 +168,10 @@ namespace AvalonDock.Controls
         {
             _isMouseDown = false;
             base.OnMouseLeftButtonUp(e);
-            if (Model != null) Model.IsActive = true;//FocusElementManager.SetFocusOnLastElement(Model);
+            if (Model != null)
+            {
+                Model.IsActive = true;//FocusElementManager.SetFocusOnLastElement(Model);
+            }
         }
 
         #endregion Overrides

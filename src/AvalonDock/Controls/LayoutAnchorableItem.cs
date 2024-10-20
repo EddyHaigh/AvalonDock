@@ -115,8 +115,16 @@ namespace AvalonDock.Controls
 
         private bool CanExecuteAutoHideCommand(object parameter)
         {
-            if (LayoutElement == null) return false;
-            if (LayoutElement.FindParent<LayoutAnchorableFloatingWindow>() != null) return false;//is floating
+            if (LayoutElement == null)
+            {
+                return false;
+            }
+
+            if (LayoutElement.FindParent<LayoutAnchorableFloatingWindow>() != null)
+            {
+                return false;//is floating
+            }
+
             return _anchorable.CanAutoHide;
         }
 
@@ -176,7 +184,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="CanHide"/> property.</summary>
         protected virtual void OnCanHideChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (_anchorable != null) _anchorable.CanHide = (bool)e.NewValue;
+            if (_anchorable != null)
+            {
+                _anchorable.CanHide = (bool)e.NewValue;
+            }
         }
 
         #endregion CanHide
@@ -201,7 +212,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="CanMove"/> property.</summary>
         protected virtual void OnCanMoveChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (_anchorable != null) _anchorable.CanMove = (bool)e.NewValue;
+            if (_anchorable != null)
+            {
+                _anchorable.CanMove = (bool)e.NewValue;
+            }
         }
 
         #endregion CanMove
@@ -228,14 +242,22 @@ namespace AvalonDock.Controls
         protected override bool CanExecuteDockAsDocumentCommand()
         {
             var canExecute = base.CanExecuteDockAsDocumentCommand();
-            if (canExecute && _anchorable != null) return _anchorable.CanDockAsTabbedDocument;
+            if (canExecute && _anchorable != null)
+            {
+                return _anchorable.CanDockAsTabbedDocument;
+            }
+
             return canExecute;
         }
 
         /// <inheritdoc />
         protected override void Close()
         {
-            if (_anchorable.Root?.Manager == null) return;
+            if (_anchorable.Root?.Manager == null)
+            {
+                return;
+            }
+
             var dockingManager = _anchorable.Root.Manager;
             dockingManager.ExecuteCloseCommand(_anchorable);
         }
@@ -252,18 +274,42 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override void ClearDefaultBindings()
         {
-            if (HideCommand == _defaultHideCommand) BindingOperations.ClearBinding(this, HideCommandProperty);
-            if (AutoHideCommand == _defaultAutoHideCommand) BindingOperations.ClearBinding(this, AutoHideCommandProperty);
-            if (DockCommand == _defaultDockCommand) BindingOperations.ClearBinding(this, DockCommandProperty);
+            if (HideCommand == _defaultHideCommand)
+            {
+                BindingOperations.ClearBinding(this, HideCommandProperty);
+            }
+
+            if (AutoHideCommand == _defaultAutoHideCommand)
+            {
+                BindingOperations.ClearBinding(this, AutoHideCommandProperty);
+            }
+
+            if (DockCommand == _defaultDockCommand)
+            {
+                BindingOperations.ClearBinding(this, DockCommandProperty);
+            }
+
             base.ClearDefaultBindings();
         }
 
         /// <inheritdoc />
         protected override void SetDefaultBindings()
         {
-            if (HideCommand == null) HideCommand = _defaultHideCommand;
-            if (AutoHideCommand == null) AutoHideCommand = _defaultAutoHideCommand;
-            if (DockCommand == null) DockCommand = _defaultDockCommand;
+            if (HideCommand == null)
+            {
+                HideCommand = _defaultHideCommand;
+            }
+
+            if (AutoHideCommand == null)
+            {
+                AutoHideCommand = _defaultAutoHideCommand;
+            }
+
+            if (DockCommand == null)
+            {
+                DockCommand = _defaultDockCommand;
+            }
+
             Visibility = _anchorable.IsVisible ? Visibility.Visible : Visibility.Hidden;
             base.SetDefaultBindings();
         }
@@ -291,7 +337,11 @@ namespace AvalonDock.Controls
 
         private void _anchorable_IsVisibleChanged(object sender, EventArgs e)
         {
-            if (_anchorable?.Root == null || !_anchorableVisibilityReentrantFlag.CanEnter) return;
+            if (_anchorable?.Root == null || !_anchorableVisibilityReentrantFlag.CanEnter)
+            {
+                return;
+            }
+
             using (_anchorableVisibilityReentrantFlag.Enter())
             {
                 Visibility = _anchorable.IsVisible ? Visibility.Visible : Visibility.Hidden;

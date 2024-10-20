@@ -69,7 +69,11 @@ namespace AvalonDock.Layout
             get => _parent;
             set
             {
-                if (_parent == value) return;
+                if (_parent == value)
+                {
+                    return;
+                }
+
                 var oldValue = _parent;
                 var oldRoot = _root;
                 RaisePropertyChanging(nameof(Parent));
@@ -78,9 +82,16 @@ namespace AvalonDock.Layout
                 OnParentChanged(oldValue, value);
 
                 _root = Root;
-                if (oldRoot != _root) OnRootChanged(oldRoot, _root);
+                if (oldRoot != _root)
+                {
+                    OnRootChanged(oldRoot, _root);
+                }
+
                 RaisePropertyChanged(nameof(Parent));
-                if (Root is LayoutRoot root) root.FireLayoutUpdated();
+                if (Root is LayoutRoot root)
+                {
+                    root.FireLayoutUpdated();
+                }
             }
         }
 
@@ -121,7 +132,9 @@ namespace AvalonDock.Layout
         internal void FixCachedRootOnDeserialize()
         {
             if (_root == null)
+            {
                 _root = Root;
+            }
         }
 
         #endregion Internal Methods

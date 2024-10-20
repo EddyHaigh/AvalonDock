@@ -88,7 +88,9 @@ namespace AvalonDock.Controls
                     {
                         if (parentGroupPanel != null &&
                             parentGroupPanel.ChildrenCount == 1)
+                        {
                             parentGroupPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
+                        }
 
                         if (parentGroupPanel != null &&
                             parentGroupPanel.Orientation == System.Windows.Controls.Orientation.Vertical)
@@ -120,7 +122,9 @@ namespace AvalonDock.Controls
                     {
                         if (parentGroupPanel != null &&
                             parentGroupPanel.ChildrenCount == 1)
+                        {
                             parentGroupPanel.Orientation = System.Windows.Controls.Orientation.Vertical;
+                        }
 
                         if (parentGroupPanel != null &&
                             parentGroupPanel.Orientation == System.Windows.Controls.Orientation.Vertical)
@@ -152,7 +156,9 @@ namespace AvalonDock.Controls
                     {
                         if (parentGroupPanel != null &&
                             parentGroupPanel.ChildrenCount == 1)
+                        {
                             parentGroupPanel.Orientation = System.Windows.Controls.Orientation.Horizontal;
+                        }
 
                         if (parentGroupPanel != null &&
                             parentGroupPanel.Orientation == System.Windows.Controls.Orientation.Horizontal)
@@ -184,7 +190,9 @@ namespace AvalonDock.Controls
                     {
                         if (parentGroupPanel != null &&
                             parentGroupPanel.ChildrenCount == 1)
+                        {
                             parentGroupPanel.Orientation = System.Windows.Controls.Orientation.Horizontal;
+                        }
 
                         if (parentGroupPanel != null &&
                             parentGroupPanel.Orientation == System.Windows.Controls.Orientation.Horizontal)
@@ -231,7 +239,9 @@ namespace AvalonDock.Controls
             LayoutDocumentPaneGroup parentGroup;
             LayoutPanel parentGroupPanel;
             if (!FindParentLayoutDocumentPane(targetModel, out parentGroup, out parentGroupPanel))
+            {
                 return null;
+            }
 
             //if (targetModel.Parent is LayoutDocumentPaneGroup)
             //{
@@ -307,11 +317,15 @@ namespace AvalonDock.Controls
                     documentPaneGroup = documentPaneGroup.Parent as LayoutDocumentPaneGroup;
 
                     if (documentPaneGroup == null)
+                    {
                         break;
+                    }
                 }
 
                 if (documentPaneGroup == null)
+                {
                     return false;
+                }
 
                 containerPaneGroup = documentPaneGroup;
                 containerPanel = documentPaneGroup.Parent as LayoutPanel;

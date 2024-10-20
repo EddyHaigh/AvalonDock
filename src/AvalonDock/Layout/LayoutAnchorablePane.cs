@@ -65,7 +65,11 @@ namespace AvalonDock.Layout
             get => _name;
             set
             {
-                if (value == _name) return;
+                if (value == _name)
+                {
+                    return;
+                }
+
                 _name = value;
                 RaisePropertyChanged(nameof(Name));
             }
@@ -77,15 +81,29 @@ namespace AvalonDock.Layout
             get => _selectedIndex;
             set
             {
-                if (value < 0 || value >= Children.Count) value = -1;
-                if (value == _selectedIndex) return;
+                if (value < 0 || value >= Children.Count)
+                {
+                    value = -1;
+                }
+
+                if (value == _selectedIndex)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(SelectedContentIndex));
                 RaisePropertyChanging(nameof(SelectedContent));
                 if (_selectedIndex >= 0 && _selectedIndex < Children.Count)
+                {
                     Children[_selectedIndex].IsSelected = false;
+                }
+
                 _selectedIndex = value;
                 if (_selectedIndex >= 0 && _selectedIndex < Children.Count)
+                {
                     Children[_selectedIndex].IsSelected = true;
+                }
+
                 RaisePropertyChanged(nameof(SelectedContentIndex));
                 RaisePropertyChanged(nameof(SelectedContent));
             }
@@ -126,7 +144,11 @@ namespace AvalonDock.Layout
             AutoFixSelectedContent();
             for (var i = 0; i < Children.Count; i++)
             {
-                if (!Children[i].IsSelected) continue;
+                if (!Children[i].IsSelected)
+                {
+                    continue;
+                }
+
                 SelectedContentIndex = i;
                 break;
             }
@@ -139,25 +161,49 @@ namespace AvalonDock.Layout
         /// <inheritdoc />
         protected override void OnParentChanged(ILayoutContainer oldValue, ILayoutContainer newValue)
         {
-            if (oldValue is ILayoutGroup oldGroup) oldGroup.ChildrenCollectionChanged -= OnParentChildrenCollectionChanged;
+            if (oldValue is ILayoutGroup oldGroup)
+            {
+                oldGroup.ChildrenCollectionChanged -= OnParentChildrenCollectionChanged;
+            }
+
             RaisePropertyChanged(nameof(IsDirectlyHostedInFloatingWindow));
-            if (newValue is ILayoutGroup newGroup) newGroup.ChildrenCollectionChanged += OnParentChildrenCollectionChanged;
+            if (newValue is ILayoutGroup newGroup)
+            {
+                newGroup.ChildrenCollectionChanged += OnParentChildrenCollectionChanged;
+            }
+
             base.OnParentChanged(oldValue, newValue);
         }
 
         /// <inheritdoc />
         public override void WriteXml(System.Xml.XmlWriter writer)
         {
-            if (_id != null) writer.WriteAttributeString(nameof(ILayoutPaneSerializable.Id), _id);
-            if (_name != null) writer.WriteAttributeString(nameof(Name), _name);
+            if (_id != null)
+            {
+                writer.WriteAttributeString(nameof(ILayoutPaneSerializable.Id), _id);
+            }
+
+            if (_name != null)
+            {
+                writer.WriteAttributeString(nameof(Name), _name);
+            }
+
             base.WriteXml(writer);
         }
 
         /// <inheritdoc />
         public override void ReadXml(System.Xml.XmlReader reader)
         {
-            if (reader.MoveToAttribute(nameof(ILayoutPaneSerializable.Id))) _id = reader.Value;
-            if (reader.MoveToAttribute(nameof(Name))) _name = reader.Value;
+            if (reader.MoveToAttribute(nameof(ILayoutPaneSerializable.Id)))
+            {
+                _id = reader.Value;
+            }
+
+            if (reader.MoveToAttribute(nameof(Name)))
+            {
+                _name = reader.Value;
+            }
+
             _autoFixSelectedContent = false;
             base.ReadXml(reader);
             _autoFixSelectedContent = true;
@@ -171,7 +217,9 @@ namespace AvalonDock.Layout
             System.Diagnostics.Trace.TraceInformation("{0}AnchorablePane()", new string(' ', tab * 4));
 
             foreach (LayoutElement child in Children)
+            {
                 child.ConsoleDump(tab + 1);
+            }
         }
 #endif
 
@@ -219,7 +267,11 @@ namespace AvalonDock.Layout
             SelectedContentIndex = -1;
             for (var i = 0; i < Children.Count; ++i)
             {
-                if (!Children[i].IsEnabled) continue;
+                if (!Children[i].IsEnabled)
+                {
+                    continue;
+                }
+
                 SelectedContentIndex = i;
                 return;
             }
@@ -236,9 +288,20 @@ namespace AvalonDock.Layout
 
         private void AutoFixSelectedContent()
         {
-            if (!_autoFixSelectedContent) return;
-            if (SelectedContentIndex >= ChildrenCount) SelectedContentIndex = Children.Count - 1;
-            if (SelectedContentIndex == -1 && ChildrenCount > 0) SetLastActivatedIndex();
+            if (!_autoFixSelectedContent)
+            {
+                return;
+            }
+
+            if (SelectedContentIndex >= ChildrenCount)
+            {
+                SelectedContentIndex = Children.Count - 1;
+            }
+
+            if (SelectedContentIndex == -1 && ChildrenCount > 0)
+            {
+                SetLastActivatedIndex();
+            }
         }
 
         /// <summary>Sets the current <see cref="SelectedContentIndex"/> to the last activated child with IsEnabled == true</summary>

@@ -30,10 +30,22 @@ namespace AvalonDock.Converters
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (!(value is bool)) throw new ArgumentException("Invalid argument type. Expected argument: bool.", nameof(value));
-            if (targetType != typeof(Visibility)) throw new ArgumentException("Invalid return type. Expected type: Visibility", nameof(targetType));
+            if (!(value is bool))
+            {
+                throw new ArgumentException("Invalid argument type. Expected argument: bool.", nameof(value));
+            }
+
+            if (targetType != typeof(Visibility))
+            {
+                throw new ArgumentException("Invalid return type. Expected type: Visibility", nameof(targetType));
+            }
+
             var val = !(bool)value;
-            if (val) return Visibility.Visible;
+            if (val)
+            {
+                return Visibility.Visible;
+            }
+
             return parameter is Visibility ? parameter : Visibility.Collapsed;
         }
 
@@ -46,8 +58,16 @@ namespace AvalonDock.Converters
         /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (!(value is Visibility)) throw new ArgumentException("Invalid argument type. Expected argument: Visibility.", nameof(value));
-            if (targetType != typeof(bool)) throw new ArgumentException("Invalid return type. Expected type: bool", nameof(targetType));
+            if (!(value is Visibility))
+            {
+                throw new ArgumentException("Invalid argument type. Expected argument: Visibility.", nameof(value));
+            }
+
+            if (targetType != typeof(bool))
+            {
+                throw new ArgumentException("Invalid return type. Expected type: bool", nameof(targetType));
+            }
+
             Visibility val = (Visibility)value;
             return val != Visibility.Visible;
         }

@@ -60,23 +60,44 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Model"/> property.</summary>
         protected virtual void OnModelChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue != null) ((LayoutContent)e.OldValue).PropertyChanged -= Model_PropertyChanged;
+            if (e.OldValue != null)
+            {
+                ((LayoutContent)e.OldValue).PropertyChanged -= Model_PropertyChanged;
+            }
+
             if (Model != null)
             {
                 Model.PropertyChanged += Model_PropertyChanged;
                 SetLayoutItem(Model?.Root?.Manager?.GetLayoutItemFromModel(Model));
             }
             else
+            {
                 SetLayoutItem(null);
+            }
         }
 
         private void Model_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(LayoutContent.IsEnabled)) return;
-            if (Model == null) return;
+            if (e.PropertyName != nameof(LayoutContent.IsEnabled))
+            {
+                return;
+            }
+
+            if (Model == null)
+            {
+                return;
+            }
+
             IsEnabled = Model.IsEnabled;
-            if (IsEnabled || !Model.IsActive) return;
-            if (Model.Parent is LayoutDocumentPane layoutDocumentPane) layoutDocumentPane.SetNextSelectedIndex();
+            if (IsEnabled || !Model.IsActive)
+            {
+                return;
+            }
+
+            if (Model.Parent is LayoutDocumentPane layoutDocumentPane)
+            {
+                layoutDocumentPane.SetNextSelectedIndex();
+            }
         }
 
         #endregion Model
@@ -136,7 +157,10 @@ namespace AvalonDock.Controls
 
         private void SetIsActive()
         {
-            if (Model != null && !Model.IsActive) Model.IsActive = true;
+            if (Model != null && !Model.IsActive)
+            {
+                Model.IsActive = true;
+            }
         }
 
         #endregion Private Methods

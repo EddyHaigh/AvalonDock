@@ -37,7 +37,11 @@ namespace AvalonDock.Converters
             switch (value)
             {
                 case bool val when targetType == typeof(Visibility):
-                    if (val) return Visibility.Visible;
+                    if (val)
+                    {
+                        return Visibility.Visible;
+                    }
+
                     return parameter is Visibility ? parameter : Visibility.Collapsed;
 
                 case null when parameter is Visibility:
@@ -65,8 +69,16 @@ namespace AvalonDock.Converters
         /// </returns>
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (!(value is Visibility)) throw new ArgumentException("Invalid argument type. Expected argument: Visibility.", nameof(value));
-            if (targetType != typeof(bool)) throw new ArgumentException("Invalid return type. Expected type: bool", nameof(targetType));
+            if (!(value is Visibility))
+            {
+                throw new ArgumentException("Invalid argument type. Expected argument: Visibility.", nameof(value));
+            }
+
+            if (targetType != typeof(bool))
+            {
+                throw new ArgumentException("Invalid return type. Expected type: bool", nameof(targetType));
+            }
+
             return (Visibility)value == Visibility.Visible;
         }
 

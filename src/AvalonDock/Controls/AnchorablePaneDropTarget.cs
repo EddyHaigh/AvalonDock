@@ -89,7 +89,9 @@ namespace AvalonDock.Controls
 
                         if (parentModelOrientable.Orientation != System.Windows.Controls.Orientation.Vertical &&
                             parentModel.ChildrenCount == 1)
+                        {
                             parentModelOrientable.Orientation = System.Windows.Controls.Orientation.Vertical;
+                        }
 
                         if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Vertical)
                         {
@@ -100,10 +102,14 @@ namespace AvalonDock.Controls
                             {
                                 var anchorablesToMove = layoutAnchorablePaneGroup.Children.ToArray();
                                 for (int i = 0; i < anchorablesToMove.Length; i++)
+                                {
                                     parentModel.InsertChildAt(insertToIndex + 1 + i, anchorablesToMove[i]);
+                                }
                             }
                             else
+                            {
                                 parentModel.InsertChildAt(insertToIndex + 1, floatingWindow.RootPanel);
+                            }
                         }
                         else
                         {
@@ -135,7 +141,9 @@ namespace AvalonDock.Controls
 
                         if (parentModelOrientable.Orientation != System.Windows.Controls.Orientation.Vertical &&
                             parentModel.ChildrenCount == 1)
+                        {
                             parentModelOrientable.Orientation = System.Windows.Controls.Orientation.Vertical;
+                        }
 
                         if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Vertical)
                         {
@@ -146,10 +154,14 @@ namespace AvalonDock.Controls
                             {
                                 var anchorablesToMove = layoutAnchorablePaneGroup.Children.ToArray();
                                 for (int i = 0; i < anchorablesToMove.Length; i++)
+                                {
                                     parentModel.InsertChildAt(insertToIndex + i, anchorablesToMove[i]);
+                                }
                             }
                             else
+                            {
                                 parentModel.InsertChildAt(insertToIndex, floatingWindow.RootPanel);
+                            }
                         }
                         else
                         {
@@ -182,7 +194,9 @@ namespace AvalonDock.Controls
 
                         if (parentModelOrientable.Orientation != System.Windows.Controls.Orientation.Horizontal &&
                             parentModel.ChildrenCount == 1)
+                        {
                             parentModelOrientable.Orientation = System.Windows.Controls.Orientation.Horizontal;
+                        }
 
                         if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Horizontal)
                         {
@@ -193,10 +207,14 @@ namespace AvalonDock.Controls
                             {
                                 var anchorablesToMove = layoutAnchorablePaneGroup.Children.ToArray();
                                 for (int i = 0; i < anchorablesToMove.Length; i++)
+                                {
                                     parentModel.InsertChildAt(insertToIndex + i, anchorablesToMove[i]);
+                                }
                             }
                             else
+                            {
                                 parentModel.InsertChildAt(insertToIndex, floatingWindow.RootPanel);
+                            }
                         }
                         else
                         {
@@ -229,7 +247,9 @@ namespace AvalonDock.Controls
 
                         if (parentModelOrientable.Orientation != System.Windows.Controls.Orientation.Horizontal &&
                             parentModel.ChildrenCount == 1)
+                        {
                             parentModelOrientable.Orientation = System.Windows.Controls.Orientation.Horizontal;
+                        }
 
                         if (parentModelOrientable.Orientation == System.Windows.Controls.Orientation.Horizontal)
                         {
@@ -240,10 +260,14 @@ namespace AvalonDock.Controls
                             {
                                 var anchorablesToMove = layoutAnchorablePaneGroup.Children.ToArray();
                                 for (int i = 0; i < anchorablesToMove.Length; i++)
+                                {
                                     parentModel.InsertChildAt(insertToIndex + 1 + i, anchorablesToMove[i]);
+                                }
                             }
                             else
+                            {
                                 parentModel.InsertChildAt(insertToIndex + 1, floatingWindow.RootPanel);
+                            }
                         }
                         else
                         {
@@ -351,7 +375,9 @@ namespace AvalonDock.Controls
                         targetScreenRect.Offset(-overlayWindow.Left, -overlayWindow.Top);
 
                         if (_tabIndex == -1)
+                        {
                             return new RectangleGeometry(targetScreenRect);
+                        }
                         else
                         {
                             var translatedDetectionRect = new Rect(DetectionRects[0].TopLeft, DetectionRects[0].BottomRight);

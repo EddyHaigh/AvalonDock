@@ -82,8 +82,16 @@ namespace AvalonDock.Controls
             base.OnInitialized(e);
             _model.ChildrenTreeChanged += (s, args) =>
             {
-                if (args.Change != ChildrenTreeChange.DirectChildrenChanged) return;
-                if (_asyncRefreshCalled.HasValue && _asyncRefreshCalled.Value == args.Change) return;
+                if (args.Change != ChildrenTreeChange.DirectChildrenChanged)
+                {
+                    return;
+                }
+
+                if (_asyncRefreshCalled.HasValue && _asyncRefreshCalled.Value == args.Change)
+                {
+                    return;
+                }
+
                 _asyncRefreshCalled = args.Change;
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -101,7 +109,9 @@ namespace AvalonDock.Controls
         protected void FixChildrenDockLengths()
         {
             using (_fixingChildrenDockLengths.Enter())
+            {
                 OnFixChildrenDockLengths();
+            }
         }
 
         protected abstract void OnFixChildrenDockLengths();
@@ -144,14 +154,22 @@ namespace AvalonDock.Controls
             ColumnDefinitions.Clear();
             RowDefinitions.Clear();
             var manager = _model?.Root?.Manager;
-            if (manager == null) return;
+            if (manager == null)
+            {
+                return;
+            }
+
             foreach (var child in _model.Children)
             {
                 var foundContainedChild = alreadyContainedChildren.FirstOrDefault(chVM => chVM.Model == child);
                 if (foundContainedChild != null)
+                {
                     Children.Add(foundContainedChild as UIElement);
+                }
                 else
+                {
                     Children.Add(manager.CreateUIElementForModel(child));
+                }
             }
             CreateSplitters();
             UpdateRowColDefinitions();
@@ -162,21 +180,33 @@ namespace AvalonDock.Controls
         private void AttachPropertyChangeHandler()
         {
             foreach (var child in InternalChildren.OfType<ILayoutControl>())
+            {
                 child.Model.PropertyChanged += this.OnChildModelPropertyChanged;
+            }
         }
 
         private void DetachPropertyChangeHandler()
         {
             foreach (var child in InternalChildren.OfType<ILayoutControl>())
+            {
                 child.Model.PropertyChanged -= this.OnChildModelPropertyChanged;
+            }
         }
 
         private void OnChildModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (AsyncRefreshCalled) return;
+            if (AsyncRefreshCalled)
+            {
+                return;
+            }
+
             if (_fixingChildrenDockLengths.CanEnter && e.PropertyName == nameof(ILayoutPositionableElement.DockWidth) && Orientation == System.Windows.Controls.Orientation.Horizontal)
             {
-                if (ColumnDefinitions.Count != InternalChildren.Count) return;
+                if (ColumnDefinitions.Count != InternalChildren.Count)
+                {
+                    return;
+                }
+
                 var changedElement = sender as ILayoutPositionableElement;
                 var childFromModel = InternalChildren.OfType<ILayoutControl>().First(ch => ch.Model == changedElement) as UIElement;
                 var indexOfChild = InternalChildren.IndexOf(childFromModel);
@@ -184,21 +214,31 @@ namespace AvalonDock.Controls
             }
             else if (_fixingChildrenDockLengths.CanEnter && e.PropertyName == nameof(ILayoutPositionableElement.DockHeight) && Orientation == System.Windows.Controls.Orientation.Vertical)
             {
-                if (RowDefinitions.Count != InternalChildren.Count) return;
+                if (RowDefinitions.Count != InternalChildren.Count)
+                {
+                    return;
+                }
+
                 var changedElement = sender as ILayoutPositionableElement;
                 var childFromModel = InternalChildren.OfType<ILayoutControl>().First(ch => ch.Model == changedElement) as UIElement;
                 var indexOfChild = InternalChildren.IndexOf(childFromModel);
                 RowDefinitions[indexOfChild].Height = changedElement.DockHeight;
             }
             else if (e.PropertyName == nameof(ILayoutPositionableElement.IsVisible))
+            {
                 UpdateRowColDefinitions();
+            }
         }
 
         private void UpdateRowColDefinitions()
         {
             var root = _model.Root;
             var manager = root?.Manager;
-            if (manager == null) return;
+            if (manager == null)
+            {
+                return;
+            }
+
             FixChildrenDockLengths();
             //Debug.Assert(InternalChildren.Count == _model.ChildrenCount + (_model.ChildrenCount - 1));
 
@@ -222,7 +262,11 @@ namespace AvalonDock.Controls
                     Grid.SetColumn(InternalChildren[iChild], iColumn);
 
                     //append column for splitter
-                    if (iChild >= InternalChildren.Count - 1) continue;
+                    if (iChild >= InternalChildren.Count - 1)
+                    {
+                        continue;
+                    }
+
                     iChild++;
                     iColumn++;
 
@@ -230,7 +274,11 @@ namespace AvalonDock.Controls
                     for (var i = iChildModel + 1; i < _model.Children.Count; i++)
                     {
                         var nextChildModel = _model.Children[i] as ILayoutPositionableElement;
-                        if (!nextChildModel.IsVisible) continue;
+                        if (!nextChildModel.IsVisible)
+                        {
+                            continue;
+                        }
+
                         nextChildModelVisibleExist = true;
                         break;
                     }
@@ -261,7 +309,11 @@ namespace AvalonDock.Controls
                     //    System.Diagnostics.Debugger.Break();
 
                     //append row for splitter (if necessary)
-                    if (iChild >= InternalChildren.Count - 1) continue;
+                    if (iChild >= InternalChildren.Count - 1)
+                    {
+                        continue;
+                    }
+
                     iChild++;
                     iRow++;
 
@@ -269,7 +321,11 @@ namespace AvalonDock.Controls
                     for (var i = iChildModel + 1; i < _model.Children.Count; i++)
                     {
                         var nextChildModel = _model.Children[i] as ILayoutPositionableElement;
-                        if (!nextChildModel.IsVisible) continue;
+                        if (!nextChildModel.IsVisible)
+                        {
+                            continue;
+                        }
+
                         nextChildModelVisibleExist = true;
                         break;
                     }
@@ -341,9 +397,13 @@ namespace AvalonDock.Controls
             var trToWnd = TransformToAncestor(rootVisual);
             var transformedDelta = trToWnd.Transform(new Point(e.HorizontalChange, e.VerticalChange)) - trToWnd.Transform(new Point());
             if (Orientation == System.Windows.Controls.Orientation.Horizontal)
+            {
                 Canvas.SetLeft(_resizerGhost, MathHelper.MinMax(_initialStartPoint.X + transformedDelta.X, 0.0, _resizerWindowHost.Width - _resizerGhost.Width));
+            }
             else
+            {
                 Canvas.SetTop(_resizerGhost, MathHelper.MinMax(_initialStartPoint.Y + transformedDelta.Y, 0.0, _resizerWindowHost.Height - _resizerGhost.Height));
+            }
         }
 
         private void OnSplitterDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -356,9 +416,13 @@ namespace AvalonDock.Controls
 
             double delta;
             if (Orientation == System.Windows.Controls.Orientation.Horizontal)
+            {
                 delta = Canvas.GetLeft(_resizerGhost) - _initialStartPoint.X;
+            }
             else
+            {
                 delta = Canvas.GetTop(_resizerGhost) - _initialStartPoint.Y;
+            }
 
             var indexOfResizer = InternalChildren.IndexOf(splitter);
 
@@ -374,7 +438,9 @@ namespace AvalonDock.Controls
             if (Orientation == System.Windows.Controls.Orientation.Horizontal)
             {
                 if (prevChildModel.DockWidth.IsStar)
+                {
                     prevChildModel.DockWidth = new GridLength(prevChildModel.DockWidth.Value * (prevChildActualSize.Width + delta) / prevChildActualSize.Width, GridUnitType.Star);
+                }
                 else
                 {
                     var width = (prevChildModel.DockWidth.IsAuto) ? prevChildActualSize.Width : prevChildModel.DockWidth.Value;
@@ -383,7 +449,9 @@ namespace AvalonDock.Controls
                 }
 
                 if (nextChildModel.DockWidth.IsStar)
+                {
                     nextChildModel.DockWidth = new GridLength(nextChildModel.DockWidth.Value * (nextChildActualSize.Width - delta) / nextChildActualSize.Width, GridUnitType.Star);
+                }
                 else
                 {
                     var width = (nextChildModel.DockWidth.IsAuto) ? nextChildActualSize.Width : nextChildModel.DockWidth.Value;
@@ -394,7 +462,9 @@ namespace AvalonDock.Controls
             else
             {
                 if (prevChildModel.DockHeight.IsStar)
+                {
                     prevChildModel.DockHeight = new GridLength(prevChildModel.DockHeight.Value * (prevChildActualSize.Height + delta) / prevChildActualSize.Height, GridUnitType.Star);
+                }
                 else
                 {
                     var height = (prevChildModel.DockHeight.IsAuto) ? prevChildActualSize.Height : prevChildModel.DockHeight.Value;
@@ -403,7 +473,9 @@ namespace AvalonDock.Controls
                 }
 
                 if (nextChildModel.DockHeight.IsStar)
+                {
                     nextChildModel.DockHeight = new GridLength(nextChildModel.DockHeight.Value * (nextChildActualSize.Height - delta) / nextChildActualSize.Height, GridUnitType.Star);
+                }
                 else
                 {
                     var height = (nextChildModel.DockHeight.IsAuto) ? nextChildActualSize.Height : nextChildModel.DockHeight.Value;
@@ -418,7 +490,10 @@ namespace AvalonDock.Controls
         public virtual void AdjustFixedChildrenPanelSizes(Size? parentSize = null)
         {
             var visibleChildren = GetVisibleChildren();
-            if (visibleChildren.Count == 0) return;
+            if (visibleChildren.Count == 0)
+            {
+                return;
+            }
 
             var layoutChildrenModels = visibleChildren.OfType<ILayoutControl>()
               .Select(child => child.Model)
@@ -472,9 +547,13 @@ namespace AvalonDock.Controls
                 foreach (var fixedChild in fixedPanels)
                 {
                     if (minimumSize.Height >= availableSize.Height)
+                    {
                         fixedChild.ResizableAbsoluteDockHeight = fixedChild.CalculatedDockMinHeight();
+                    }
                     else if (preferredMinimumSize.Height <= availableSize.Height)
+                    {
                         fixedChild.ResizableAbsoluteDockHeight = fixedChild.FixedDockHeight;
+                    }
                     else if (relativePanels.All(child => Math.Abs(child.ActualHeight - child.CalculatedDockMinHeight()) <= 1))
                     {
                         double panelFraction;
@@ -507,9 +586,13 @@ namespace AvalonDock.Controls
                 foreach (var fixedChild in fixedPanels)
                 {
                     if (minimumSize.Width >= availableSize.Width)
+                    {
                         fixedChild.ResizableAbsoluteDockWidth = fixedChild.CalculatedDockMinWidth();
+                    }
                     else if (preferredMinimumSize.Width <= availableSize.Width)
+                    {
                         fixedChild.ResizableAbsoluteDockWidth = fixedChild.FixedDockWidth;
+                    }
                     else
                     {
                         double panelFraction;
@@ -536,15 +619,24 @@ namespace AvalonDock.Controls
             }
 
             foreach (var child in InternalChildren.OfType<IAdjustableSizeLayout>())
+            {
                 child.AdjustFixedChildrenPanelSizes(availableSize);
+            }
         }
 
         private FrameworkElement GetNextVisibleChild(int index)
         {
             for (var i = index + 1; i < InternalChildren.Count; i++)
             {
-                if (InternalChildren[i] is LayoutGridResizerControl) continue;
-                if (IsChildVisible(i)) return InternalChildren[i] as FrameworkElement;
+                if (InternalChildren[i] is LayoutGridResizerControl)
+                {
+                    continue;
+                }
+
+                if (IsChildVisible(i))
+                {
+                    return InternalChildren[i] as FrameworkElement;
+                }
             }
             return null;
         }
@@ -555,7 +647,9 @@ namespace AvalonDock.Controls
             for (var i = 0; i < InternalChildren.Count; i++)
             {
                 if (IsChildVisible(i) && InternalChildren[i] is FrameworkElement)
+                {
                     visibleChildren.Add(InternalChildren[i] as FrameworkElement);
+                }
             }
             return visibleChildren;
         }
@@ -565,10 +659,14 @@ namespace AvalonDock.Controls
             if (Orientation == Orientation.Horizontal)
             {
                 if (index < ColumnDefinitions.Count)
+                {
                     return ColumnDefinitions[index].Width.IsStar || ColumnDefinitions[index].Width.Value > 0;
+                }
             }
             else if (index < RowDefinitions.Count)
+            {
                 return RowDefinitions[index].Height.IsStar || RowDefinitions[index].Height.Value > 0;
+            }
 
             return false;
         }
@@ -617,9 +715,13 @@ namespace AvalonDock.Controls
             _initialStartPoint = splitter.PointToScreenDPIWithoutFlowDirection(new Point()) - ptTopLeftScreen;
 
             if (Orientation == System.Windows.Controls.Orientation.Horizontal)
+            {
                 Canvas.SetLeft(_resizerGhost, _initialStartPoint.X);
+            }
             else
+            {
                 Canvas.SetTop(_resizerGhost, _initialStartPoint.Y);
+            }
 
             var panelHostResizer = new Canvas { HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch, VerticalAlignment = System.Windows.VerticalAlignment.Stretch };
             panelHostResizer.Children.Add(_resizerGhost);
@@ -646,7 +748,11 @@ namespace AvalonDock.Controls
 
         private void HideResizerOverlayWindow()
         {
-            if (_resizerWindowHost == null) return;
+            if (_resizerWindowHost == null)
+            {
+                return;
+            }
+
             _resizerWindowHost.Close();
             _resizerWindowHost = null;
         }

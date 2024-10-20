@@ -65,9 +65,13 @@ namespace AvalonDock.Controls
                         int disableProcessingCount = (int?)typeof(Dispatcher).GetField("_disableProcessingCount", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(disp) ?? 0;
 
                         if (disableProcessingCount == 0)
+                        {
                             disp.Invoke(subscribeToExitAction);
+                        }
                         else
+                        {
                             disp.BeginInvoke(subscribeToExitAction);
+                        }
                     }
                 }
             }
@@ -104,7 +108,9 @@ namespace AvalonDock.Controls
         {
             IInputElement objectWithFocus;
             if (_modelFocusedElement.GetValue(model, out objectWithFocus))
+            {
                 return objectWithFocus;
+            }
 
             return null;
         }
@@ -118,7 +124,9 @@ namespace AvalonDock.Controls
         {
             IntPtr handleWithFocus;
             if (_modelFocusedWindowHandle.GetValue(model, out handleWithFocus))
+            {
                 return handleWithFocus;
+            }
 
             return IntPtr.Zero;
         }
@@ -138,7 +146,9 @@ namespace AvalonDock.Controls
 
             IntPtr handleToFocus;
             if (_modelFocusedWindowHandle.GetValue(model, out handleToFocus))
+            {
                 focused = IntPtr.Zero != Win32Helper.SetFocus(handleToFocus);
+            }
 
             if (focused)
             {
@@ -153,7 +163,9 @@ namespace AvalonDock.Controls
         private static void Current_Exit(object sender, ExitEventArgs e)
         {
             if (Application.Current != null)
+            {
                 Application.Current.Exit -= new ExitEventHandler(Current_Exit);
+            }
 
             if (_windowHandler != null)
             {
@@ -199,7 +211,9 @@ namespace AvalonDock.Controls
                     {
                         _modelFocusedWindowHandle[parentAnchorable.Model] = e.GotFocusWinHandle;
                         if (parentAnchorable.Model != null)
+                        {
                             parentAnchorable.Model.IsActive = true;
+                        }
                     }
                     else
                     {
@@ -208,7 +222,9 @@ namespace AvalonDock.Controls
                         {
                             _modelFocusedWindowHandle[parentDocument.Model] = e.GotFocusWinHandle;
                             if (parentDocument.Model != null)
+                            {
                                 parentDocument.Model.IsActive = true;
+                            }
                         }
                     }
                 }
@@ -256,7 +272,9 @@ namespace AvalonDock.Controls
         private static void InputManager_EnterMenuMode(object sender, EventArgs e)
         {
             if (Keyboard.FocusedElement == null)
+            {
                 return;
+            }
 
             var lastfocusDepObj = Keyboard.FocusedElement as DependencyObject;
             if (lastfocusDepObj.FindLogicalAncestor<DockingManager>() == null)
@@ -277,7 +295,9 @@ namespace AvalonDock.Controls
                 if (lastFocusedInputElement != null)
                 {
                     if (lastFocusedInputElement != Keyboard.Focus(lastFocusedInputElement))
+                    {
                         Debug.WriteLine("Unable to activate the element");
+                    }
                 }
             }
         }

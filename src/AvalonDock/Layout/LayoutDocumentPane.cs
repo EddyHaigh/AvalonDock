@@ -61,7 +61,11 @@ namespace AvalonDock.Layout
             get => _showHeader;
             set
             {
-                if (value == _showHeader) return;
+                if (value == _showHeader)
+                {
+                    return;
+                }
+
                 _showHeader = value;
                 RaisePropertyChanged(nameof(ShowHeader));
             }
@@ -73,13 +77,29 @@ namespace AvalonDock.Layout
             get => _selectedIndex;
             set
             {
-                if (value < 0 || value >= Children.Count) value = -1;
-                if (value == _selectedIndex) return;
+                if (value < 0 || value >= Children.Count)
+                {
+                    value = -1;
+                }
+
+                if (value == _selectedIndex)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(SelectedContentIndex));
                 RaisePropertyChanging(nameof(SelectedContent));
-                if (_selectedIndex >= 0 && _selectedIndex < Children.Count) Children[_selectedIndex].IsSelected = false;
+                if (_selectedIndex >= 0 && _selectedIndex < Children.Count)
+                {
+                    Children[_selectedIndex].IsSelected = false;
+                }
+
                 _selectedIndex = value;
-                if (_selectedIndex >= 0 && _selectedIndex < Children.Count) Children[_selectedIndex].IsSelected = true;
+                if (_selectedIndex >= 0 && _selectedIndex < Children.Count)
+                {
+                    Children[_selectedIndex].IsSelected = true;
+                }
+
                 RaisePropertyChanged(nameof(SelectedContentIndex));
                 RaisePropertyChanged(nameof(SelectedContent));
             }
@@ -117,7 +137,10 @@ namespace AvalonDock.Layout
         protected override bool GetVisibility()
         {
             if (Parent is LayoutDocumentPaneGroup)
+            {
                 return ChildrenCount > 0 && Children.Any(c => (c is LayoutDocument document && document.IsVisible) || c is LayoutAnchorable);
+            }
+
             return true;
         }
 
@@ -139,7 +162,11 @@ namespace AvalonDock.Layout
             AutoFixSelectedContent();
             for (var i = 0; i < Children.Count; i++)
             {
-                if (!Children[i].IsSelected) continue;
+                if (!Children[i].IsSelected)
+                {
+                    continue;
+                }
+
                 SelectedContentIndex = i;
                 break;
             }
@@ -153,9 +180,20 @@ namespace AvalonDock.Layout
 
         private void AutoFixSelectedContent()
         {
-            if (!_autoFixSelectedContent) return;
-            if (SelectedContentIndex >= ChildrenCount) SelectedContentIndex = Children.Count - 1;
-            if (SelectedContentIndex == -1 && ChildrenCount > 0) SetLastActivatedIndex();
+            if (!_autoFixSelectedContent)
+            {
+                return;
+            }
+
+            if (SelectedContentIndex >= ChildrenCount)
+            {
+                SelectedContentIndex = Children.Count - 1;
+            }
+
+            if (SelectedContentIndex == -1 && ChildrenCount > 0)
+            {
+                SetLastActivatedIndex();
+            }
         }
 
         /// <summary>
@@ -174,16 +212,32 @@ namespace AvalonDock.Layout
         /// <inheritdoc/>
         public override void WriteXml(System.Xml.XmlWriter writer)
         {
-            if (_id != null) writer.WriteAttributeString(nameof(ILayoutPaneSerializable.Id), _id);
-            if (!_showHeader) writer.WriteAttributeString(nameof(ShowHeader), _showHeader.ToString());
+            if (_id != null)
+            {
+                writer.WriteAttributeString(nameof(ILayoutPaneSerializable.Id), _id);
+            }
+
+            if (!_showHeader)
+            {
+                writer.WriteAttributeString(nameof(ShowHeader), _showHeader.ToString());
+            }
+
             base.WriteXml(writer);
         }
 
         /// <inheritdoc/>
         public override void ReadXml(System.Xml.XmlReader reader)
         {
-            if (reader.MoveToAttribute(nameof(ILayoutPaneSerializable.Id))) _id = reader.Value;
-            if (reader.MoveToAttribute(nameof(ShowHeader))) _showHeader = bool.Parse(reader.Value);
+            if (reader.MoveToAttribute(nameof(ILayoutPaneSerializable.Id)))
+            {
+                _id = reader.Value;
+            }
+
+            if (reader.MoveToAttribute(nameof(ShowHeader)))
+            {
+                _showHeader = bool.Parse(reader.Value);
+            }
+
             base.ReadXml(reader);
         }
 
@@ -218,7 +272,11 @@ namespace AvalonDock.Layout
             SelectedContentIndex = -1;
             for (var i = 0; i < Children.Count; ++i)
             {
-                if (!Children[i].IsEnabled) continue;
+                if (!Children[i].IsEnabled)
+                {
+                    continue;
+                }
+
                 SelectedContentIndex = i;
                 return;
             }
@@ -237,9 +295,17 @@ namespace AvalonDock.Layout
         /// <inheritdoc/>
         protected override void OnParentChanged(ILayoutContainer oldValue, ILayoutContainer newValue)
         {
-            if (oldValue is ILayoutGroup oldGroup) oldGroup.ChildrenCollectionChanged -= OnParentChildrenCollectionChanged;
+            if (oldValue is ILayoutGroup oldGroup)
+            {
+                oldGroup.ChildrenCollectionChanged -= OnParentChildrenCollectionChanged;
+            }
+
             RaisePropertyChanged(nameof(IsDirectlyHostedInFloatingWindow));
-            if (newValue is ILayoutGroup newGroup) newGroup.ChildrenCollectionChanged += OnParentChildrenCollectionChanged;
+            if (newValue is ILayoutGroup newGroup)
+            {
+                newGroup.ChildrenCollectionChanged += OnParentChildrenCollectionChanged;
+            }
+
             base.OnParentChanged(oldValue, newValue);
         }
 

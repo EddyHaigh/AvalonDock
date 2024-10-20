@@ -96,19 +96,29 @@ namespace Standard
         private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
         {
             // Block against reentrancy.
-            if (_isDisposed) return;
+            if (_isDisposed)
+            {
+                return;
+            }
+
             _isDisposed = true;
             var hwnd = Handle;
             var className = _className;
 
             if (isHwndBeingDestroyed)
+            {
                 Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(IntPtr.Zero, className)));
+            }
             else if (Handle != IntPtr.Zero)
             {
                 if (CheckAccess())
+                {
                     _DestroyWindow(hwnd, className);
+                }
                 else
+                {
                     Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(hwnd, className)));
+                }
             }
             s_windowLookup.Remove(hwnd);
             _className = null;
@@ -130,15 +140,21 @@ namespace Standard
             else
             {
                 if (!s_windowLookup.TryGetValue(hwnd, out hwndWrapper))
+                {
                     return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
+                }
             }
             Assert.IsNotNull(hwndWrapper);
 
             var callback = hwndWrapper._wndProcCallback;
             if (callback != null)
+            {
                 ret = callback(hwnd, msg, wParam, lParam);
+            }
             else
+            {
                 ret = NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
+            }
 
             if (msg == WM.NCDESTROY)
             {

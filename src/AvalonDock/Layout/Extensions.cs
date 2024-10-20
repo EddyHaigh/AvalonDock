@@ -20,12 +20,18 @@ namespace AvalonDock.Layout
 
         public static IEnumerable<ILayoutElement> Descendents(this ILayoutElement element)
         {
-            if (!(element is ILayoutContainer container)) yield break;
+            if (!(element is ILayoutContainer container))
+            {
+                yield break;
+            }
+
             foreach (var childElement in container.Children)
             {
                 yield return childElement;
                 foreach (var childChildElement in childElement.Descendents())
+                {
                     yield return childChildElement;
+                }
             }
         }
 
@@ -33,30 +39,52 @@ namespace AvalonDock.Layout
         {
             var parent = element.Parent;
             while (parent != null && !(parent is T))
+            {
                 parent = parent.Parent;
+            }
+
             return (T)parent;
         }
 
         public static ILayoutRoot GetRoot(this ILayoutElement element) //where T : ILayoutContainer
         {
-            if (element is ILayoutRoot layoutRoot) return layoutRoot;
+            if (element is ILayoutRoot layoutRoot)
+            {
+                return layoutRoot;
+            }
+
             var parent = element.Parent;
             while (parent != null && !(parent is ILayoutRoot))
+            {
                 parent = parent.Parent;
+            }
+
             return (ILayoutRoot)parent;
         }
 
         public static bool ContainsChildOfType<T>(this ILayoutContainer element)
         {
             foreach (var childElement in element.Descendents())
-                if (childElement is T) return true;
+            {
+                if (childElement is T)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
         public static bool ContainsChildOfType<T, S>(this ILayoutContainer container)
         {
             foreach (var childElement in container.Descendents())
-                if (childElement is T || childElement is S) return true;
+            {
+                if (childElement is T || childElement is S)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -70,7 +98,10 @@ namespace AvalonDock.Layout
                 if (layoutPanel != null && layoutPanel.Children.Count > 0)
                 {
                     if (layoutPanel.Orientation == System.Windows.Controls.Orientation.Horizontal)
+                    {
                         return layoutPanel.Children[0].Equals(element) || layoutPanel.Children[0].Descendents().Contains(element) ? AnchorSide.Left : AnchorSide.Right;
+                    }
+
                     return layoutPanel.Children[0].Equals(element) || layoutPanel.Children[0].Descendents().Contains(element) ? AnchorSide.Top : AnchorSide.Bottom;
                 }
             }
@@ -99,21 +130,40 @@ namespace AvalonDock.Layout
             uint MONITOR_DEFAULTTONULL = 0x00000000;
 
             var monitor = Win32Helper.MonitorFromRect(ref r, MONITOR_DEFAULTTONULL);
-            if (monitor != System.IntPtr.Zero) return;
+            if (monitor != System.IntPtr.Zero)
+            {
+                return;
+            }
+
             var nearestMonitor = Win32Helper.MonitorFromRect(ref r, MONITOR_DEFAULTTONEAREST);
-            if (nearestMonitor == System.IntPtr.Zero) return;
+            if (nearestMonitor == System.IntPtr.Zero)
+            {
+                return;
+            }
+
             var monitorInfo = new Win32Helper.MonitorInfo();
             monitorInfo.Size = Marshal.SizeOf(monitorInfo);
             Win32Helper.GetMonitorInfo(nearestMonitor, monitorInfo);
 
             if (paneInsideFloatingWindow.FloatingLeft < monitorInfo.Work.Left)
+            {
                 paneInsideFloatingWindow.FloatingLeft = monitorInfo.Work.Left + 10;
+            }
+
             if (paneInsideFloatingWindow.FloatingLeft + paneInsideFloatingWindow.FloatingWidth > monitorInfo.Work.Right)
+            {
                 paneInsideFloatingWindow.FloatingLeft = monitorInfo.Work.Right - (paneInsideFloatingWindow.FloatingWidth + 10);
+            }
+
             if (paneInsideFloatingWindow.FloatingTop < monitorInfo.Work.Top)
+            {
                 paneInsideFloatingWindow.FloatingTop = monitorInfo.Work.Top + 10;
+            }
+
             if (paneInsideFloatingWindow.FloatingTop + paneInsideFloatingWindow.FloatingHeight > monitorInfo.Work.Bottom)
+            {
                 paneInsideFloatingWindow.FloatingTop = monitorInfo.Work.Bottom - (paneInsideFloatingWindow.FloatingHeight + 10);
+            }
         }
 
         #endregion Internal Methods

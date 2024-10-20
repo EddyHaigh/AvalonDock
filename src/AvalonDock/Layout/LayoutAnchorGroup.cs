@@ -28,15 +28,31 @@ namespace AvalonDock.Layout
         /// <inheritdoc />
         public override void WriteXml(System.Xml.XmlWriter writer)
         {
-            if (_id != null) writer.WriteAttributeString(nameof(ILayoutPaneSerializable.Id), _id);
-            if (_previousContainer is ILayoutPaneSerializable paneSerializable) writer.WriteAttributeString("PreviousContainerId", paneSerializable.Id);
+            if (_id != null)
+            {
+                writer.WriteAttributeString(nameof(ILayoutPaneSerializable.Id), _id);
+            }
+
+            if (_previousContainer is ILayoutPaneSerializable paneSerializable)
+            {
+                writer.WriteAttributeString("PreviousContainerId", paneSerializable.Id);
+            }
+
             base.WriteXml(writer);
         }
 
         public override void ReadXml(System.Xml.XmlReader reader)
         {
-            if (reader.MoveToAttribute(nameof(ILayoutPaneSerializable.Id))) _id = reader.Value;
-            if (reader.MoveToAttribute("PreviousContainerId")) ((ILayoutPreviousContainer)this).PreviousContainerId = reader.Value;
+            if (reader.MoveToAttribute(nameof(ILayoutPaneSerializable.Id)))
+            {
+                _id = reader.Value;
+            }
+
+            if (reader.MoveToAttribute("PreviousContainerId"))
+            {
+                ((ILayoutPreviousContainer)this).PreviousContainerId = reader.Value;
+            }
+
             base.ReadXml(reader);
         }
 
@@ -55,11 +71,17 @@ namespace AvalonDock.Layout
             get => _previousContainer;
             set
             {
-                if (value == _previousContainer) return;
+                if (value == _previousContainer)
+                {
+                    return;
+                }
+
                 _previousContainer = value;
                 RaisePropertyChanged(nameof(ILayoutPreviousContainer.PreviousContainer));
                 if (_previousContainer is ILayoutPaneSerializable paneSerializable && paneSerializable.Id == null)
+                {
                     paneSerializable.Id = Guid.NewGuid().ToString();
+                }
             }
         }
 

@@ -80,7 +80,9 @@ namespace AvalonDock.Controls
             if (code == Win32Helper.HCBT_SETFOCUS)
             {
                 if (FocusChanged != null)
+                {
                     FocusChanged(this, new FocusChangeEventArgs(wParam, lParam));
+                }
             }
             else if (code == Win32Helper.HCBT_ACTIVATE)
             {

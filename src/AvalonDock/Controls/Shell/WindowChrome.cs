@@ -66,7 +66,10 @@ namespace Microsoft.Windows.Shell
             // Rather than try to support this concept in the design surface let the designer draw its own
             // chrome anyways.
             // There's certainly room for improvement here.
-            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(d)) return;
+            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(d))
+            {
+                return;
+            }
 
             var window = (Window)d;
             var newChrome = (WindowChrome)e.NewValue;
@@ -105,7 +108,10 @@ namespace Microsoft.Windows.Shell
         {
             Verify.IsNotNull(inputElement, nameof(inputElement));
             if (!(inputElement is DependencyObject dobj))
+            {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
+            }
+
             return (bool)dobj.GetValue(IsHitTestVisibleInChromeProperty);
         }
 
@@ -113,7 +119,10 @@ namespace Microsoft.Windows.Shell
         {
             Verify.IsNotNull(inputElement, nameof(inputElement));
             if (!(inputElement is DependencyObject dobj))
+            {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
+            }
+
             dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
 

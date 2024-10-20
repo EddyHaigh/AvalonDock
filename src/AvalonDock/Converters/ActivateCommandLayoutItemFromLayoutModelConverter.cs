@@ -36,17 +36,25 @@ namespace AvalonDock.Converters
         {
             //when this converter is called layout could be constructing so many properties here are potentially not valid
             if (!(value is LayoutContent layoutModel))
+            {
                 return null;
+            }
 
             if (layoutModel.Root == null)
+            {
                 return null;
+            }
 
             if (layoutModel.Root.Manager == null)
+            {
                 return null;
+            }
 
             var layoutItemModel = layoutModel.Root.Manager.GetLayoutItemFromModel(layoutModel);
             if (layoutItemModel == null)
+            {
                 return Binding.DoNothing;
+            }
 
             return layoutItemModel.ActivateCommand;
         }

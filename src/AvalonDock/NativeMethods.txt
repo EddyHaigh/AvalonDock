@@ -6,3 +6,6 @@ IsWindow
 GetSystemMenu
 TrackPopupMenuEx
 PostMessage
+SetWindowPos
+IsChild
+SetFocus

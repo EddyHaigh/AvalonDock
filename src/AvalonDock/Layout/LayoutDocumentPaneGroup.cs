@@ -51,7 +51,11 @@ namespace AvalonDock.Layout
             get => _orientation;
             set
             {
-                if (value == _orientation) return;
+                if (value == _orientation)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(Orientation));
                 _orientation = value;
                 RaisePropertyChanged(nameof(Orientation));
@@ -75,7 +79,11 @@ namespace AvalonDock.Layout
         /// <inheritdoc />
         public override void ReadXml(System.Xml.XmlReader reader)
         {
-            if (reader.MoveToAttribute(nameof(Orientation))) Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
+            if (reader.MoveToAttribute(nameof(Orientation)))
+            {
+                Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
+            }
+
             base.ReadXml(reader);
         }
 

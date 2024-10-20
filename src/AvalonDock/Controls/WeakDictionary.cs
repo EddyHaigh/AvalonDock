@@ -40,7 +40,10 @@ namespace AvalonDock.Controls
             {
                 V valueToReturn;
                 if (!GetValue(key, out valueToReturn))
+                {
                     throw new ArgumentException();
+                }
+
                 return valueToReturn;
             }
             set
@@ -73,7 +76,9 @@ namespace AvalonDock.Controls
             CollectGarbage();
             int vIndex = _keys.FindIndex(k => k.GetValueOrDefault<K>() == key);
             if (vIndex > -1)
+            {
                 _values[vIndex] = value;
+            }
             else
             {
                 _values.Add(value);
@@ -93,7 +98,10 @@ namespace AvalonDock.Controls
             int vIndex = _keys.FindIndex(k => k.GetValueOrDefault<K>() == key);
             value = default(V);
             if (vIndex == -1)
+            {
                 return false;
+            }
+
             value = _values[vIndex];
             return true;
         }

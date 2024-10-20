@@ -97,11 +97,19 @@ namespace AvalonDock.Layout
             get => _rootPanel;
             set
             {
-                if (_rootPanel == value) return;
+                if (_rootPanel == value)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(RootPanel));
                 var activeContent = ActiveContent;
                 var activeRoot = activeContent?.Root;
-                if (_rootPanel != null && _rootPanel.Parent == this) _rootPanel.Parent = null;
+                if (_rootPanel != null && _rootPanel.Parent == this)
+                {
+                    _rootPanel.Parent = null;
+                }
+
                 _rootPanel = value ?? new LayoutPanel(new LayoutDocumentPane());
                 _rootPanel.Parent = this;
                 if (ActiveContent == null && activeRoot == this && activeContent != null)
@@ -122,10 +130,18 @@ namespace AvalonDock.Layout
             get => _topSide;
             set
             {
-                if (_topSide == value) return;
+                if (_topSide == value)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(TopSide));
                 _topSide = value;
-                if (_topSide != null) _topSide.Parent = this;
+                if (_topSide != null)
+                {
+                    _topSide.Parent = this;
+                }
+
                 RaisePropertyChanged(nameof(TopSide));
             }
         }
@@ -136,10 +152,18 @@ namespace AvalonDock.Layout
             get => _rightSide;
             set
             {
-                if (_rightSide == value) return;
+                if (_rightSide == value)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(RightSide));
                 _rightSide = value;
-                if (_rightSide != null) _rightSide.Parent = this;
+                if (_rightSide != null)
+                {
+                    _rightSide.Parent = this;
+                }
+
                 RaisePropertyChanged(nameof(RightSide));
             }
         }
@@ -150,10 +174,18 @@ namespace AvalonDock.Layout
             get => _leftSide;
             set
             {
-                if (value == _leftSide) return;
+                if (value == _leftSide)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(LeftSide));
                 _leftSide = value;
-                if (_leftSide != null) _leftSide.Parent = this;
+                if (_leftSide != null)
+                {
+                    _leftSide.Parent = this;
+                }
+
                 RaisePropertyChanged(nameof(LeftSide));
             }
         }
@@ -164,10 +196,18 @@ namespace AvalonDock.Layout
             get => _bottomSide;
             set
             {
-                if (value == _bottomSide) return;
+                if (value == _bottomSide)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(BottomSide));
                 _bottomSide = value;
-                if (_bottomSide != null) _bottomSide.Parent = this;
+                if (_bottomSide != null)
+                {
+                    _bottomSide.Parent = this;
+                }
+
                 RaisePropertyChanged(nameof(BottomSide));
             }
         }
@@ -210,24 +250,43 @@ namespace AvalonDock.Layout
             get
             {
                 if (RootPanel != null)
+                {
                     yield return RootPanel;
+                }
+
                 if (_floatingWindows != null)
                 {
                     foreach (var floatingWindow in _floatingWindows)
+                    {
                         yield return floatingWindow;
+                    }
                 }
                 if (TopSide != null)
+                {
                     yield return TopSide;
+                }
+
                 if (RightSide != null)
+                {
                     yield return RightSide;
+                }
+
                 if (BottomSide != null)
+                {
                     yield return BottomSide;
+                }
+
                 if (LeftSide != null)
+                {
                     yield return LeftSide;
+                }
+
                 if (_hiddenAnchorables != null)
                 {
                     foreach (var hiddenAnchorable in _hiddenAnchorables)
+                    {
                         yield return hiddenAnchorable;
+                    }
                 }
             }
         }
@@ -265,10 +324,18 @@ namespace AvalonDock.Layout
                 if (currentValue != value)
                 {
                     RaisePropertyChanging(nameof(LastFocusedDocument));
-                    if (currentValue != null) currentValue.IsLastFocusedDocument = false;
+                    if (currentValue != null)
+                    {
+                        currentValue.IsLastFocusedDocument = false;
+                    }
+
                     _lastFocusedDocument = new WeakReference(value);
                     currentValue = LastFocusedDocument;
-                    if (currentValue != null) currentValue.IsLastFocusedDocument = true;
+                    if (currentValue != null)
+                    {
+                        currentValue.IsLastFocusedDocument = true;
+                    }
+
                     RaisePropertyChanged(nameof(LastFocusedDocument));
                 }
             }
@@ -281,7 +348,11 @@ namespace AvalonDock.Layout
             get => _manager;
             internal set
             {
-                if (value == _manager) return;
+                if (value == _manager)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(Manager));
                 _manager = value;
                 RaisePropertyChanged(nameof(Manager));
@@ -322,25 +393,41 @@ namespace AvalonDock.Layout
         public void RemoveChild(ILayoutElement element)
         {
             if (element == RootPanel)
+            {
                 RootPanel = null;
+            }
             else if (_floatingWindows != null && _floatingWindows.Contains(element))
+            {
                 _floatingWindows.Remove(element as LayoutFloatingWindow);
+            }
             else if (_hiddenAnchorables != null && _hiddenAnchorables.Contains(element))
+            {
                 _hiddenAnchorables.Remove(element as LayoutAnchorable);
+            }
             else if (element == TopSide)
+            {
                 TopSide = null;
+            }
             else if (element == RightSide)
+            {
                 RightSide = null;
+            }
             else if (element == BottomSide)
+            {
                 BottomSide = null;
+            }
             else if (element == LeftSide)
+            {
                 LeftSide = null;
+            }
         }
 
         public void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
         {
             if (oldElement == RootPanel)
+            {
                 RootPanel = (LayoutPanel)newElement;
+            }
             else if (_floatingWindows != null && _floatingWindows.Contains(oldElement))
             {
                 var index = _floatingWindows.IndexOf(oldElement as LayoutFloatingWindow);
@@ -354,13 +441,21 @@ namespace AvalonDock.Layout
                 _hiddenAnchorables.Insert(index, newElement as LayoutAnchorable);
             }
             else if (oldElement == TopSide)
+            {
                 TopSide = (LayoutAnchorSide)newElement;
+            }
             else if (oldElement == RightSide)
+            {
                 RightSide = (LayoutAnchorSide)newElement;
+            }
             else if (oldElement == BottomSide)
+            {
                 BottomSide = (LayoutAnchorSide)newElement;
+            }
             else if (oldElement == LeftSide)
+            {
                 LeftSide = (LayoutAnchorSide)newElement;
+            }
         }
 
         /// <summary>Removes any empty container not directly referenced by other layout items.</summary>
@@ -390,9 +485,9 @@ namespace AvalonDock.Layout
                     {
                         if (contentReferencingEmptyPane is LayoutAnchorable anchorable &&
                             !anchorable.IsVisible)
+                        {
                             continue;
-
-                        ((ILayoutPreviousContainer)contentReferencingEmptyPane).PreviousContainer = null;
+                        } ((ILayoutPreviousContainer)contentReferencingEmptyPane).PreviousContainer = null;
                         contentReferencingEmptyPane.PreviousContainerIndex = -1;
                     }
 
@@ -499,7 +594,10 @@ namespace AvalonDock.Layout
                     var singleChild = paneGroupToCollapse.Children[0] as LayoutAnchorablePaneGroup;
                     paneGroupToCollapse.Orientation = singleChild.Orientation;
                     while (singleChild.ChildrenCount > 0)
+                    {
                         paneGroupToCollapse.InsertChildAt(paneGroupToCollapse.ChildrenCount, singleChild.Children[0]);
+                    }
+
                     paneGroupToCollapse.RemoveChild(singleChild);
                     exitFlag = false;
                     break;
@@ -520,7 +618,10 @@ namespace AvalonDock.Layout
                     var singleChild = paneGroupToCollapse.Children[0] as LayoutDocumentPaneGroup;
                     paneGroupToCollapse.Orientation = singleChild.Orientation;
                     while (singleChild.ChildrenCount > 0)
+                    {
                         paneGroupToCollapse.InsertChildAt(paneGroupToCollapse.ChildrenCount, singleChild.Children[0]);
+                    }
+
                     paneGroupToCollapse.RemoveChild(singleChild);
                     exitFlag = false;
                     break;
@@ -585,25 +686,49 @@ namespace AvalonDock.Layout
             {
                 RootPanel = new LayoutPanel { Orientation = orientation, CanDock = canDock };
                 //Add all children to RootPanel
-                foreach (var panel in layoutPanelElements) RootPanel.Children.Add(panel);
+                foreach (var panel in layoutPanelElements)
+                {
+                    RootPanel.Children.Add(panel);
+                }
             }
 
             TopSide = new LayoutAnchorSide();
-            if (ReadElement(reader) != null) FillLayoutAnchorSide(reader, TopSide);
+            if (ReadElement(reader) != null)
+            {
+                FillLayoutAnchorSide(reader, TopSide);
+            }
+
             RightSide = new LayoutAnchorSide();
-            if (ReadElement(reader) != null) FillLayoutAnchorSide(reader, RightSide);
+            if (ReadElement(reader) != null)
+            {
+                FillLayoutAnchorSide(reader, RightSide);
+            }
+
             LeftSide = new LayoutAnchorSide();
-            if (ReadElement(reader) != null) FillLayoutAnchorSide(reader, LeftSide);
+            if (ReadElement(reader) != null)
+            {
+                FillLayoutAnchorSide(reader, LeftSide);
+            }
+
             BottomSide = new LayoutAnchorSide();
-            if (ReadElement(reader) != null) FillLayoutAnchorSide(reader, BottomSide);
+            if (ReadElement(reader) != null)
+            {
+                FillLayoutAnchorSide(reader, BottomSide);
+            }
 
             FloatingWindows.Clear();
             var floatingWindows = ReadElementList(reader, true);
-            foreach (var floatingWindow in floatingWindows) FloatingWindows.Add((LayoutFloatingWindow)floatingWindow);
+            foreach (var floatingWindow in floatingWindows)
+            {
+                FloatingWindows.Add((LayoutFloatingWindow)floatingWindow);
+            }
 
             Hidden.Clear();
             var hidden = ReadElementList(reader, false);
-            foreach (var hiddenObject in hidden) Hidden.Add((LayoutAnchorable)hiddenObject);
+            foreach (var hiddenObject in hidden)
+            {
+                Hidden.Add((LayoutAnchorable)hiddenObject);
+            }
 
             //Read the closing end element of LayoutRoot
             reader.ReadEndElement();
@@ -664,15 +789,21 @@ namespace AvalonDock.Layout
             var avalonAssembly = Assembly.GetAssembly(typeof(LayoutRoot));
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(a => a != avalonAssembly))
+            {
                 try
                 {
                     foreach (var type in assembly.GetTypes())
+                    {
                         if (type.Name.Equals(name))
+                        {
                             return type;
+                        }
+                    }
                 }
                 catch (ReflectionTypeLoadException)
                 {
                 }
+            }
 
             return null;
         }
@@ -684,9 +815,15 @@ namespace AvalonDock.Layout
         internal void OnLayoutElementRemoved(LayoutElement element)
         {
             if (element.Descendents().OfType<LayoutContent>().Any(c => c == LastFocusedDocument))
+            {
                 LastFocusedDocument = null;
+            }
+
             if (element.Descendents().OfType<LayoutContent>().Any(c => c == ActiveContent))
+            {
                 ActiveContent = null;
+            }
+
             ElementRemoved?.Invoke(this, new LayoutElementEventArgs(element));
         }
 
@@ -702,7 +839,11 @@ namespace AvalonDock.Layout
             {
                 foreach (LayoutFloatingWindow element in e.OldItems)
                 {
-                    if (element.Parent != this) continue;
+                    if (element.Parent != this)
+                    {
+                        continue;
+                    }
+
                     element.Parent = null;
                     bNotifyChildren = true;
                 }
@@ -720,7 +861,11 @@ namespace AvalonDock.Layout
             // descendants of LayoutElement notify when their Children and ChildrenCount properties change
             // https://github.com/xceedsoftware/wpftoolkit/issues/1313
             //
-            if (!bNotifyChildren) return;
+            if (!bNotifyChildren)
+            {
+                return;
+            }
+
             switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
@@ -745,7 +890,11 @@ namespace AvalonDock.Layout
                 {
                     foreach (LayoutAnchorable element in e.OldItems)
                     {
-                        if (element.Parent != this) continue;
+                        if (element.Parent != this)
+                        {
+                            continue;
+                        }
+
                         element.Parent = null;
                         bNotifyChildren = true;
                     }
@@ -758,7 +907,11 @@ namespace AvalonDock.Layout
                 {
                     foreach (LayoutAnchorable element in e.NewItems)
                     {
-                        if (element.Parent == this) continue;
+                        if (element.Parent == this)
+                        {
+                            continue;
+                        }
+
                         element.Parent?.RemoveChild(element);
                         element.Parent = this;
                         bNotifyChildren = true;
@@ -769,7 +922,11 @@ namespace AvalonDock.Layout
             // descendants of LayoutElement notify when their Children and ChildrenCount properties change
             // https://github.com/xceedsoftware/wpftoolkit/issues/1313
             //
-            if (!bNotifyChildren) return;
+            if (!bNotifyChildren)
+            {
+                return;
+            }
+
             switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
@@ -787,19 +944,31 @@ namespace AvalonDock.Layout
         private void InternalSetActiveContent(LayoutContent currentValue, LayoutContent newActiveContent)
         {
             RaisePropertyChanging(nameof(ActiveContent));
-            if (currentValue != null && currentValue.IsActive) currentValue.IsActive = false;
+            if (currentValue != null && currentValue.IsActive)
+            {
+                currentValue.IsActive = false;
+            }
+
             _activeContent = new WeakReference(newActiveContent);
             currentValue = ActiveContent;
-            if (currentValue != null && !currentValue.IsActive) currentValue.IsActive = true;
+            if (currentValue != null && !currentValue.IsActive)
+            {
+                currentValue.IsActive = true;
+            }
+
             RaisePropertyChanged(nameof(ActiveContent));
             _activeContentSet = currentValue != null;
             if (currentValue != null)
             {
                 if (currentValue.Parent is LayoutDocumentPane || currentValue is LayoutDocument)
+                {
                     LastFocusedDocument = currentValue;
+                }
             }
             else
+            {
                 LastFocusedDocument = null;
+            }
         }
 
         private void UpdateActiveContentProperty()
@@ -819,8 +988,14 @@ namespace AvalonDock.Layout
             while (true)
             {
                 //Read all layoutAnchorSide children
-                if (ReadElement(reader) is LayoutAnchorGroup element) result.Add(element);
-                else if (reader.NodeType == XmlNodeType.EndElement) break;
+                if (ReadElement(reader) is LayoutAnchorGroup element)
+                {
+                    result.Add(element);
+                }
+                else if (reader.NodeType == XmlNodeType.EndElement)
+                {
+                    break;
+                }
             }
 
             reader.ReadEndElement();
@@ -847,9 +1022,15 @@ namespace AvalonDock.Layout
             var result = new List<ILayoutPanelElement>();
             var startElementName = reader.LocalName;
             reader.Read();
-            if (reader.LocalName.Equals(startElementName) && reader.NodeType == XmlNodeType.EndElement) return null;
+            if (reader.LocalName.Equals(startElementName) && reader.NodeType == XmlNodeType.EndElement)
+            {
+                return null;
+            }
 
-            while (reader.NodeType == XmlNodeType.Whitespace) reader.Read();
+            while (reader.NodeType == XmlNodeType.Whitespace)
+            {
+                reader.Read();
+            }
 
             if (reader.LocalName.Equals(nameof(RootPanel)))
             {
@@ -857,14 +1038,22 @@ namespace AvalonDock.Layout
 
                 var canDockStr = reader.GetAttribute("CanDock");
                 if (canDockStr != null)
+                {
                     canDock = bool.Parse(canDockStr);
+                }
 
                 reader.Read();
                 while (true)
                 {
                     //Read all RootPanel children
-                    if (ReadElement(reader) is ILayoutPanelElement element) result.Add(element);
-                    else if (reader.NodeType == XmlNodeType.EndElement) break;
+                    if (ReadElement(reader) is ILayoutPanelElement element)
+                    {
+                        result.Add(element);
+                    }
+                    else if (reader.NodeType == XmlNodeType.EndElement)
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -875,8 +1064,15 @@ namespace AvalonDock.Layout
         private List<object> ReadElementList(XmlReader reader, bool isFloatingWindow)
         {
             var resultList = new List<object>();
-            while (reader.NodeType == XmlNodeType.Whitespace) reader.Read();
-            if (reader.NodeType == XmlNodeType.EndElement) return resultList;
+            while (reader.NodeType == XmlNodeType.Whitespace)
+            {
+                reader.Read();
+            }
+
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                return resultList;
+            }
 
             if (reader.IsEmptyElement)
             {
@@ -886,9 +1082,15 @@ namespace AvalonDock.Layout
 
             var startElementName = reader.LocalName;
             reader.Read();
-            if (reader.LocalName.Equals(startElementName) && reader.NodeType == XmlNodeType.EndElement) return null;
+            if (reader.LocalName.Equals(startElementName) && reader.NodeType == XmlNodeType.EndElement)
+            {
+                return null;
+            }
 
-            while (reader.NodeType == XmlNodeType.Whitespace) reader.Read();
+            while (reader.NodeType == XmlNodeType.Whitespace)
+            {
+                reader.Read();
+            }
 
             while (true)
             {
@@ -918,8 +1120,15 @@ namespace AvalonDock.Layout
 
         private object ReadElement(XmlReader reader)
         {
-            while (reader.NodeType == XmlNodeType.Whitespace) reader.Read();
-            if (reader.NodeType == XmlNodeType.EndElement) return null;
+            while (reader.NodeType == XmlNodeType.Whitespace)
+            {
+                reader.Read();
+            }
+
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                return null;
+            }
 
             Type typeToSerialize;
             switch (reader.LocalName)
@@ -978,7 +1187,10 @@ namespace AvalonDock.Layout
                 default:
                     typeToSerialize = FindType(reader.LocalName);
                     if (typeToSerialize == null)
+                    {
                         throw new ArgumentException("AvalonDock.LayoutRoot doesn't know how to deserialize " + reader.LocalName);
+                    }
+
                     break;
             }
             XmlSerializer serializer = XmlSerializersCache.GetSerializer(typeToSerialize);

@@ -163,7 +163,10 @@ namespace AvalonDock.Controls
         private void CreateChildrenViews()
         {
             var manager = _model.Root.Manager;
-            foreach (var childModel in _model.Children) _childViews.Add(manager.CreateUIElementForModel(childModel) as LayoutAnchorGroupControl);
+            foreach (var childModel in _model.Children)
+            {
+                _childViews.Add(manager.CreateUIElementForModel(childModel) as LayoutAnchorGroupControl);
+            }
         }
 
         private void OnModelChildrenCollectionChanged(object sender,
@@ -174,11 +177,15 @@ namespace AvalonDock.Controls
                 e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace))
             {
                 foreach (var childModel in e.OldItems)
+                {
                     _childViews.Remove(_childViews.First(cv => cv.Model == childModel));
+                }
             }
 
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
                 _childViews.Clear();
+            }
 
             if (e.NewItems != null &&
                 (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add ||
@@ -186,7 +193,10 @@ namespace AvalonDock.Controls
             {
                 var manager = _model.Root.Manager;
                 var insertIndex = e.NewStartingIndex;
-                foreach (LayoutAnchorGroup childModel in e.NewItems) _childViews.Insert(insertIndex++, manager.CreateUIElementForModel(childModel) as LayoutAnchorGroupControl);
+                foreach (LayoutAnchorGroup childModel in e.NewItems)
+                {
+                    _childViews.Insert(insertIndex++, manager.CreateUIElementForModel(childModel) as LayoutAnchorGroupControl);
+                }
             }
         }
 

@@ -61,7 +61,10 @@ namespace AvalonDock.Controls
         {
             var compositionTarget = PresentationSource.FromVisual(visual).CompositionTarget;
             if (compositionTarget == null)
+            {
                 return default;
+            }
+
             Matrix m = compositionTarget.TransformToDevice;
             return new Point(pt.X / m.M11, pt.Y / m.M22);
         }
@@ -86,7 +89,9 @@ namespace AvalonDock.Controls
         public static Size TransformActualSizeToAncestor(this FrameworkElement element)
         {
             if (PresentationSource.FromVisual(element) == null)
+            {
                 return new Size(element.ActualWidth, element.ActualHeight);
+            }
 
             var parentWindow = PresentationSource.FromVisual(element).RootVisual;
             var transformToWindow = element.TransformToAncestor(parentWindow);
@@ -96,7 +101,9 @@ namespace AvalonDock.Controls
         public static Size TransformSizeToAncestor(this FrameworkElement element, Size sizeToTransform)
         {
             if (PresentationSource.FromVisual(element) == null)
+            {
                 return sizeToTransform;
+            }
 
             var parentWindow = PresentationSource.FromVisual(element).RootVisual;
             var transformToWindow = element.TransformToAncestor(parentWindow);
@@ -106,7 +113,9 @@ namespace AvalonDock.Controls
         public static GeneralTransform TansformToAncestor(this FrameworkElement element)
         {
             if (PresentationSource.FromVisual(element) == null)
+            {
                 return new MatrixTransform(Matrix.Identity);
+            }
 
             var parentWindow = PresentationSource.FromVisual(element).RootVisual;
             return element.TransformToAncestor(parentWindow);

@@ -39,7 +39,9 @@ namespace AvalonDock.Converters
         {
             AnchorSide side = (AnchorSide)value;
             if (side == AnchorSide.Left || side == AnchorSide.Right)
+            {
                 return 90.0;
+            }
 
             return Binding.DoNothing;
         }

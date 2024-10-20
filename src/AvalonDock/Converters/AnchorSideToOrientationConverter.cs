@@ -40,7 +40,9 @@ namespace AvalonDock.Converters
         {
             AnchorSide side = (AnchorSide)value;
             if (side == AnchorSide.Left || side == AnchorSide.Right)
+            {
                 return Orientation.Vertical;
+            }
 
             return Orientation.Horizontal;
         }

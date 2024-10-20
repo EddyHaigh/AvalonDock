@@ -191,7 +191,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="SelectedAnchorable"/> property.</summary>
         protected virtual void OnSelectedAnchorableChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (_internalSetSelectedAnchorable) return;
+            if (_internalSetSelectedAnchorable)
+            {
+                return;
+            }
             // TODO: What goes on here??
             var selectedAnchorable = e.NewValue as LayoutAnchorableItem;
             if (SelectedAnchorable != null && SelectedAnchorable.ActivateCommand.CanExecute(null))
@@ -423,56 +426,97 @@ namespace AvalonDock.Controls
                 else
                 {
                     var resourceDictionaryToRemove = Resources.MergedDictionaries.FirstOrDefault(r => r.Source == oldTheme.GetResourceUri());
-                    if (resourceDictionaryToRemove != null) Resources.MergedDictionaries.Remove(resourceDictionaryToRemove);
+                    if (resourceDictionaryToRemove != null)
+                    {
+                        Resources.MergedDictionaries.Remove(resourceDictionaryToRemove);
+                    }
                 }
             }
 
             // Implicit parameter to this method is the new theme already set here
-            if (_manager.Theme == null) return;
+            if (_manager.Theme == null)
+            {
+                return;
+            }
+
             if (_manager.Theme is DictionaryTheme dictionaryTheme)
             {
                 currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
                 Resources.MergedDictionaries.Add(currentThemeResourceDictionary);
             }
             else
+            {
                 Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = _manager.Theme.GetResourceUri() });
+            }
         }
 
         internal void SelectNextDocument()
         {
-            if (SelectedDocument == null) return;
+            if (SelectedDocument == null)
+            {
+                return;
+            }
+
             var docIndex = Documents.IndexOf(SelectedDocument);
             docIndex++;
-            if (docIndex == Documents.Length) docIndex = 0;
+            if (docIndex == Documents.Length)
+            {
+                docIndex = 0;
+            }
+
             InternalSetSelectedDocument(Documents[docIndex]);
         }
 
         internal void SelectNextAnchorable()
         {
-            if (SelectedAnchorable == null) return;
+            if (SelectedAnchorable == null)
+            {
+                return;
+            }
+
             var anchorablesArray = Anchorables.ToArray();
             var anchorableIndex = anchorablesArray.IndexOf(SelectedAnchorable);
             anchorableIndex++;
-            if (anchorableIndex == anchorablesArray.Length) anchorableIndex = 0;
+            if (anchorableIndex == anchorablesArray.Length)
+            {
+                anchorableIndex = 0;
+            }
+
             InternalSetSelectedAnchorable(anchorablesArray[anchorableIndex]);
         }
 
         internal void SelectPreviousDocument()
         {
-            if (SelectedDocument == null) return;
+            if (SelectedDocument == null)
+            {
+                return;
+            }
+
             var docIndex = Documents.IndexOf(SelectedDocument);
             docIndex--;
-            if (docIndex < 0) docIndex = Documents.Length - 1;
+            if (docIndex < 0)
+            {
+                docIndex = Documents.Length - 1;
+            }
+
             InternalSetSelectedDocument(Documents[docIndex]);
         }
 
         internal void SelectPreviousAnchorable()
         {
-            if (SelectedAnchorable == null) return;
+            if (SelectedAnchorable == null)
+            {
+                return;
+            }
+
             var anchorablesArray = Anchorables.ToArray();
             var anchorableIndex = anchorablesArray.IndexOf(SelectedAnchorable);
             anchorableIndex--;
-            if (anchorableIndex < 0) anchorableIndex = anchorablesArray.Length - 1;
+            if (anchorableIndex < 0)
+            {
+                anchorableIndex = anchorablesArray.Length - 1;
+            }
+
             InternalSetSelectedAnchorable(anchorablesArray[anchorableIndex]);
         }
 
@@ -528,9 +572,14 @@ namespace AvalonDock.Controls
             Deactivated -= OnDeactivated;
             Close();
             if (SelectedDocument != null && SelectedDocument.ActivateCommand.CanExecute(null))
+            {
                 SelectedDocument.ActivateCommand.Execute(null);
+            }
+
             if (SelectedDocument == null && SelectedAnchorable != null && SelectedAnchorable.ActivateCommand.CanExecute(null))
+            {
                 SelectedAnchorable.ActivateCommand.Execute(null);
+            }
         }
 
         private void FocusSelectedItem(ListBox list)

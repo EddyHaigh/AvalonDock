@@ -29,8 +29,16 @@ namespace AvalonDock
         /// <returns></returns>
         public static double MinMax(double value, double min, double max)
         {
-            if (min > max) throw new ArgumentException("The minimum should not be greater then the maximum", nameof(min));
-            if (value < min) return min;
+            if (min > max)
+            {
+                throw new ArgumentException("The minimum should not be greater then the maximum", nameof(min));
+            }
+
+            if (value < min)
+            {
+                return min;
+            }
+
             return value > max ? max : value;
         }
 
@@ -40,7 +48,10 @@ namespace AvalonDock
         /// <param name="value"></param>
         public static void AssertIsPositiveOrZero(double value)
         {
-            if (value < 0.0) throw new ArgumentException("Invalid value, must be a positive number or equal to zero", nameof(value));
+            if (value < 0.0)
+            {
+                throw new ArgumentException("Invalid value, must be a positive number or equal to zero", nameof(value));
+            }
         }
     }
 }

@@ -13,7 +13,9 @@ namespace AvalonDock
         public static XmlSerializer GetSerializer(Type targetType)
         {
             if (s_cache.TryGetValue(targetType, out var serializer))
+            {
                 return serializer;
+            }
 
             lock (s_lock)
             {

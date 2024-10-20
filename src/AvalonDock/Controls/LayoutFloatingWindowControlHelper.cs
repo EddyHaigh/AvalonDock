@@ -62,9 +62,13 @@ namespace AvalonDock.Controls
                     if (paneControl != null && paneControl.Model is LayoutAnchorablePane pane)
                     {
                         if (pane.SelectedContent != null)
+                        {
                             pane.SelectedContent.IsActive = true;
+                        }
                         else
+                        {
                             ActiveTheLastActivedContentOfPane(pane);
+                        }
 
                         return;
                     }
@@ -75,9 +79,13 @@ namespace AvalonDock.Controls
                     if (paneControl != null && paneControl.Model is LayoutDocumentPane pane)
                     {
                         if (pane.SelectedContent != null)
+                        {
                             pane.SelectedContent.IsActive = true;
+                        }
                         else
+                        {
                             ActiveTheLastActivedContentOfPane(pane);
+                        }
 
                         return;
                     }

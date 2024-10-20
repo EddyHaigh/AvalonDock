@@ -62,7 +62,9 @@ namespace AvalonDock.Controls
                     var layoutContent = doc.Content as LayoutContent;
 
                     if (layoutContent != null)
+                    {
                         isLayoutContentSelected = layoutContent.IsSelected;
+                    }
 
                     if (isLayoutContentSelected && !doc.IsVisible)
                     {

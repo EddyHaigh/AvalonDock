@@ -36,7 +36,10 @@ namespace AvalonDock.Controls
         public _ReentrantFlagHandler Enter()
         {
             if (_flag)
+            {
                 throw new InvalidOperationException();
+            }
+
             return new _ReentrantFlagHandler(this);
         }
 

@@ -68,7 +68,9 @@ namespace AvalonDock.Controls
                 StopCloseTimer();
             }
             else
+            {
                 System.Diagnostics.Debug.Assert(false);
+            }
         }
 
         #endregion public methods
@@ -84,7 +86,9 @@ namespace AvalonDock.Controls
                 if (_manager.AutoHideWindow.IsWin32MouseOver ||
                     ((LayoutAnchorable)_manager.AutoHideWindow.Model).IsActive ||
                     _manager.AutoHideWindow.IsResizing)
+                {
                     return;
+                }
 
                 StopCloseTimer();
             };

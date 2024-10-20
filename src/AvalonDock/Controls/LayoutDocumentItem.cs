@@ -71,7 +71,11 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override void Close()
         {
-            if (_document.Root?.Manager == null) return;
+            if (_document.Root?.Manager == null)
+            {
+                return;
+            }
+
             var dockingManager = _document.Root.Manager;
             dockingManager.ExecuteCloseCommand(_document);
         }
@@ -82,7 +86,10 @@ namespace AvalonDock.Controls
             if (_document?.Root != null)
             {
                 _document.IsVisible = Visibility == Visibility.Visible;
-                if (_document.Parent is LayoutDocumentPane layoutDocumentPane) layoutDocumentPane.ComputeVisibility();
+                if (_document.Parent is LayoutDocumentPane layoutDocumentPane)
+                {
+                    layoutDocumentPane.ComputeVisibility();
+                }
             }
             base.OnVisibilityChanged();
         }

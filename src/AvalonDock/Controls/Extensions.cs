@@ -24,14 +24,23 @@ namespace AvalonDock.Controls
         /// <remarks>Uses <see cref="VisualTreeHelper"/> internally.</remarks>
         public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject depObj) where T : DependencyObject
         {
-            if (depObj == null) yield break;
+            if (depObj == null)
+            {
+                yield break;
+            }
+
             for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
             {
                 var child = VisualTreeHelper.GetChild(depObj, i);
                 if (child is T t)
+                {
                     yield return t;
+                }
+
                 foreach (var childOfChild in FindVisualChildren<T>(child))
+                {
                     yield return childOfChild;
+                }
             }
         }
 
@@ -42,13 +51,22 @@ namespace AvalonDock.Controls
         /// <remarks>Uses <see cref="LogicalTreeHelper"/> internally.</remarks>
         public static IEnumerable<T> FindLogicalChildren<T>(this DependencyObject depObj) where T : DependencyObject
         {
-            if (depObj == null) yield break;
+            if (depObj == null)
+            {
+                yield break;
+            }
+
             foreach (var child in LogicalTreeHelper.GetChildren(depObj).OfType<DependencyObject>())
             {
                 if (child is T t)
+                {
                     yield return t;
+                }
+
                 foreach (var childOfChild in FindLogicalChildren<T>(child))
+                {
                     yield return childOfChild;
+                }
             }
         }
 
@@ -64,7 +82,9 @@ namespace AvalonDock.Controls
             {
                 result = current;
                 if (current is Visual || current is Visual3D)
+                {
                     current = VisualTreeHelper.GetParent(current);
+                }
                 else
                 {
                     // If we're in Logical Land then we must walk

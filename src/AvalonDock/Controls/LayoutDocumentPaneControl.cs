@@ -79,7 +79,9 @@ namespace AvalonDock.Controls
         {
             base.OnSelectionChanged(e);
             if (_model.SelectedContent != null)
+            {
                 _model.SelectedContent.IsActive = true;
+            }
         }
 
         /// <summary>
@@ -93,7 +95,9 @@ namespace AvalonDock.Controls
         {
             base.OnMouseLeftButtonDown(e);
             if (!e.Handled && _model.SelectedContent != null && !_model.SelectedContent.IsActive)
+            {
                 _model.SelectedContent.IsActive = true;
+            }
         }
 
         /// <summary>
@@ -107,7 +111,9 @@ namespace AvalonDock.Controls
         {
             base.OnMouseRightButtonDown(e);
             if (!e.Handled && _model.SelectedContent != null)
+            {
                 _model.SelectedContent.IsActive = true;
+            }
         }
 
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
@@ -123,7 +129,11 @@ namespace AvalonDock.Controls
                         layoutContent.TabItem.ContextMenu = null;
                         layoutContent.TabItem.Content = null;
                         var panel = layoutContent.TabItem.FindVisualAncestor<Panel>();
-                        if (panel != null) panel.Children.Remove(layoutContent.TabItem);
+                        if (panel != null)
+                        {
+                            panel.Children.Remove(layoutContent.TabItem);
+                        }
+
                         layoutContent.TabItem = null;
                     }
                 }

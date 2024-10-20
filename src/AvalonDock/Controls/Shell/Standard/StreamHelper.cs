@@ -47,7 +47,10 @@ namespace Standard
 
         private void _Validate()
         {
-            if (_source == null) throw new ObjectDisposedException("this");
+            if (_source == null)
+            {
+                throw new ObjectDisposedException("this");
+            }
         }
 
         // Comments are taken from MSDN IStream documentation.
@@ -119,15 +122,25 @@ namespace Standard
             while (cbWritten < cb)
             {
                 var cbRead = _source.Read(buffer, 0, buffer.Length);
-                if (cbRead == 0) break;
+                if (cbRead == 0)
+                {
+                    break;
+                }
                 // COM documentation is a bit vague here whether NULL is valid for the third parameter.
                 // Going to assume it is, as most implementations I've seen treat it as optional.
                 // It's possible this will break on some IStream implementations.
                 pstm.Write(buffer, cbRead, IntPtr.Zero);
                 cbWritten += cbRead;
             }
-            if (pcbRead != IntPtr.Zero) Marshal.WriteInt64(pcbRead, cbWritten);
-            if (pcbWritten != IntPtr.Zero) Marshal.WriteInt64(pcbWritten, cbWritten);
+            if (pcbRead != IntPtr.Zero)
+            {
+                Marshal.WriteInt64(pcbRead, cbWritten);
+            }
+
+            if (pcbWritten != IntPtr.Zero)
+            {
+                Marshal.WriteInt64(pcbWritten, cbWritten);
+            }
         }
 
         /// <summary>
@@ -168,7 +181,10 @@ namespace Standard
         {
             _Validate();
             var cbRead = _source.Read(pv, 0, cb);
-            if (pcbRead != IntPtr.Zero) Marshal.WriteInt32(pcbRead, cbRead);
+            if (pcbRead != IntPtr.Zero)
+            {
+                Marshal.WriteInt32(pcbRead, cbRead);
+            }
         }
 
         /// <summary>
@@ -202,7 +218,10 @@ namespace Standard
         {
             _Validate();
             var position = _source.Seek(dlibMove, (SeekOrigin)dwOrigin);
-            if (plibNewPosition != IntPtr.Zero) Marshal.WriteInt64(plibNewPosition, position);
+            if (plibNewPosition != IntPtr.Zero)
+            {
+                Marshal.WriteInt64(plibNewPosition, position);
+            }
         }
 
         /// <summary>
@@ -276,7 +295,10 @@ namespace Standard
         {
             _Validate();
             _source.Write(pv, 0, cb);
-            if (pcbWritten != IntPtr.Zero) Marshal.WriteInt32(pcbWritten, cb);
+            if (pcbWritten != IntPtr.Zero)
+            {
+                Marshal.WriteInt32(pcbWritten, cb);
+            }
         }
 
         #endregion IStream Members

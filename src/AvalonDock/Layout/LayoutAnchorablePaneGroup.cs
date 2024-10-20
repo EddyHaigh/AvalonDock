@@ -54,7 +54,11 @@ namespace AvalonDock.Layout
             get => _orientation;
             set
             {
-                if (value == _orientation) return;
+                if (value == _orientation)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(Orientation));
                 _orientation = value;
                 RaisePropertyChanged(nameof(Orientation));
@@ -79,7 +83,10 @@ namespace AvalonDock.Layout
         protected override void OnDockWidthChanged()
         {
             if (DockWidth.IsAbsolute && ChildrenCount == 1)
+            {
                 ((ILayoutPositionableElement)Children[0]).DockWidth = DockWidth;
+            }
+
             base.OnDockWidthChanged();
         }
 
@@ -87,7 +94,10 @@ namespace AvalonDock.Layout
         protected override void OnDockHeightChanged()
         {
             if (DockHeight.IsAbsolute && ChildrenCount == 1)
+            {
                 ((ILayoutPositionableElement)Children[0]).DockHeight = DockHeight;
+            }
+
             base.OnDockHeightChanged();
         }
 
@@ -95,9 +105,15 @@ namespace AvalonDock.Layout
         protected override void OnChildrenCollectionChanged()
         {
             if (DockWidth.IsAbsolute && ChildrenCount == 1)
+            {
                 ((ILayoutPositionableElement)Children[0]).DockWidth = DockWidth;
+            }
+
             if (DockHeight.IsAbsolute && ChildrenCount == 1)
+            {
                 ((ILayoutPositionableElement)Children[0]).DockHeight = DockHeight;
+            }
+
             base.OnChildrenCollectionChanged();
         }
 
@@ -112,7 +128,10 @@ namespace AvalonDock.Layout
         public override void ReadXml(System.Xml.XmlReader reader)
         {
             if (reader.MoveToAttribute(nameof(Orientation)))
+            {
                 Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
+            }
+
             base.ReadXml(reader);
         }
 
@@ -135,7 +154,10 @@ namespace AvalonDock.Layout
 
         private void UpdateParentVisibility()
         {
-            if (Parent is ILayoutElementWithVisibility parentPane) parentPane.ComputeVisibility();
+            if (Parent is ILayoutElementWithVisibility parentPane)
+            {
+                parentPane.ComputeVisibility();
+            }
         }
 
         #endregion Private Methods

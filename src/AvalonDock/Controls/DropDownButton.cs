@@ -56,7 +56,9 @@ namespace AvalonDock.Controls
         protected virtual void OnDropDownContextMenuChanged(DependencyPropertyChangedEventArgs e)
         {
             if (e.OldValue is ContextMenu oldContextMenu && IsChecked.GetValueOrDefault())
+            {
                 oldContextMenu.Closed -= OnContextMenuClosed;
+            }
         }
 
         #endregion DropDownContextMenu
@@ -112,7 +114,10 @@ namespace AvalonDock.Controls
         {
             // When changing theme, Unloaded event is called, erasing the DropDownContextMenu.
             // Prevent this on theme changes.
-            if (IsLoaded) DropDownContextMenu = null;
+            if (IsLoaded)
+            {
+                DropDownContextMenu = null;
+            }
         }
 
         #endregion Private Methods
