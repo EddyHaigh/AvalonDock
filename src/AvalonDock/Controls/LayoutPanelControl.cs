@@ -41,7 +41,10 @@ namespace AvalonDock.Controls
 
         protected override void OnFixChildrenDockLengths()
         {
-            if (ActualWidth == 0.0 || ActualHeight == 0.0) return;
+            if (ActualWidth == 0.0 || ActualHeight == 0.0)
+            {
+                return;
+            }
 
             #region Setup DockWidth/Height for children
 
@@ -83,7 +86,10 @@ namespace AvalonDock.Controls
                         if (!childPositionableModel.DockWidth.IsStar)
                         {
                             // Keep set values (from XML for instance)
-                            if (!childPositionableModel.DockWidth.IsStar) childPositionableModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
+                            if (!childPositionableModel.DockWidth.IsStar)
+                            {
+                                childPositionableModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
+                            }
                         }
                     }
                 }
@@ -124,7 +130,10 @@ namespace AvalonDock.Controls
                         if (!childPositionableModel.DockHeight.IsStar)
                         {
                             // Keep set values (from XML for instance)
-                            if (!childPositionableModel.DockHeight.IsStar) childPositionableModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
+                            if (!childPositionableModel.DockHeight.IsStar)
+                            {
+                                childPositionableModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
+                            }
                         }
                     }
                 }

@@ -1405,7 +1405,10 @@ namespace Standard
                 target.FindConnectionPoint(ref eventId, out cp);
                 cp.Advise(sink, out var dwCookie);
                 if (dwCookie == 0)
+                {
                     throw new InvalidOperationException("IConnectionPoint::Advise returned an invalid cookie.");
+                }
+
                 handle = new IntPtr(dwCookie);
                 _cp = cp;
                 cp = null;
@@ -1426,7 +1429,11 @@ namespace Standard
         {
             try
             {
-                if (this.IsInvalid) return true;
+                if (this.IsInvalid)
+                {
+                    return true;
+                }
+
                 var dwCookie = handle.ToInt32();
                 handle = IntPtr.Zero;
                 Assert.IsNotNull(_cp);
@@ -2156,7 +2163,11 @@ namespace Standard
         public static RECT AdjustWindowRectEx(RECT lpRect, WS dwStyle, bool bMenu, WS_EX dwExStyle)
         {
             // Native version modifies the parameter in place.
-            if (!_AdjustWindowRectEx(ref lpRect, dwStyle, bMenu, dwExStyle)) HRESULT.ThrowLastError();
+            if (!_AdjustWindowRectEx(ref lpRect, dwStyle, bMenu, dwExStyle))
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return lpRect;
         }
 
@@ -2179,7 +2190,9 @@ namespace Standard
             // This origins of this API were added for Vista.  The Ex version was added for Windows 7.
             // If we're not on either, then this message filter isolation doesn't exist.
             if (!Utility.IsOSVistaOrNewer)
+            {
                 return HRESULT.S_FALSE;
+            }
 
             // If we're on Vista rather than Win7 then we can't use the Ex version of this function.
             // The Ex version is preferred if possible because this results in process-wide modifications of the filter
@@ -2193,7 +2206,10 @@ namespace Standard
 
             var filterstruct = new CHANGEFILTERSTRUCT { cbSize = (uint)Marshal.SizeOf(typeof(CHANGEFILTERSTRUCT)) };
             ret = _ChangeWindowMessageFilterEx(hwnd, message, action, ref filterstruct);
-            if (!ret) return (HRESULT)Win32Error.GetLastError();
+            if (!ret)
+            {
+                return (HRESULT)Win32Error.GetLastError();
+            }
 
             filterInfo = filterstruct.ExtStatus;
             return HRESULT.S_OK;
@@ -2211,7 +2227,11 @@ namespace Standard
             try
             {
                 argv = _CommandLineToArgvW(cmdLine, out var numArgs);
-                if (argv == IntPtr.Zero) throw new Win32Exception();
+                if (argv == IntPtr.Zero)
+                {
+                    throw new Win32Exception();
+                }
+
                 var result = new string[numArgs];
                 for (var i = 0; i < numArgs; i++)
                 {
@@ -2239,10 +2259,19 @@ namespace Standard
             const int DIB_RGB_COLORS = 0;
             SafeHBITMAP hBitmap = null;
             if (hdc == null)
+            {
                 hBitmap = _CreateDIBSectionIntPtr(IntPtr.Zero, ref bitmapInfo, DIB_RGB_COLORS, out ppvBits, hSection, dwOffset);
+            }
             else
+            {
                 hBitmap = _CreateDIBSection(hdc, ref bitmapInfo, DIB_RGB_COLORS, out ppvBits, hSection, dwOffset);
-            if (hBitmap.IsInvalid) HRESULT.ThrowLastError();
+            }
+
+            if (hBitmap.IsInvalid)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return hBitmap;
         }
 
@@ -2252,7 +2281,11 @@ namespace Standard
         public static IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse)
         {
             var ret = _CreateRoundRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect, nWidthEllipse, nHeightEllipse);
-            if (ret == IntPtr.Zero) throw new Win32Exception();
+            if (ret == IntPtr.Zero)
+            {
+                throw new Win32Exception();
+            }
+
             return ret;
         }
 
@@ -2262,7 +2295,11 @@ namespace Standard
         public static IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect)
         {
             var ret = _CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect);
-            if (ret == IntPtr.Zero) throw new Win32Exception();
+            if (ret == IntPtr.Zero)
+            {
+                throw new Win32Exception();
+            }
+
             return ret;
         }
 
@@ -2272,7 +2309,11 @@ namespace Standard
         public static IntPtr CreateRectRgnIndirect(RECT lprc)
         {
             var ret = _CreateRectRgnIndirect(ref lprc);
-            if (ret == IntPtr.Zero) throw new Win32Exception();
+            if (ret == IntPtr.Zero)
+            {
+                throw new Win32Exception();
+            }
+
             return ret;
         }
 
@@ -2309,7 +2350,11 @@ namespace Standard
             IntPtr lpParam)
         {
             var ret = _CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-            if (ret == IntPtr.Zero) HRESULT.ThrowLastError();
+            if (ret == IntPtr.Zero)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return ret;
         }
 
@@ -2422,7 +2467,10 @@ namespace Standard
 
         public static void DrawMenuBar(IntPtr hWnd)
         {
-            if (!_DrawMenuBar(hWnd)) throw new Win32Exception();
+            if (!_DrawMenuBar(hWnd))
+            {
+                throw new Win32Exception();
+            }
         }
 
         [DllImport("kernel32.dll")]
@@ -2445,7 +2493,11 @@ namespace Standard
 
         public static RECT GetClientRect(IntPtr hwnd)
         {
-            if (!_GetClientRect(hwnd, out var rc)) HRESULT.ThrowLastError();
+            if (!_GetClientRect(hwnd, out var rc))
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return rc;
         }
 
@@ -2494,7 +2546,10 @@ namespace Standard
             while (true)
             {
                 var size = _GetModuleFileName(hModule, buffer, buffer.Capacity);
-                if (size == 0) HRESULT.ThrowLastError();
+                if (size == 0)
+                {
+                    HRESULT.ThrowLastError();
+                }
 
                 // GetModuleFileName returns nSize when it's truncated but does NOT set the last error.
                 // MSDN documentation says this has changed in Windows 2000+.
@@ -2515,7 +2570,11 @@ namespace Standard
         public static IntPtr GetModuleHandle(string lpModuleName)
         {
             var retPtr = _GetModuleHandle(lpModuleName);
-            if (retPtr == IntPtr.Zero) HRESULT.ThrowLastError();
+            if (retPtr == IntPtr.Zero)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return retPtr;
         }
 
@@ -2526,7 +2585,11 @@ namespace Standard
         public static MONITORINFO GetMonitorInfo(IntPtr hMonitor)
         {
             var mi = new MONITORINFO();
-            if (!_GetMonitorInfo(hMonitor, mi)) throw new Win32Exception();
+            if (!_GetMonitorInfo(hMonitor, mi))
+            {
+                throw new Win32Exception();
+            }
+
             return mi;
         }
 
@@ -2536,7 +2599,11 @@ namespace Standard
         public static IntPtr GetStockObject(StockObject fnObject)
         {
             var retPtr = _GetStockObject(fnObject);
-            if (retPtr == null) HRESULT.ThrowLastError();
+            if (retPtr == null)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return retPtr;
         }
 
@@ -2551,7 +2618,11 @@ namespace Standard
         {
             var ret = IntPtr.Zero;
             ret = IntPtr.Size == 8 ? GetWindowLongPtr64(hwnd, nIndex) : new IntPtr(GetWindowLongPtr32(hwnd, nIndex));
-            if (ret == IntPtr.Zero) throw new Win32Exception();
+            if (ret == IntPtr.Zero)
+            {
+                throw new Win32Exception();
+            }
+
             return ret;
         }
 
@@ -2590,7 +2661,11 @@ namespace Standard
         public static WINDOWPLACEMENT GetWindowPlacement(IntPtr hwnd)
         {
             var wndpl = new WINDOWPLACEMENT();
-            if (GetWindowPlacement(hwnd, wndpl)) return wndpl;
+            if (GetWindowPlacement(hwnd, wndpl))
+            {
+                return wndpl;
+            }
+
             throw new Win32Exception();
         }
 
@@ -2600,7 +2675,11 @@ namespace Standard
 
         public static RECT GetWindowRect(IntPtr hwnd)
         {
-            if (!_GetWindowRect(hwnd, out var rc)) HRESULT.ThrowLastError();
+            if (!_GetWindowRect(hwnd, out var rc))
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return rc;
         }
 
@@ -2641,7 +2720,10 @@ namespace Standard
 
         public static void PostMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam)
         {
-            if (!_PostMessage(hWnd, Msg, wParam, lParam)) throw new Win32Exception();
+            if (!_PostMessage(hWnd, Msg, wParam, lParam))
+            {
+                throw new Win32Exception();
+            }
         }
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "RegisterClassExW")]
@@ -2653,7 +2735,11 @@ namespace Standard
         public static short RegisterClassEx(ref WNDCLASSEX lpwcx)
         {
             var ret = _RegisterClassEx(ref lpwcx);
-            if (ret == 0) HRESULT.ThrowLastError();
+            if (ret == 0)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return ret;
         }
 
@@ -2663,7 +2749,11 @@ namespace Standard
         public static WM RegisterWindowMessage(string lpString)
         {
             var iRet = _RegisterWindowMessage(lpString);
-            if (iRet == 0) HRESULT.ThrowLastError();
+            if (iRet == 0)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return (WM)iRet;
         }
 
@@ -2674,14 +2764,22 @@ namespace Standard
         {
             Verify.IsNotDefault(hwnd, nameof(hwnd));
             var ret = _SetActiveWindow(hwnd);
-            if (ret == IntPtr.Zero) HRESULT.ThrowLastError();
+            if (ret == IntPtr.Zero)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return ret;
         }
 
         // This is aliased as a macro in 32bit Windows.
         public static IntPtr SetClassLongPtr(IntPtr hwnd, GCLP nIndex, IntPtr dwNewLong)
         {
-            if (IntPtr.Size == 8) return SetClassLongPtr64(hwnd, nIndex, dwNewLong);
+            if (IntPtr.Size == 8)
+            {
+                return SetClassLongPtr64(hwnd, nIndex, dwNewLong);
+            }
+
             return new IntPtr(SetClassLongPtr32(hwnd, nIndex, dwNewLong.ToInt32()));
         }
 
@@ -2700,7 +2798,10 @@ namespace Standard
 
         public static void SetProcessWorkingSetSize(IntPtr hProcess, int dwMinimumWorkingSetSize, int dwMaximumWorkingSetSize)
         {
-            if (!_SetProcessWorkingSetSize(hProcess, new IntPtr(dwMinimumWorkingSetSize), new IntPtr(dwMaximumWorkingSetSize))) throw new Win32Exception();
+            if (!_SetProcessWorkingSetSize(hProcess, new IntPtr(dwMinimumWorkingSetSize), new IntPtr(dwMaximumWorkingSetSize)))
+            {
+                throw new Win32Exception();
+            }
         }
 
         // This is aliased as a macro in 32bit Windows.
@@ -2718,7 +2819,10 @@ namespace Standard
 
         public static void SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw)
         {
-            if (_SetWindowRgn(hWnd, hRgn, bRedraw) == 0) throw new Win32Exception();
+            if (_SetWindowRgn(hWnd, hRgn, bRedraw) == 0)
+            {
+                throw new Win32Exception();
+            }
         }
 
         [DllImport("user32.dll", EntryPoint = "SetWindowPos", SetLastError = true)]
@@ -2751,20 +2855,31 @@ namespace Standard
 
         public static void SystemParametersInfo(SPI uiAction, int uiParam, string pvParam, SPIF fWinIni)
         {
-            if (!_SystemParametersInfo_String(uiAction, uiParam, pvParam, fWinIni)) HRESULT.ThrowLastError();
+            if (!_SystemParametersInfo_String(uiAction, uiParam, pvParam, fWinIni))
+            {
+                HRESULT.ThrowLastError();
+            }
         }
 
         public static NONCLIENTMETRICS SystemParameterInfo_GetNONCLIENTMETRICS()
         {
             var metrics = Utility.IsOSVistaOrNewer ? NONCLIENTMETRICS.VistaMetricsStruct : NONCLIENTMETRICS.XPMetricsStruct;
-            if (!_SystemParametersInfo_NONCLIENTMETRICS(SPI.GETNONCLIENTMETRICS, metrics.cbSize, ref metrics, SPIF.None)) HRESULT.ThrowLastError();
+            if (!_SystemParametersInfo_NONCLIENTMETRICS(SPI.GETNONCLIENTMETRICS, metrics.cbSize, ref metrics, SPIF.None))
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return metrics;
         }
 
         public static HIGHCONTRAST SystemParameterInfo_GetHIGHCONTRAST()
         {
             var hc = new HIGHCONTRAST { cbSize = Marshal.SizeOf(typeof(HIGHCONTRAST)) };
-            if (!_SystemParametersInfo_HIGHCONTRAST(SPI.GETHIGHCONTRAST, hc.cbSize, ref hc, SPIF.None)) HRESULT.ThrowLastError();
+            if (!_SystemParametersInfo_HIGHCONTRAST(SPI.GETHIGHCONTRAST, hc.cbSize, ref hc, SPIF.None))
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return hc;
         }
 
@@ -2779,7 +2894,11 @@ namespace Standard
         public static IntPtr SelectObject(SafeDC hdc, IntPtr hgdiobj)
         {
             var ret = _SelectObject(hdc, hgdiobj);
-            if (ret == IntPtr.Zero) HRESULT.ThrowLastError();
+            if (ret == IntPtr.Zero)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return ret;
         }
 
@@ -2789,7 +2908,11 @@ namespace Standard
         public static IntPtr SelectObject(SafeDC hdc, SafeHBITMAP hgdiobj)
         {
             var ret = _SelectObjectSafeHBITMAP(hdc, hgdiobj);
-            if (ret == IntPtr.Zero) HRESULT.ThrowLastError();
+            if (ret == IntPtr.Zero)
+            {
+                HRESULT.ThrowLastError();
+            }
+
             return ret;
         }
 
@@ -2810,12 +2933,18 @@ namespace Standard
 
         public static void UnregisterClass(short atom, IntPtr hinstance)
         {
-            if (!_UnregisterClassAtom(new IntPtr(atom), hinstance)) HRESULT.ThrowLastError();
+            if (!_UnregisterClassAtom(new IntPtr(atom), hinstance))
+            {
+                HRESULT.ThrowLastError();
+            }
         }
 
         public static void UnregisterClass(string lpClassName, IntPtr hInstance)
         {
-            if (!_UnregisterClassName(lpClassName, hInstance)) HRESULT.ThrowLastError();
+            if (!_UnregisterClassName(lpClassName, hInstance))
+            {
+                HRESULT.ThrowLastError();
+            }
         }
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "UpdateLayeredWindow")]
@@ -2855,13 +2984,18 @@ namespace Standard
             ref BLENDFUNCTION pblend,
             ULW dwFlags)
         {
-            if (!_UpdateLayeredWindow(hwnd, hdcDst, ref pptDst, ref psize, hdcSrc, ref pptSrc, crKey, ref pblend, dwFlags)) HRESULT.ThrowLastError();
+            if (!_UpdateLayeredWindow(hwnd, hdcDst, ref pptDst, ref psize, hdcSrc, ref pptSrc, crKey, ref pblend, dwFlags))
+            {
+                HRESULT.ThrowLastError();
+            }
         }
 
         public static void UpdateLayeredWindow(IntPtr hwnd, int crKey, ref BLENDFUNCTION pblend, ULW dwFlags)
         {
             if (!_UpdateLayeredWindowIntPtr(hwnd, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, crKey, ref pblend, dwFlags))
+            {
                 HRESULT.ThrowLastError();
+            }
         }
 
         #region Win7 declarations
@@ -2886,10 +3020,18 @@ namespace Standard
 
         public static DWM_TIMING_INFO? DwmGetCompositionTimingInfo(IntPtr hwnd)
         {
-            if (!Utility.IsOSVistaOrNewer) return null; // API was new to Vista.
+            if (!Utility.IsOSVistaOrNewer)
+            {
+                return null; // API was new to Vista.
+            }
+
             var dti = new DWM_TIMING_INFO { cbSize = Marshal.SizeOf(typeof(DWM_TIMING_INFO)) };
             var hr = _DwmGetCompositionTimingInfo(Utility.IsOSWindows8OrNewer ? IntPtr.Zero : hwnd, ref dti);
-            if (hr == HRESULT.E_PENDING) return null; // The system isn't yet ready to respond.  Return null rather than throw.
+            if (hr == HRESULT.E_PENDING)
+            {
+                return null; // The system isn't yet ready to respond.  Return null rather than throw.
+            }
+
             hr.ThrowIfFailed();
             return dti;
         }

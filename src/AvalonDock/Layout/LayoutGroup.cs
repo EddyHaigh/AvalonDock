@@ -58,7 +58,11 @@ namespace AvalonDock.Layout
             get => _isVisible;
             protected set
             {
-                if (value == _isVisible) return;
+                if (value == _isVisible)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(IsVisible));
                 _isVisible = value;
                 OnIsVisibleChanged();
@@ -76,7 +80,11 @@ namespace AvalonDock.Layout
         /// <inheritdoc cref="ILayoutPane" />
         public void MoveChild(int oldIndex, int newIndex)
         {
-            if (oldIndex == newIndex) return;
+            if (oldIndex == newIndex)
+            {
+                return;
+            }
+
             _children.Move(oldIndex, newIndex);
             ChildMoved(oldIndex, newIndex);
         }
@@ -97,14 +105,18 @@ namespace AvalonDock.Layout
         public void InsertChildAt(int index, ILayoutElement element)
         {
             if (element is T t)
+            {
                 _children.Insert(index, t);
+            }
         }
 
         /// <inheritdoc cref="ILayoutContainer" />
         public void RemoveChild(ILayoutElement element)
         {
             if (element is T t)
+            {
                 _children.Remove(t);
+            }
         }
 
         /// <inheritdoc cref="ILayoutContainer" />
@@ -143,7 +155,10 @@ namespace AvalonDock.Layout
             while (true)
             {
                 if (reader.LocalName == localName && reader.NodeType == System.Xml.XmlNodeType.EndElement)
+                {
                     break;
+                }
+
                 if (reader.NodeType == System.Xml.XmlNodeType.Whitespace)
                 {
                     reader.Read();
@@ -154,10 +169,14 @@ namespace AvalonDock.Layout
                 Type typeForSerializer = Type.GetType(fullName);
 
                 if (typeForSerializer == null)
+                {
                     typeForSerializer = FindType(reader.LocalName);
+                }
 
                 if (typeForSerializer == null)
+                {
                     throw new ArgumentException("AvalonDock.LayoutGroup doesn't know how to deserialize " + reader.LocalName);
+                }
 
                 XmlSerializer serializer = XmlSerializersCache.GetSerializer(typeForSerializer);
                 Children.Add((T)serializer.Deserialize(reader));
@@ -215,7 +234,12 @@ namespace AvalonDock.Layout
                 if (e.OldItems != null)
                 {
                     foreach (LayoutElement element in e.OldItems)
-                        if (element.Parent == this || e.Action == NotifyCollectionChangedAction.Remove) element.Parent = null;
+                    {
+                        if (element.Parent == this || e.Action == NotifyCollectionChangedAction.Remove)
+                        {
+                            element.Parent = null;
+                        }
+                    }
                 }
             }
             if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Replace)
@@ -224,7 +248,11 @@ namespace AvalonDock.Layout
                 {
                     foreach (LayoutElement element in e.NewItems)
                     {
-                        if (element.Parent == this) continue;
+                        if (element.Parent == this)
+                        {
+                            continue;
+                        }
+
                         element.Parent?.RemoveChild(element);
                         element.Parent = this;
                     }
@@ -235,24 +263,39 @@ namespace AvalonDock.Layout
             OnChildrenCollectionChanged();
 
             if (e.Action == NotifyCollectionChangedAction.Add)
+            {
                 // #81 - Make parents update their children up the tree. Otherwise, they will not be redrawn.
                 RaiseChildrenTreeChanged();
+            }
             else
+            {
                 NotifyChildrenTreeChanged(ChildrenTreeChange.DirectChildrenChanged);
+            }
+
             RaisePropertyChanged(nameof(ChildrenCount));
         }
 
         private void UpdateParentVisibility()
         {
             if (Parent is ILayoutElementWithVisibility parentPane)
+            {
                 parentPane.ComputeVisibility();
+            }
         }
 
         private Type FindType(string name)
         {
             foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
                 foreach (var t in a.GetTypes())
-                    if (t.Name.Equals(name)) return t;
+                {
+                    if (t.Name.Equals(name))
+                    {
+                        return t;
+                    }
+                }
+            }
+
             return null;
         }
 

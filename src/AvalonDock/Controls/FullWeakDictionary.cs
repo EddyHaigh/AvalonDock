@@ -75,7 +75,9 @@ namespace AvalonDock.Controls
             CollectGarbage();
             int vIndex = _keys.FindIndex(k => k.GetValueOrDefault<K>() == key);
             if (vIndex > -1)
+            {
                 _values[vIndex] = new WeakReference(value);
+            }
             else
             {
                 _values.Add(new WeakReference(value));
@@ -97,7 +99,9 @@ namespace AvalonDock.Controls
             value = default(V);
 
             if (vIndex == -1)
+            {
                 return false;
+            }
 
             value = _values[vIndex].GetValueOrDefault<V>();
             return true;

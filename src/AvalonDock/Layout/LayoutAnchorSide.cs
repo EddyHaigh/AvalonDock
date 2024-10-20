@@ -34,7 +34,11 @@ namespace AvalonDock.Layout
             get => _side;
             private set
             {
-                if (value == _side) return;
+                if (value == _side)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(Side));
                 _side = value;
                 RaisePropertyChanged(nameof(Side));
@@ -61,10 +65,22 @@ namespace AvalonDock.Layout
 
         private void UpdateSide()
         {
-            if (this == Root.LeftSide) Side = AnchorSide.Left;
-            else if (this == Root.TopSide) Side = AnchorSide.Top;
-            else if (this == Root.RightSide) Side = AnchorSide.Right;
-            else if (this == Root.BottomSide) Side = AnchorSide.Bottom;
+            if (this == Root.LeftSide)
+            {
+                Side = AnchorSide.Left;
+            }
+            else if (this == Root.TopSide)
+            {
+                Side = AnchorSide.Top;
+            }
+            else if (this == Root.RightSide)
+            {
+                Side = AnchorSide.Right;
+            }
+            else if (this == Root.BottomSide)
+            {
+                Side = AnchorSide.Bottom;
+            }
         }
 
         #endregion Private Methods

@@ -127,7 +127,10 @@ namespace AvalonDock.Controls
                 this.Drop(fwAsDocument);
             }
             if (currentActiveContent == null)
+            {
                 return;
+            }
+
             Dispatcher.BeginInvoke(new Action(() =>
                 {
                     currentActiveContent.IsSelected = false;

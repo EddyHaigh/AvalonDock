@@ -75,7 +75,9 @@ namespace AvalonDock.Controls
             var layoutItem = (Model?.Root?.Manager)?.GetLayoutItemFromModel(Model);
             SetLayoutItem(layoutItem);
             if (layoutItem != null)
+            {
                 Model.TabItem = this;
+            }
             //UpdateLogicalParent();
         }
 
@@ -113,8 +115,16 @@ namespace AvalonDock.Controls
             CaptureMouse();
             _allowDrag = false;
             Model.IsActive = true;
-            if (Model is LayoutDocument layoutDocument && !layoutDocument.CanMove) return;
-            if (e.ClickCount != 1) return;
+            if (Model is LayoutDocument layoutDocument && !layoutDocument.CanMove)
+            {
+                return;
+            }
+
+            if (e.ClickCount != 1)
+            {
+                return;
+            }
+
             _mouseDownPoint = e.GetPosition(this);
             _isMouseDown = true;
         }
@@ -135,20 +145,37 @@ namespace AvalonDock.Controls
                     _allowDrag = true;
                 }
             }
-            if (!IsMouseCaptured || !_allowDrag) return;
+            if (!IsMouseCaptured || !_allowDrag)
+            {
+                return;
+            }
+
             var mousePosInScreenCoord = this.PointToScreenDPI(e.GetPosition(this));
             if (!_parentDocumentTabPanelScreenArea.Contains(mousePosInScreenCoord))
+            {
                 StartDraggingFloatingWindowForContent();
+            }
             else
             {
                 var indexOfTabItemWithMouseOver = _otherTabsScreenArea.FindIndex(r => r.Contains(mousePosInScreenCoord));
-                if (indexOfTabItemWithMouseOver < 0) return;
+                if (indexOfTabItemWithMouseOver < 0)
+                {
+                    return;
+                }
+
                 var targetModel = _otherTabs[indexOfTabItemWithMouseOver].Content as LayoutContent;
                 var container = Model.Parent as ILayoutContainer;
                 var containerPane = Model.Parent as ILayoutPane;
 
-                if (containerPane is LayoutDocumentPane layoutDocumentPane && !layoutDocumentPane.CanRepositionItems) return;
-                if (containerPane.Parent is LayoutDocumentPaneGroup layoutDocumentPaneGroup && !layoutDocumentPaneGroup.CanRepositionItems) return;
+                if (containerPane is LayoutDocumentPane layoutDocumentPane && !layoutDocumentPane.CanRepositionItems)
+                {
+                    return;
+                }
+
+                if (containerPane.Parent is LayoutDocumentPaneGroup layoutDocumentPaneGroup && !layoutDocumentPaneGroup.CanRepositionItems)
+                {
+                    return;
+                }
 
                 var childrenList = container.Children.ToList();
                 containerPane.MoveChild(childrenList.IndexOf(Model), childrenList.IndexOf(targetModel));
@@ -163,7 +190,11 @@ namespace AvalonDock.Controls
         {
             _isMouseDown = false;
             _allowDrag = false;
-            if (IsMouseCaptured) ReleaseMouseCapture();
+            if (IsMouseCaptured)
+            {
+                ReleaseMouseCapture();
+            }
+
             base.OnMouseLeftButtonUp(e);
         }
 

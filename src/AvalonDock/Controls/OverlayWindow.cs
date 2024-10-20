@@ -130,7 +130,9 @@ namespace AvalonDock.Controls
             _gridAnchorablePaneDropTargets.Visibility = System.Windows.Visibility.Hidden;
             _gridDocumentPaneDropTargets.Visibility = System.Windows.Visibility.Hidden;
             if (_gridDocumentPaneFullDropTargets != null)
+            {
                 _gridDocumentPaneFullDropTargets.Visibility = System.Windows.Visibility.Hidden;
+            }
 
             _dockingManagerDropTargetBottom = GetTemplateChild("PART_DockingManagerDropTargetBottom") as FrameworkElement;
             _dockingManagerDropTargetTop = GetTemplateChild("PART_DockingManagerDropTargetTop") as FrameworkElement;
@@ -190,8 +192,10 @@ namespace AvalonDock.Controls
                     var resourceDictionaryToRemove =
                         Resources.MergedDictionaries.FirstOrDefault(r => r.Source == oldTheme.GetResourceUri());
                     if (resourceDictionaryToRemove != null)
+                    {
                         Resources.MergedDictionaries.Remove(
                             resourceDictionaryToRemove);
+                    }
                 }
             }
 
@@ -212,13 +216,17 @@ namespace AvalonDock.Controls
         internal void EnableDropTargets()
         {
             if (_mainCanvasPanel != null)
+            {
                 _mainCanvasPanel.Visibility = System.Windows.Visibility.Visible;
+            }
         }
 
         internal void HideDropTargets()
         {
             if (_mainCanvasPanel != null)
+            {
                 _mainCanvasPanel.Visibility = System.Windows.Visibility.Hidden;
+            }
         }
 
         #endregion Internal Methods
@@ -378,7 +386,9 @@ namespace AvalonDock.Controls
                             yield return new AnchorablePaneDropTarget(dropAreaAnchorablePane.AreaElement, _anchorablePaneDropTargetRight.GetScreenArea(), DropTargetType.AnchorablePaneDockRight);
                             yield return new AnchorablePaneDropTarget(dropAreaAnchorablePane.AreaElement, _anchorablePaneDropTargetBottom.GetScreenArea(), DropTargetType.AnchorablePaneDockBottom);
                             if (_anchorablePaneDropTargetInto.IsVisible)
+                            {
                                 yield return new AnchorablePaneDropTarget(dropAreaAnchorablePane.AreaElement, _anchorablePaneDropTargetInto.GetScreenArea(), DropTargetType.AnchorablePaneDockInside);
+                            }
 
                             var parentPaneModel = dropAreaAnchorablePane.AreaElement.Model as LayoutAnchorablePane;
                             LayoutAnchorableTabItem lastAreaTabItem = null;
@@ -396,12 +406,16 @@ namespace AvalonDock.Controls
                                 var lastAreaTabItemScreenArea = lastAreaTabItem.GetScreenArea();
                                 var newAreaTabItemScreenArea = new Rect(lastAreaTabItemScreenArea.TopRight, new Point(lastAreaTabItemScreenArea.Right + lastAreaTabItemScreenArea.Width, lastAreaTabItemScreenArea.Bottom));
                                 if (newAreaTabItemScreenArea.Right < dropAreaAnchorablePane.AreaElement.GetScreenArea().Right)
+                                {
                                     yield return new AnchorablePaneDropTarget(dropAreaAnchorablePane.AreaElement, newAreaTabItemScreenArea, DropTargetType.AnchorablePaneDockInside, parentPaneModel.Children.Count);
+                                }
                             }
 
                             var dropAreaTitle = dropAreaAnchorablePane.AreaElement.FindVisualChildren<AnchorablePaneTitle>().FirstOrDefault();
                             if (dropAreaTitle != null)
+                            {
                                 yield return new AnchorablePaneDropTarget(dropAreaAnchorablePane.AreaElement, dropAreaTitle.GetScreenArea(), DropTargetType.AnchorablePaneDockInside);
+                            }
                         }
                         break;
 
@@ -415,15 +429,29 @@ namespace AvalonDock.Controls
                                 // -> Yield a drop target structure with 9 buttons
                                 var dropAreaDocumentPane = visibleArea as DropArea<LayoutDocumentPaneControl>;
                                 if (_documentPaneFullDropTargetLeft.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneFullDropTargetLeft.GetScreenArea(), DropTargetType.DocumentPaneDockLeft);
+                                }
+
                                 if (_documentPaneFullDropTargetTop.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneFullDropTargetTop.GetScreenArea(), DropTargetType.DocumentPaneDockTop);
+                                }
+
                                 if (_documentPaneFullDropTargetRight.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneFullDropTargetRight.GetScreenArea(), DropTargetType.DocumentPaneDockRight);
+                                }
+
                                 if (_documentPaneFullDropTargetBottom.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneFullDropTargetBottom.GetScreenArea(), DropTargetType.DocumentPaneDockBottom);
+                                }
+
                                 if (_documentPaneFullDropTargetInto.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneFullDropTargetInto.GetScreenArea(), DropTargetType.DocumentPaneDockInside);
+                                }
 
                                 var parentPaneModel = dropAreaDocumentPane.AreaElement.Model as LayoutDocumentPane;
                                 LayoutDocumentTabItem lastAreaTabItem = null;
@@ -441,17 +469,30 @@ namespace AvalonDock.Controls
                                     var lastAreaTabItemScreenArea = lastAreaTabItem.GetScreenArea();
                                     var newAreaTabItemScreenArea = new Rect(lastAreaTabItemScreenArea.TopRight, new Point(lastAreaTabItemScreenArea.Right + lastAreaTabItemScreenArea.Width, lastAreaTabItemScreenArea.Bottom));
                                     if (newAreaTabItemScreenArea.Right < dropAreaDocumentPane.AreaElement.GetScreenArea().Right)
+                                    {
                                         yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, newAreaTabItemScreenArea, DropTargetType.DocumentPaneDockInside, parentPaneModel.Children.Count);
+                                    }
                                 }
 
                                 if (_documentPaneDropTargetLeftAsAnchorablePane.IsVisible)
+                                {
                                     yield return new DocumentPaneDropAsAnchorableTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetLeftAsAnchorablePane.GetScreenArea(), DropTargetType.DocumentPaneDockAsAnchorableLeft);
+                                }
+
                                 if (_documentPaneDropTargetTopAsAnchorablePane.IsVisible)
+                                {
                                     yield return new DocumentPaneDropAsAnchorableTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetTopAsAnchorablePane.GetScreenArea(), DropTargetType.DocumentPaneDockAsAnchorableTop);
+                                }
+
                                 if (_documentPaneDropTargetRightAsAnchorablePane.IsVisible)
+                                {
                                     yield return new DocumentPaneDropAsAnchorableTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetRightAsAnchorablePane.GetScreenArea(), DropTargetType.DocumentPaneDockAsAnchorableRight);
+                                }
+
                                 if (_documentPaneDropTargetBottomAsAnchorablePane.IsVisible)
+                                {
                                     yield return new DocumentPaneDropAsAnchorableTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetBottomAsAnchorablePane.GetScreenArea(), DropTargetType.DocumentPaneDockAsAnchorableBottom);
+                                }
                             }
                             else
                             {
@@ -459,15 +500,29 @@ namespace AvalonDock.Controls
                                 // -> Yield a drop target structure with 5 center buttons over the document
                                 var dropAreaDocumentPane = visibleArea as DropArea<LayoutDocumentPaneControl>;
                                 if (_documentPaneDropTargetLeft.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetLeft.GetScreenArea(), DropTargetType.DocumentPaneDockLeft);
+                                }
+
                                 if (_documentPaneDropTargetTop.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetTop.GetScreenArea(), DropTargetType.DocumentPaneDockTop);
+                                }
+
                                 if (_documentPaneDropTargetRight.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetRight.GetScreenArea(), DropTargetType.DocumentPaneDockRight);
+                                }
+
                                 if (_documentPaneDropTargetBottom.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetBottom.GetScreenArea(), DropTargetType.DocumentPaneDockBottom);
+                                }
+
                                 if (_documentPaneDropTargetInto.IsVisible)
+                                {
                                     yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetInto.GetScreenArea(), DropTargetType.DocumentPaneDockInside);
+                                }
 
                                 var parentPaneModel = dropAreaDocumentPane.AreaElement.Model as LayoutDocumentPane;
                                 LayoutDocumentTabItem lastAreaTabItem = null;
@@ -485,7 +540,9 @@ namespace AvalonDock.Controls
                                     var lastAreaTabItemScreenArea = lastAreaTabItem.GetScreenArea();
                                     var newAreaTabItemScreenArea = new Rect(lastAreaTabItemScreenArea.TopRight, new Point(lastAreaTabItemScreenArea.Right + lastAreaTabItemScreenArea.Width, lastAreaTabItemScreenArea.Bottom));
                                     if (newAreaTabItemScreenArea.Right < dropAreaDocumentPane.AreaElement.GetScreenArea().Right)
+                                    {
                                         yield return new DocumentPaneDropTarget(dropAreaDocumentPane.AreaElement, newAreaTabItemScreenArea, DropTargetType.DocumentPaneDockInside, parentPaneModel.Children.Count);
+                                    }
                                 }
                             }
                         }
@@ -496,7 +553,9 @@ namespace AvalonDock.Controls
                             // Dragging over DocumentPaneGroup -> Add DropTarget Area
                             var dropAreaDocumentPane = visibleArea as DropArea<LayoutDocumentPaneGroupControl>;
                             if (_documentPaneDropTargetInto.IsVisible)
+                            {
                                 yield return new DocumentPaneGroupDropTarget(dropAreaDocumentPane.AreaElement, _documentPaneDropTargetInto.GetScreenArea(), DropTargetType.DocumentPaneGroupDockInside);
+                            }
                         }
                         break;
                 }
@@ -764,9 +823,13 @@ namespace AvalonDock.Controls
                     {
                         bool isDraggingAnchorables = _floatingWindow.Model is LayoutAnchorableFloatingWindow;
                         if (isDraggingAnchorables && _gridDocumentPaneFullDropTargets != null)
+                        {
                             areaElement = _gridDocumentPaneFullDropTargets;
+                        }
                         else
+                        {
                             areaElement = _gridDocumentPaneDropTargets;
+                        }
                     }
                     break;
             }

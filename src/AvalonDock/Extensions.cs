@@ -20,19 +20,34 @@ namespace AvalonDock
         public static bool Contains(this IEnumerable collection, object item)
         {
             foreach (var o in collection)
-                if (o == item) return true;
+            {
+                if (o == item)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
         public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
         {
-            foreach (var v in collection) action(v);
+            foreach (var v in collection)
+            {
+                action(v);
+            }
         }
 
         public static int IndexOf<T>(this T[] array, T value) where T : class
         {
             for (var i = 0; i < array.Length; i++)
-                if (array[i] == value) return i;
+            {
+                if (array[i] == value)
+                {
+                    return i;
+                }
+            }
+
             return -1;
         }
 
@@ -87,7 +102,9 @@ namespace AvalonDock
             {
                 dependencyObject = VisualTreeHelper.GetParent(dependencyObject);
                 if (dependencyObject != null)
+                {
                     yield return dependencyObject;
+                }
             }
         }
 

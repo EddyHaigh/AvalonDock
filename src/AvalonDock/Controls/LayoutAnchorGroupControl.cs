@@ -89,13 +89,17 @@ namespace AvalonDock.Controls
                 {
                     {
                         foreach (var childModel in e.OldItems)
+                        {
                             _childViews.Remove(_childViews.First(cv => cv.Model == childModel));
+                        }
                     }
                 }
             }
 
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
                 _childViews.Clear();
+            }
 
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add ||
                 e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)

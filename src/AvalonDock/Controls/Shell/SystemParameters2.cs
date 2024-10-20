@@ -336,10 +336,22 @@ namespace Microsoft.Windows.Shell
         private IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
         {
             // Don't do this if called within the SystemParameters2 constructor
-            if (_UpdateTable == null) return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
-            if (!_UpdateTable.TryGetValue(msg, out var handlers)) return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
+            if (_UpdateTable == null)
+            {
+                return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
+            }
+
+            if (!_UpdateTable.TryGetValue(msg, out var handlers))
+            {
+                return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
+            }
+
             Assert.IsNotNull(handlers);
-            foreach (var handler in handlers) handler(wParam, lParam);
+            foreach (var handler in handlers)
+            {
+                handler(wParam, lParam);
+            }
+
             return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
         }
 
@@ -351,7 +363,11 @@ namespace Microsoft.Windows.Shell
             get => NativeMethods.DwmIsCompositionEnabled();
             private set
             {
-                if (value == _isGlassEnabled) return;
+                if (value == _isGlassEnabled)
+                {
+                    return;
+                }
+
                 _isGlassEnabled = value;
                 _NotifyPropertyChanged(nameof(IsGlassEnabled));
             }
@@ -362,7 +378,11 @@ namespace Microsoft.Windows.Shell
             get => _glassColor;
             private set
             {
-                if (value == _glassColor) return;
+                if (value == _glassColor)
+                {
+                    return;
+                }
+
                 _glassColor = value;
                 _NotifyPropertyChanged(nameof(WindowGlassColor));
             }
@@ -375,7 +395,11 @@ namespace Microsoft.Windows.Shell
             {
                 Assert.IsNotNull(value);
                 Assert.IsTrue(value.IsFrozen);
-                if (_glassColorBrush != null && value.Color == _glassColorBrush.Color) return;
+                if (_glassColorBrush != null && value.Color == _glassColorBrush.Color)
+                {
+                    return;
+                }
+
                 _glassColorBrush = value;
                 _NotifyPropertyChanged(nameof(WindowGlassBrush));
             }
@@ -386,7 +410,11 @@ namespace Microsoft.Windows.Shell
             get => _windowResizeBorderThickness;
             private set
             {
-                if (value == _windowResizeBorderThickness) return;
+                if (value == _windowResizeBorderThickness)
+                {
+                    return;
+                }
+
                 _windowResizeBorderThickness = value;
                 _NotifyPropertyChanged(nameof(WindowResizeBorderThickness));
             }
@@ -397,7 +425,11 @@ namespace Microsoft.Windows.Shell
             get => _windowNonClientFrameThickness;
             private set
             {
-                if (value == _windowNonClientFrameThickness) return;
+                if (value == _windowNonClientFrameThickness)
+                {
+                    return;
+                }
+
                 _windowNonClientFrameThickness = value;
                 _NotifyPropertyChanged(nameof(WindowNonClientFrameThickness));
             }
@@ -408,7 +440,11 @@ namespace Microsoft.Windows.Shell
             get => _captionHeight;
             private set
             {
-                if (value == _captionHeight) return;
+                if (value == _captionHeight)
+                {
+                    return;
+                }
+
                 _captionHeight = value;
                 _NotifyPropertyChanged(nameof(WindowCaptionHeight));
             }
@@ -419,7 +455,11 @@ namespace Microsoft.Windows.Shell
             get => new Size(_smallIconSize.Width, _smallIconSize.Height);
             private set
             {
-                if (value == _smallIconSize) return;
+                if (value == _smallIconSize)
+                {
+                    return;
+                }
+
                 _smallIconSize = value;
                 _NotifyPropertyChanged(nameof(SmallIconSize));
             }
@@ -430,7 +470,11 @@ namespace Microsoft.Windows.Shell
             get => _uxThemeName;
             private set
             {
-                if (value == _uxThemeName) return;
+                if (value == _uxThemeName)
+                {
+                    return;
+                }
+
                 _uxThemeName = value;
                 _NotifyPropertyChanged(nameof(UxThemeName));
             }
@@ -441,7 +485,11 @@ namespace Microsoft.Windows.Shell
             get => _uxThemeColor;
             private set
             {
-                if (value == _uxThemeColor) return;
+                if (value == _uxThemeColor)
+                {
+                    return;
+                }
+
                 _uxThemeColor = value;
                 _NotifyPropertyChanged(nameof(UxThemeColor));
             }
@@ -452,7 +500,11 @@ namespace Microsoft.Windows.Shell
             get => _isHighContrast;
             private set
             {
-                if (value == _isHighContrast) return;
+                if (value == _isHighContrast)
+                {
+                    return;
+                }
+
                 _isHighContrast = value;
                 _NotifyPropertyChanged(nameof(HighContrast));
             }
@@ -463,7 +515,11 @@ namespace Microsoft.Windows.Shell
             get => _windowCornerRadius;
             private set
             {
-                if (value == _windowCornerRadius) return;
+                if (value == _windowCornerRadius)
+                {
+                    return;
+                }
+
                 _windowCornerRadius = value;
                 _NotifyPropertyChanged(nameof(WindowCornerRadius));
             }
@@ -474,7 +530,11 @@ namespace Microsoft.Windows.Shell
             get => _captionButtonLocation;
             private set
             {
-                if (value == _captionButtonLocation) return;
+                if (value == _captionButtonLocation)
+                {
+                    return;
+                }
+
                 _captionButtonLocation = value;
                 _NotifyPropertyChanged(nameof(WindowCaptionButtonsLocation));
             }

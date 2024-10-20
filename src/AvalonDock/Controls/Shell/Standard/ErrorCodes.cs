@@ -333,7 +333,9 @@ namespace Standard
                 {
                     var hr = (HRESULT)publicStaticField.GetValue(null);
                     if (hr == this)
+                    {
                         return publicStaticField.Name;
+                    }
                 }
             }
 
@@ -346,7 +348,9 @@ namespace Standard
                     {
                         var error = (Win32Error)publicStaticField.GetValue(null);
                         if ((HRESULT)error == this)
+                        {
                             return "HRESULT_FROM_WIN32(" + publicStaticField.Name + ")";
+                        }
                     }
                 }
             }
@@ -386,12 +390,20 @@ namespace Standard
 
         public void ThrowIfFailed(string message)
         {
-            if (!Failed) return;
+            if (!Failed)
+            {
+                return;
+            }
+
             if (string.IsNullOrEmpty(message))
+            {
                 message = ToString();
+            }
 #if DEBUG
             else
+            {
                 message += " (" + ToString() + ")";
+            }
 #endif
             // Wow.  Reflection in a throw call.  Later on this may turn out to have been a bad idea.
             // If you're throwing an exception I assume it's OK for me to take some time to give it back.

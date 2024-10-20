@@ -83,7 +83,9 @@ namespace AvalonDock.Layout.Serialization
         public void Serialize(string filepath)
         {
             using (var stream = new StreamWriter(filepath))
+            {
                 Serialize(stream);
+            }
         }
 
         /// <summary>Deserialize the layout a file from a <see cref="Stream"/>.</summary>
@@ -117,7 +119,9 @@ namespace AvalonDock.Layout.Serialization
         public void Deserialize(string filepath)
         {
             using (var stream = new StreamReader(filepath))
+            {
                 Deserialize(stream);
+            }
         }
 
         #endregion Public Methods

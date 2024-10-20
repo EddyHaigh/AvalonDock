@@ -60,14 +60,20 @@ namespace AvalonDock.Layout.Serialization
 
         protected virtual void FixupLayout(LayoutRoot layout)
         {
-            foreach (var element in layout.Descendents().OfType<LayoutElement>()) element.FixCachedRootOnDeserialize();
+            foreach (var element in layout.Descendents().OfType<LayoutElement>())
+            {
+                element.FixCachedRootOnDeserialize();
+            }
 
             //fix container panes
             foreach (var lcToAttach in layout.Descendents().OfType<ILayoutPreviousContainer>().Where(lc => lc.PreviousContainerId != null))
             {
                 var paneContainerToAttach = layout.Descendents().OfType<ILayoutPaneSerializable>().FirstOrDefault(lps => lps.Id == lcToAttach.PreviousContainerId);
                 if (paneContainerToAttach == null)
+                {
                     throw new ArgumentException($"Unable to find a pane with id ='{lcToAttach.PreviousContainerId}'");
+                }
+
                 lcToAttach.PreviousContainer = paneContainerToAttach as ILayoutContainer;
             }
 
@@ -76,10 +82,14 @@ namespace AvalonDock.Layout.Serialization
             {
                 LayoutAnchorable previousAchorable = null;            //try find the content in replaced layout
                 if (lcToFix.ContentId != null)
+                {
                     previousAchorable = Array.Find(_previousAnchorables, a => a.ContentId == lcToFix.ContentId);
+                }
 
                 if (previousAchorable != null && previousAchorable.Title != null)
+                {
                     lcToFix.Title = previousAchorable.Title;
+                }
 
                 if (LayoutSerializationCallback != null)
                 {
@@ -87,14 +97,22 @@ namespace AvalonDock.Layout.Serialization
                     var args = new LayoutSerializationCallbackEventArgs(lcToFix, previousAchorable?.Content);
                     LayoutSerializationCallback(this, args);
                     if (args.Cancel)
+                    {
                         lcToFix.Close();
+                    }
                     else if (args.Content != null)
+                    {
                         lcToFix.Content = args.Content;
+                    }
                     else if (args.Model.Content != null)
+                    {
                         lcToFix.HideAnchorable(false);   // hide layoutanchorable if client app supplied no content
+                    }
                 }
                 else if (previousAchorable == null)  // No Callback and no provious document -> skip this
+                {
                     lcToFix.HideAnchorable(false);
+                }
                 else
                 {   // No Callback but previous anchoreable available -> load content from previous document
                     lcToFix.Content = previousAchorable.Content;
@@ -118,14 +136,22 @@ namespace AvalonDock.Layout.Serialization
                     LayoutSerializationCallback(this, args);
 
                     if (args.Cancel)
+                    {
                         lcToFix.Close();
+                    }
                     else if (args.Content != null)
+                    {
                         lcToFix.Content = args.Content;
+                    }
                     else if (args.Model.Content != null)  // Close document if client app supplied no content
+                    {
                         lcToFix.Close();
+                    }
                 }
                 else if (previousDocument == null)  // No Callback and no provious document -> skip this
+                {
                     lcToFix.Close();
+                }
                 else
                 {   // No Callback but previous document available -> load content from previous document
                     lcToFix.Content = previousDocument.Content;

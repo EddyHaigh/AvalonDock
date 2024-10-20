@@ -105,7 +105,9 @@ namespace AvalonDock.Controls
                 {
                     //esit drop target
                     if (_currentDropTarget != null)
+                    {
                         _currentWindow.DragLeave(_currentDropTarget);
+                    }
 
                     _currentDropTarget = null;
 
@@ -116,7 +118,10 @@ namespace AvalonDock.Controls
 
                     //hide current overlay window
                     if (_currentWindow != null)
+                    {
                         _currentWindow.DragLeave(_floatingWindow);
+                    }
+
                     if (_currentHost != null)
                     {
                         _currentHost.HideOverlayWindow();
@@ -154,7 +159,9 @@ namespace AvalonDock.Controls
             }
 
             if (_currentHost == null)
+            {
                 return;
+            }
 
             if (_currentDropTarget != null &&
                 !_currentDropTarget.HitTestScreen(dragPosition))
@@ -190,7 +197,9 @@ namespace AvalonDock.Controls
                 _currentWindowAreas.ForEach(wa =>
                 {
                     if (_currentDropTarget != null)
+                    {
                         return;
+                    }
 
                     _currentDropTarget = _currentWindow.GetTargets().FirstOrDefault(dt => dt.HitTestScreen(dragPosition));
 
@@ -227,7 +236,9 @@ namespace AvalonDock.Controls
             var root = floatingWindowModel.Root;
 
             if (_currentHost != null)
+            {
                 _currentHost.HideOverlayWindow();
+            }
 
             if (_currentDropTarget != null)
             {
@@ -239,10 +250,14 @@ namespace AvalonDock.Controls
             _currentWindowAreas.ForEach(a => _currentWindow.DragLeave(a));
 
             if (_currentDropTarget != null)
+            {
                 _currentWindow.DragLeave(_currentDropTarget);
+            }
 
             if (_currentWindow != null)
+            {
                 _currentWindow.DragLeave(_floatingWindow);
+            }
 
             _currentWindow = null;
             _currentHost = null;
@@ -261,15 +276,21 @@ namespace AvalonDock.Controls
             _currentWindowAreas.ForEach(a => _currentWindow.DragLeave(a));
 
             if (_currentDropTarget != null)
+            {
                 _currentWindow.DragLeave(_currentDropTarget);
+            }
 
             if (_currentWindow != null)
+            {
                 _currentWindow.DragLeave(_floatingWindow);
+            }
 
             _currentWindow = null;
 
             if (_currentHost != null)
+            {
                 _currentHost.HideOverlayWindow();
+            }
 
             _currentHost = null;
         }
@@ -280,7 +301,10 @@ namespace AvalonDock.Controls
 
         private void BringWindowToTop2(Window window)
         {
-            if (window == null) return;
+            if (window == null)
+            {
+                return;
+            }
 
             Win32Helper.SetWindowPos(new WindowInteropHelper(window).Handle,
                 IntPtr.Zero, 0, 0, 0, 0, Win32Helper.SetWindowPosFlags.IgnoreResize | Win32Helper.SetWindowPosFlags.IgnoreMove | Win32Helper.SetWindowPosFlags.DoNotActivate);

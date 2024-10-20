@@ -70,7 +70,9 @@ namespace AvalonDock.Controls
 
             // Code below is required only if virtualization is turned ON
             if (_IsVirtualizing)
+            {
                 return;
+            }
 
             ItemsHolderPanel = CreateGrid();
             // exchange ContentPresenter for Grid
@@ -103,10 +105,14 @@ namespace AvalonDock.Controls
 
             // Code below is required only if virtualization is turned ON
             if (_IsVirtualizing)
+            {
                 return;
+            }
 
             if (ItemsHolderPanel == null)
+            {
                 return;
+            }
 
             switch (e.Action)
             {
@@ -122,7 +128,9 @@ namespace AvalonDock.Controls
                         {
                             ContentPresenter cp = FindChildContentPresenter(item);
                             if (cp != null)
+                            {
                                 ItemsHolderPanel.Children.Remove(cp);
+                            }
                         }
                     }
 
@@ -147,7 +155,9 @@ namespace AvalonDock.Controls
 
             // Code below is required only if virtualization is turned ON
             if (_IsVirtualizing)
+            {
                 return;
+            }
 
             UpdateSelectedItem();
         }
@@ -210,27 +220,37 @@ namespace AvalonDock.Controls
         private void UpdateSelectedItem()
         {
             if (ItemsHolderPanel == null)
+            {
                 return;
+            }
 
             // Generate a ContentPresenter if necessary
             TabItem item = GetSelectedTabItem();
             if (item != null)
+            {
                 CreateChildContentPresenter(item);
+            }
 
             // show the right child
             foreach (ContentPresenter child in ItemsHolderPanel.Children)
+            {
                 child.Visibility = ((child.Tag as TabItem).IsSelected) ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private ContentPresenter CreateChildContentPresenter(object item)
         {
             if (item == null)
+            {
                 return null;
+            }
 
             ContentPresenter cp = FindChildContentPresenter(item);
 
             if (cp != null)
+            {
                 return cp;
+            }
 
             // the actual child to be added.  cp.Tag is a reference to the TabItem
             cp = new ContentPresenter();

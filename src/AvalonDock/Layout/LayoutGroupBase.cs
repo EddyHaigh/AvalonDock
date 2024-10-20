@@ -55,7 +55,9 @@ namespace AvalonDock.Layout
         protected virtual void OnChildrenCollectionChanged()
         {
             if (ChildrenCollectionChanged != null)
+            {
                 ChildrenCollectionChanged(this, EventArgs.Empty);
+            }
         }
 
         /// <summary>Provides an opportuntiy for inheriting classes to execute custom code when the <see cref="ChildrenTreeChange"/> event is raised.</summary>
@@ -63,7 +65,9 @@ namespace AvalonDock.Layout
         protected virtual void OnChildrenTreeChanged(ChildrenTreeChange change)
         {
             if (ChildrenTreeChanged != null)
+            {
                 ChildrenTreeChanged(this, new ChildrenTreeChangedEventArgs(change));
+            }
         }
 
         protected void NotifyChildrenTreeChanged(ChildrenTreeChange change)

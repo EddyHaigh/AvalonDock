@@ -75,7 +75,11 @@ namespace AvalonDock.Layout
         private static object CoerceTitleValue(DependencyObject obj, object value)
         {
             var lc = (LayoutContent)obj;
-            if ((string)value != lc.Title) lc.RaisePropertyChanging(TitleProperty.Name);
+            if ((string)value != lc.Title)
+            {
+                lc.RaisePropertyChanging(TitleProperty.Name);
+            }
+
             return value;
         }
 
@@ -94,11 +98,18 @@ namespace AvalonDock.Layout
             get => _content;
             set
             {
-                if (value == _content) return;
+                if (value == _content)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(Content));
                 _content = value;
                 RaisePropertyChanged(nameof(Content));
-                if (ContentId == null) SetContentIdFromContent();
+                if (ContentId == null)
+                {
+                    SetContentIdFromContent();
+                }
             }
         }
 
@@ -113,7 +124,10 @@ namespace AvalonDock.Layout
             get
             {
                 var value = (string)GetValue(ContentIdProperty);
-                if (!string.IsNullOrWhiteSpace(value)) return value;
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
                 // #83 - if Content.Name is empty at setting content and will be set later, ContentId will stay null.
                 SetContentIdFromContent();
                 return (string)GetValue(ContentIdProperty);
@@ -123,18 +137,27 @@ namespace AvalonDock.Layout
 
         private static void OnContentIdPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
-            if (obj is LayoutContent layoutContent) layoutContent.OnContentIdPropertyChanged((string)args.OldValue, (string)args.NewValue);
+            if (obj is LayoutContent layoutContent)
+            {
+                layoutContent.OnContentIdPropertyChanged((string)args.OldValue, (string)args.NewValue);
+            }
         }
 
         private void OnContentIdPropertyChanged(string oldValue, string newValue)
         {
-            if (oldValue != newValue) RaisePropertyChanged(nameof(ContentId));
+            if (oldValue != newValue)
+            {
+                RaisePropertyChanged(nameof(ContentId));
+            }
         }
 
         private void SetContentIdFromContent()
         {
             var contentAsControl = _content as FrameworkElement;
-            if (!string.IsNullOrWhiteSpace(contentAsControl?.Name)) SetCurrentValue(ContentIdProperty, contentAsControl.Name);
+            if (!string.IsNullOrWhiteSpace(contentAsControl?.Name))
+            {
+                SetCurrentValue(ContentIdProperty, contentAsControl.Name);
+            }
         }
 
         #endregion ContentId
@@ -148,11 +171,19 @@ namespace AvalonDock.Layout
             get => _isSelected;
             set
             {
-                if (value == _isSelected) return;
+                if (value == _isSelected)
+                {
+                    return;
+                }
+
                 var oldValue = _isSelected;
                 RaisePropertyChanging(nameof(IsSelected));
                 _isSelected = value;
-                if (Parent is ILayoutContentSelector parentSelector) parentSelector.SelectedContentIndex = _isSelected ? parentSelector.IndexOf(this) : -1;
+                if (Parent is ILayoutContentSelector parentSelector)
+                {
+                    parentSelector.SelectedContentIndex = _isSelected ? parentSelector.IndexOf(this) : -1;
+                }
+
                 OnIsSelectedChanged(oldValue, value);
                 RaisePropertyChanged(nameof(IsSelected));
                 LayoutAnchorableTabItem.CancelMouseLeave();
@@ -179,17 +210,32 @@ namespace AvalonDock.Layout
             get => _isActive;
             set
             {
-                if (value == _isActive) return;
+                if (value == _isActive)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(IsActive));
                 var oldValue = _isActive;
                 _isActive = value;
                 var root = Root;
                 if (root != null)
                 {
-                    if (root.ActiveContent != this && value) Root.ActiveContent = this;
-                    if (_isActive && root.ActiveContent != this) root.ActiveContent = this;
+                    if (root.ActiveContent != this && value)
+                    {
+                        Root.ActiveContent = this;
+                    }
+
+                    if (_isActive && root.ActiveContent != this)
+                    {
+                        root.ActiveContent = this;
+                    }
                 }
-                if (_isActive) IsSelected = true;
+                if (_isActive)
+                {
+                    IsSelected = true;
+                }
+
                 OnIsActiveChanged(oldValue, value);
                 RaisePropertyChanged(nameof(IsActive));
             }
@@ -200,7 +246,11 @@ namespace AvalonDock.Layout
         /// </summary>
         protected virtual void OnIsActiveChanged(bool oldValue, bool newValue)
         {
-            if (newValue) LastActivationTimeStamp = DateTime.Now;
+            if (newValue)
+            {
+                LastActivationTimeStamp = DateTime.Now;
+            }
+
             IsActiveChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -217,7 +267,11 @@ namespace AvalonDock.Layout
             get => _isLastFocusedDocument;
             internal set
             {
-                if (value == _isLastFocusedDocument) return;
+                if (value == _isLastFocusedDocument)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(IsLastFocusedDocument));
                 _isLastFocusedDocument = value;
                 RaisePropertyChanged(nameof(IsLastFocusedDocument));
@@ -237,11 +291,17 @@ namespace AvalonDock.Layout
             get => _previousContainer;
             set
             {
-                if (value == _previousContainer) return;
+                if (value == _previousContainer)
+                {
+                    return;
+                }
+
                 _previousContainer = value;
                 RaisePropertyChanged(nameof(PreviousContainer));
                 if (_previousContainer is ILayoutPaneSerializable paneSerializable && paneSerializable.Id == null)
+                {
                     paneSerializable.Id = Guid.NewGuid().ToString();
+                }
             }
         }
 
@@ -273,7 +333,11 @@ namespace AvalonDock.Layout
             get => _previousContainerIndex;
             set
             {
-                if (value == _previousContainerIndex) return;
+                if (value == _previousContainerIndex)
+                {
+                    return;
+                }
+
                 _previousContainerIndex = value;
                 RaisePropertyChanged(nameof(PreviousContainerIndex));
             }
@@ -290,7 +354,11 @@ namespace AvalonDock.Layout
             get => _lastActivationTimeStamp;
             set
             {
-                if (value == _lastActivationTimeStamp) return;
+                if (value == _lastActivationTimeStamp)
+                {
+                    return;
+                }
+
                 _lastActivationTimeStamp = value;
                 RaisePropertyChanged(nameof(LastActivationTimeStamp));
             }
@@ -307,7 +375,11 @@ namespace AvalonDock.Layout
             get => _floatingWidth;
             set
             {
-                if (value == _floatingWidth) return;
+                if (value == _floatingWidth)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(FloatingWidth));
                 _floatingWidth = value;
                 RaisePropertyChanged(nameof(FloatingWidth));
@@ -325,7 +397,11 @@ namespace AvalonDock.Layout
             get => _floatingHeight;
             set
             {
-                if (value == _floatingHeight) return;
+                if (value == _floatingHeight)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(FloatingHeight));
                 _floatingHeight = value;
                 RaisePropertyChanged(nameof(FloatingHeight));
@@ -343,7 +419,11 @@ namespace AvalonDock.Layout
             get => _floatingLeft;
             set
             {
-                if (value == _floatingLeft) return;
+                if (value == _floatingLeft)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(FloatingLeft));
                 _floatingLeft = value;
                 RaisePropertyChanged(nameof(FloatingLeft));
@@ -361,7 +441,11 @@ namespace AvalonDock.Layout
             get => _floatingTop;
             set
             {
-                if (value == _floatingTop) return;
+                if (value == _floatingTop)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(FloatingTop));
                 _floatingTop = value;
                 RaisePropertyChanged(nameof(FloatingTop));
@@ -379,7 +463,11 @@ namespace AvalonDock.Layout
             get => _isMaximized;
             set
             {
-                if (value == _isMaximized) return;
+                if (value == _isMaximized)
+                {
+                    return;
+                }
+
                 RaisePropertyChanging(nameof(IsMaximized));
                 _isMaximized = value;
                 RaisePropertyChanged(nameof(IsMaximized));
@@ -397,7 +485,11 @@ namespace AvalonDock.Layout
             get => _toolTip;
             set
             {
-                if (value == _toolTip) return;
+                if (value == _toolTip)
+                {
+                    return;
+                }
+
                 _toolTip = value;
                 RaisePropertyChanged(nameof(ToolTip));
             }
@@ -418,7 +510,11 @@ namespace AvalonDock.Layout
             get => _iconSource;
             set
             {
-                if (value == _iconSource) return;
+                if (value == _iconSource)
+                {
+                    return;
+                }
+
                 _iconSource = value;
                 RaisePropertyChanged(nameof(IconSource));
             }
@@ -438,7 +534,11 @@ namespace AvalonDock.Layout
             get => _canClose;
             set
             {
-                if (_canClose == value) return;
+                if (_canClose == value)
+                {
+                    return;
+                }
+
                 _canClose = value;
                 RaisePropertyChanged(nameof(CanClose));
             }
@@ -455,7 +555,11 @@ namespace AvalonDock.Layout
             get => _canFloat;
             set
             {
-                if (value == _canFloat) return;
+                if (value == _canFloat)
+                {
+                    return;
+                }
+
                 _canFloat = value;
                 RaisePropertyChanged(nameof(CanFloat));
             }
@@ -479,7 +583,11 @@ namespace AvalonDock.Layout
             get => _canShowOnHover;
             set
             {
-                if (value == _canShowOnHover) return;
+                if (value == _canShowOnHover)
+                {
+                    return;
+                }
+
                 _canShowOnHover = value;
                 RaisePropertyChanged(nameof(CanShowOnHover));
             }
@@ -496,7 +604,11 @@ namespace AvalonDock.Layout
             get => _isEnabled;
             set
             {
-                if (value == _isEnabled) return;
+                if (value == _isEnabled)
+                {
+                    return;
+                }
+
                 _isEnabled = value;
                 RaisePropertyChanged(nameof(IsEnabled));
             }
@@ -525,39 +637,81 @@ namespace AvalonDock.Layout
         public virtual void ReadXml(System.Xml.XmlReader reader)
         {
             if (reader.MoveToAttribute(nameof(Title)))
+            {
                 Title = reader.Value;
+            }
             //if (reader.MoveToAttribute("IconSource"))
             //    IconSource = new Uri(reader.Value, UriKind.RelativeOrAbsolute);
 
             if (reader.MoveToAttribute(nameof(IsSelected)))
+            {
                 IsSelected = bool.Parse(reader.Value);
+            }
+
             if (reader.MoveToAttribute(nameof(ContentId)))
+            {
                 ContentId = reader.Value;
+            }
+
             if (reader.MoveToAttribute(nameof(IsLastFocusedDocument)))
+            {
                 IsLastFocusedDocument = bool.Parse(reader.Value);
+            }
+
             if (reader.MoveToAttribute(nameof(PreviousContainerId)))
+            {
                 PreviousContainerId = reader.Value;
+            }
+
             if (reader.MoveToAttribute(nameof(PreviousContainerIndex)))
+            {
                 PreviousContainerIndex = int.Parse(reader.Value);
+            }
 
             if (reader.MoveToAttribute(nameof(FloatingLeft)))
+            {
                 FloatingLeft = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
             if (reader.MoveToAttribute(nameof(FloatingTop)))
+            {
                 FloatingTop = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
             if (reader.MoveToAttribute(nameof(FloatingWidth)))
+            {
                 FloatingWidth = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
             if (reader.MoveToAttribute(nameof(FloatingHeight)))
+            {
                 FloatingHeight = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
             if (reader.MoveToAttribute(nameof(IsMaximized)))
+            {
                 IsMaximized = bool.Parse(reader.Value);
+            }
+
             if (reader.MoveToAttribute(nameof(CanClose)))
+            {
                 CanClose = bool.Parse(reader.Value);
+            }
+
             if (reader.MoveToAttribute(nameof(CanFloat)))
+            {
                 CanFloat = bool.Parse(reader.Value);
+            }
+
             if (reader.MoveToAttribute(nameof(LastActivationTimeStamp)))
+            {
                 LastActivationTimeStamp = DateTime.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
             if (reader.MoveToAttribute(nameof(CanShowOnHover)))
+            {
                 CanShowOnHover = bool.Parse(reader.Value);
+            }
 
             reader.Read();
         }
@@ -566,38 +720,79 @@ namespace AvalonDock.Layout
         public virtual void WriteXml(System.Xml.XmlWriter writer)
         {
             if (!string.IsNullOrWhiteSpace(Title))
+            {
                 writer.WriteAttributeString(nameof(Title), Title);
+            }
 
             //if (IconSource != null)
             //    writer.WriteAttributeString("IconSource", IconSource.ToString());
 
             if (IsSelected)
+            {
                 writer.WriteAttributeString(nameof(IsSelected), IsSelected.ToString());
+            }
 
             if (IsLastFocusedDocument)
+            {
                 writer.WriteAttributeString(nameof(IsLastFocusedDocument), IsLastFocusedDocument.ToString());
+            }
 
             if (!string.IsNullOrWhiteSpace(ContentId))
+            {
                 writer.WriteAttributeString(nameof(ContentId), ContentId);
+            }
 
             if (ToolTip is string toolTip && !string.IsNullOrWhiteSpace(toolTip))
+            {
                 writer.WriteAttributeString(nameof(ToolTip), toolTip);
+            }
 
-            if (FloatingLeft != 0.0) writer.WriteAttributeString(nameof(FloatingLeft), FloatingLeft.ToString(CultureInfo.InvariantCulture));
-            if (FloatingTop != 0.0) writer.WriteAttributeString(nameof(FloatingTop), FloatingTop.ToString(CultureInfo.InvariantCulture));
-            if (FloatingWidth != 0.0) writer.WriteAttributeString(nameof(FloatingWidth), FloatingWidth.ToString(CultureInfo.InvariantCulture));
-            if (FloatingHeight != 0.0) writer.WriteAttributeString(nameof(FloatingHeight), FloatingHeight.ToString(CultureInfo.InvariantCulture));
+            if (FloatingLeft != 0.0)
+            {
+                writer.WriteAttributeString(nameof(FloatingLeft), FloatingLeft.ToString(CultureInfo.InvariantCulture));
+            }
 
-            if (IsMaximized) writer.WriteAttributeString(nameof(IsMaximized), IsMaximized.ToString());
+            if (FloatingTop != 0.0)
+            {
+                writer.WriteAttributeString(nameof(FloatingTop), FloatingTop.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (FloatingWidth != 0.0)
+            {
+                writer.WriteAttributeString(nameof(FloatingWidth), FloatingWidth.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (FloatingHeight != 0.0)
+            {
+                writer.WriteAttributeString(nameof(FloatingHeight), FloatingHeight.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (IsMaximized)
+            {
+                writer.WriteAttributeString(nameof(IsMaximized), IsMaximized.ToString());
+            }
             // BD: 14.08.2020 changed to check CanClose value against the default in _canCloseDefault
             //     thus CanClose property will be serialized only when not equal to its default for given class
             //     With previous code it was not possible to serialize CanClose if set to true for LayoutAnchorable instance
-            if (CanClose != _canCloseDefault) writer.WriteAttributeString(nameof(CanClose), CanClose.ToString());
-            if (!CanFloat) writer.WriteAttributeString(nameof(CanFloat), CanFloat.ToString());
+            if (CanClose != _canCloseDefault)
+            {
+                writer.WriteAttributeString(nameof(CanClose), CanClose.ToString());
+            }
 
-            if (LastActivationTimeStamp != null) writer.WriteAttributeString(nameof(LastActivationTimeStamp), LastActivationTimeStamp.Value.ToString(CultureInfo.InvariantCulture));
+            if (!CanFloat)
+            {
+                writer.WriteAttributeString(nameof(CanFloat), CanFloat.ToString());
+            }
 
-            if (!CanShowOnHover) writer.WriteAttributeString(nameof(CanShowOnHover), CanShowOnHover.ToString());
+            if (LastActivationTimeStamp != null)
+            {
+                writer.WriteAttributeString(nameof(LastActivationTimeStamp), LastActivationTimeStamp.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (!CanShowOnHover)
+            {
+                writer.WriteAttributeString(nameof(CanShowOnHover), CanShowOnHover.ToString());
+            }
 
             if (_previousContainer is ILayoutPaneSerializable paneSerializable)
             {
@@ -609,7 +804,10 @@ namespace AvalonDock.Layout
         public int CompareTo(LayoutContent other)
         {
             if (Content is IComparable contentAsComparable)
+            {
                 return contentAsComparable.CompareTo(other.Content);
+            }
+
             return string.Compare(Title, other.Title);
         }
 
@@ -623,9 +821,13 @@ namespace AvalonDock.Layout
                 var previousContainerAsLayoutGroup = PreviousContainer as ILayoutGroup;
 
                 if (PreviousContainerIndex < previousContainerAsLayoutGroup.ChildrenCount)
+                {
                     previousContainerAsLayoutGroup.InsertChildAt(PreviousContainerIndex, this);
+                }
                 else
+                {
                     previousContainerAsLayoutGroup.InsertChildAt(previousContainerAsLayoutGroup.ChildrenCount, this);
+                }
 
                 PreviousContainer = currentContainer;
                 PreviousContainerIndex = currentContainerIndex;
@@ -647,7 +849,10 @@ namespace AvalonDock.Layout
         /// <summary>Dock the content as document.</summary>
         public void DockAsDocument()
         {
-            if (!(Root is LayoutRoot root)) throw new InvalidOperationException();
+            if (!(Root is LayoutRoot root))
+            {
+                throw new InvalidOperationException();
+            }
 
             if (PreviousContainer is LayoutDocumentPane)
             {
@@ -657,9 +862,13 @@ namespace AvalonDock.Layout
 
             LayoutDocumentPane newParentPane;
             if (root.LastFocusedDocument != null)
+            {
                 newParentPane = root.LastFocusedDocument.Parent as LayoutDocumentPane;
+            }
             else
+            {
                 newParentPane = root.Descendents().OfType<LayoutDocumentPane>().FirstOrDefault();
+            }
 
             if (newParentPane != null)
             {
@@ -683,9 +892,13 @@ namespace AvalonDock.Layout
                 var previousContainerAsLayoutGroup = PreviousContainer as ILayoutGroup;
 
                 if (PreviousContainerIndex < previousContainerAsLayoutGroup.ChildrenCount)
+                {
                     previousContainerAsLayoutGroup.InsertChildAt(PreviousContainerIndex, this);
+                }
                 else
+                {
                     previousContainerAsLayoutGroup.InsertChildAt(previousContainerAsLayoutGroup.ChildrenCount, this);
+                }
 
                 if (currentContainerIndex > -1)
                 {
@@ -702,7 +915,9 @@ namespace AvalonDock.Layout
                 IsActive = true;
             }
             else
+            {
                 InternalDock();
+            }
 
             Root.CollectGarbage();
 
@@ -717,7 +932,10 @@ namespace AvalonDock.Layout
         /// <inheritdoc />
         protected override void OnParentChanging(ILayoutContainer oldValue, ILayoutContainer newValue)
         {
-            if (oldValue != null) IsSelected = false;
+            if (oldValue != null)
+            {
+                IsSelected = false;
+            }
 
             base.OnParentChanging(oldValue, newValue);
         }
@@ -769,9 +987,13 @@ namespace AvalonDock.Layout
                         PreviousContainerIndex = -1;
 
                         if (parentAsGroup.Parent is ILayoutPaneSerializable paneSerializable)
+                        {
                             PreviousContainerId = paneSerializable.Id;
+                        }
                         else
+                        {
                             PreviousContainerId = null;
+                        }
                     }
                 }
             }

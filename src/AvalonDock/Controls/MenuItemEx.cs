@@ -88,20 +88,33 @@ namespace AvalonDock.Controls
 
         private static void OnIconPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue != null) ((MenuItemEx)sender).UpdateIcon();
+            if (e.NewValue != null)
+            {
+                ((MenuItemEx)sender).UpdateIcon();
+            }
         }
 
         private void UpdateIcon()
         {
-            if (_reentrantFlag) return;
+            if (_reentrantFlag)
+            {
+                return;
+            }
+
             _reentrantFlag = true;
             if (IconTemplateSelector != null)
             {
                 var dataTemplateToUse = IconTemplateSelector.SelectTemplate(Icon, this);
-                if (dataTemplateToUse != null) Icon = dataTemplateToUse.LoadContent();
+                if (dataTemplateToUse != null)
+                {
+                    Icon = dataTemplateToUse.LoadContent();
+                }
             }
             else if (IconTemplate != null)
+            {
                 Icon = IconTemplate.LoadContent();
+            }
+
             _reentrantFlag = false;
         }
 

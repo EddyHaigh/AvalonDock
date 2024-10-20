@@ -134,7 +134,9 @@ namespace AvalonDock.Controls
                 _draggingItem = null;
             }
             else
+            {
                 _cancelMouseLeave = false;
+            }
         }
 
         /// <inheritdoc />
@@ -163,18 +165,33 @@ namespace AvalonDock.Controls
         protected override void OnMouseEnter(MouseEventArgs e)
         {
             base.OnMouseEnter(e);
-            if (_draggingItem == null || _draggingItem == this || e.LeftButton != MouseButtonState.Pressed) return;
+            if (_draggingItem == null || _draggingItem == this || e.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+
             var model = Model;
             var container = model.Parent;
             var containerPane = model.Parent as ILayoutPane;
-            if (containerPane is LayoutAnchorablePane layoutAnchorablePane && !layoutAnchorablePane.CanRepositionItems) return;
-            if (containerPane.Parent is LayoutAnchorablePaneGroup layoutAnchorablePaneGroup && !layoutAnchorablePaneGroup.CanRepositionItems) return;
+            if (containerPane is LayoutAnchorablePane layoutAnchorablePane && !layoutAnchorablePane.CanRepositionItems)
+            {
+                return;
+            }
+
+            if (containerPane.Parent is LayoutAnchorablePaneGroup layoutAnchorablePaneGroup && !layoutAnchorablePaneGroup.CanRepositionItems)
+            {
+                return;
+            }
+
             var childrenList = container.Children.ToList();
 
             // Hotfix to avoid crash caused by a likely threading issue Back in the containerPane.
             var oldIndex = childrenList.IndexOf(_draggingItem.Model);
             var newIndex = childrenList.IndexOf(model);
-            if (newIndex < containerPane.ChildrenCount && oldIndex > -1) containerPane.MoveChild(oldIndex, newIndex);
+            if (newIndex < containerPane.ChildrenCount && oldIndex > -1)
+            {
+                containerPane.MoveChild(oldIndex, newIndex);
+            }
         }
 
         #endregion Overrides

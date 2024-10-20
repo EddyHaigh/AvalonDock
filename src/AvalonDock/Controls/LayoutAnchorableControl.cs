@@ -64,24 +64,44 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Model"/> property.</summary>
         protected virtual void OnModelChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (e.OldValue != null) ((LayoutContent)e.OldValue).PropertyChanged -= Model_PropertyChanged;
+            if (e.OldValue != null)
+            {
+                ((LayoutContent)e.OldValue).PropertyChanged -= Model_PropertyChanged;
+            }
+
             if (Model != null)
             {
                 Model.PropertyChanged += Model_PropertyChanged;
                 SetLayoutItem(Model?.Root?.Manager?.GetLayoutItemFromModel(Model));
             }
             else
+            {
                 SetLayoutItem(null);
+            }
         }
 
         private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(LayoutAnchorable.IsEnabled)) return;
-            if (Model == null) return;
+            if (e.PropertyName != nameof(LayoutAnchorable.IsEnabled))
+            {
+                return;
+            }
+
+            if (Model == null)
+            {
+                return;
+            }
+
             IsEnabled = Model.IsEnabled;
-            if (IsEnabled || !Model.IsActive) return;
+            if (IsEnabled || !Model.IsActive)
+            {
+                return;
+            }
+
             if (Model.Parent != null && Model.Parent is LayoutAnchorablePane layoutAnchorablePane)
+            {
                 layoutAnchorablePane.SetNextSelectedIndex();
+            }
         }
 
         #endregion Model
@@ -115,7 +135,10 @@ namespace AvalonDock.Controls
         protected override void OnGotKeyboardFocus(System.Windows.Input.KeyboardFocusChangedEventArgs e)
         {
             if (Model != null)
+            {
                 Model.IsActive = true;
+            }
+
             base.OnGotKeyboardFocus(e);
         }
 
@@ -128,7 +151,9 @@ namespace AvalonDock.Controls
         {
             // prevent memory leak via event handler
             if (Model != null)
+            {
                 Model.PropertyChanged -= Model_PropertyChanged;
+            }
 
             Unloaded -= LayoutAnchorableControl_Unloaded;
         }

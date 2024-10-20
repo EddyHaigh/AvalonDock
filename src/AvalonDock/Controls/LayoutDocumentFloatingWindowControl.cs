@@ -112,7 +112,10 @@ namespace AvalonDock.Controls
 
         private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(LayoutDocumentFloatingWindow.RootPanel) && _model.RootPanel == null) InternalClose();
+            if (e.PropertyName == nameof(LayoutDocumentFloatingWindow.RootPanel) && _model.RootPanel == null)
+            {
+                InternalClose();
+            }
         }
 
         /// <inheritdoc />
@@ -141,12 +144,18 @@ namespace AvalonDock.Controls
                         if (windowChrome != null)
                         {
                             if (OpenContextMenu())
+                            {
                                 handled = true;
+                            }
 
                             if (_model.Root.Manager.ShowSystemMenu)
+                            {
                                 windowChrome.ShowSystemMenu = !handled;
+                            }
                             else
+                            {
                                 windowChrome.ShowSystemMenu = false;
+                            }
                         }
                     }
                     break;
@@ -181,7 +190,11 @@ namespace AvalonDock.Controls
                 _overlayWindow = null;
             }
             base.OnClosed(e);
-            if (!CloseInitiatedByUser) root?.FloatingWindows.Remove(_model);
+            if (!CloseInitiatedByUser)
+            {
+                root?.FloatingWindows.Remove(_model);
+            }
+
             _model.PropertyChanged -= Model_PropertyChanged;
         }
 
@@ -191,13 +204,20 @@ namespace AvalonDock.Controls
 
         private void RootPanelOnChildrenCollectionChanged(object sender, EventArgs e)
         {
-            if (_model.RootPanel == null || _model.RootPanel.Children.Count == 0) InternalClose();
+            if (_model.RootPanel == null || _model.RootPanel.Children.Count == 0)
+            {
+                InternalClose();
+            }
         }
 
         private bool OpenContextMenu()
         {
             var ctxMenu = _model.Root.Manager.DocumentContextMenu;
-            if (ctxMenu == null || SingleContentLayoutItem == null) return false;
+            if (ctxMenu == null || SingleContentLayoutItem == null)
+            {
+                return false;
+            }
+
             ctxMenu.PlacementTarget = null;
             ctxMenu.Placement = PlacementMode.MousePoint;
             ctxMenu.DataContext = SingleContentLayoutItem;
@@ -225,7 +245,10 @@ namespace AvalonDock.Controls
         bool HitTest(Point dragPoint)
         {
             if (dragPoint == default(Point))
+            {
                 return false;
+            }
+
             var detectionRect = new Rect(this.PointToScreenDPIWithoutFlowDirection(new Point()), this.TransformActualSizeToAncestor());
             return detectionRect.Contains(dragPoint);
         }
@@ -236,15 +259,22 @@ namespace AvalonDock.Controls
 
         private void CreateOverlayWindow(LayoutFloatingWindowControl draggingWindow)
         {
-            if (_overlayWindow == null) _overlayWindow = new OverlayWindow(this);
+            if (_overlayWindow == null)
+            {
+                _overlayWindow = new OverlayWindow(this);
+            }
 
             // Usually, the overlay window is made a child of the main window. However, if the floating
             // window being dragged isn't also a child of the main window (because OwnedByDockingManagerWindow
             // is set to false to allow the parent window to be minimized independently of floating windows)
             if (draggingWindow?.OwnedByDockingManagerWindow ?? true)
+            {
                 _overlayWindow.Owner = Window.GetWindow(_model.Root.Manager);
+            }
             else
+            {
                 _overlayWindow.Owner = null;
+            }
 
             var rectWindow = new Rect(this.PointToScreenDPIWithoutFlowDirection(new Point()), this.TransformActualSizeToAncestor());
             _overlayWindow.Left = rectWindow.Left;
@@ -272,7 +302,11 @@ namespace AvalonDock.Controls
 
         public IEnumerable<IDropArea> GetDropAreas(LayoutFloatingWindowControl draggingWindow)
         {
-            if (_dropAreas != null) return _dropAreas;
+            if (_dropAreas != null)
+            {
+                return _dropAreas;
+            }
+
             _dropAreas = new List<IDropArea>();
             var isDraggingDocuments = draggingWindow.Model is LayoutDocumentFloatingWindow;
 
@@ -284,7 +318,11 @@ namespace AvalonDock.Controls
                 {
                     foreach (var item in GetAnchorableInFloatingWindow(draggingWindow))
                     {
-                        if (item.CanDockAsTabbedDocument != false) continue;
+                        if (item.CanDockAsTabbedDocument != false)
+                        {
+                            continue;
+                        }
+
                         dockAsDocument = false;
                         break;
                     }
@@ -294,14 +332,18 @@ namespace AvalonDock.Controls
             var rootVisual = ((FloatingWindowContentHost)Content).RootVisual;
 
             foreach (var areaHost in rootVisual.FindVisualChildren<LayoutAnchorablePaneControl>())
+            {
                 _dropAreas.Add(new DropArea<LayoutAnchorablePaneControl>(areaHost, DropAreaType.AnchorablePane));
+            }
 
             if (dockAsDocument)
             {
                 foreach (var areaHost in rootVisual.FindVisualChildren<LayoutDocumentPaneControl>())
                 {
                     if (areaHost is LayoutDocumentPaneControl == true)
+                    {
                         _dropAreas.Add(new DropArea<LayoutDocumentPaneControl>(areaHost, DropAreaType.DocumentPane));
+                    }
                 }
             }
 
@@ -316,7 +358,10 @@ namespace AvalonDock.Controls
         /// <returns></returns>
         private IEnumerable<LayoutAnchorable> GetAnchorableInFloatingWindow(LayoutFloatingWindowControl draggingWindow)
         {
-            if (!(draggingWindow.Model is LayoutAnchorableFloatingWindow layoutAnchorableFloatingWindow)) yield break;
+            if (!(draggingWindow.Model is LayoutAnchorableFloatingWindow layoutAnchorableFloatingWindow))
+            {
+                yield break;
+            }
             //big part of code for getting type
 
             if (layoutAnchorableFloatingWindow.SinglePane is LayoutAnchorablePane layoutAnchorablePane && (layoutAnchorableFloatingWindow.IsSinglePane && layoutAnchorablePane.SelectedContent != null))
@@ -325,8 +370,12 @@ namespace AvalonDock.Controls
                 yield return layoutAnchorable;
             }
             else
+            {
                 foreach (var item in GetLayoutAnchorable(layoutAnchorableFloatingWindow.RootPanel))
+                {
                     yield return item;
+                }
+            }
         }
 
         /// <summary>
@@ -339,9 +388,15 @@ namespace AvalonDock.Controls
         /// <seealso cref="LayoutAnchorablePaneGroup"/>
         internal IEnumerable<LayoutAnchorable> GetLayoutAnchorable(LayoutAnchorablePaneGroup layoutAnchPaneGroup)
         {
-            if (layoutAnchPaneGroup == null) yield break;
+            if (layoutAnchPaneGroup == null)
+            {
+                yield break;
+            }
+
             foreach (var anchorable in layoutAnchPaneGroup.Descendents().OfType<LayoutAnchorable>())
+            {
                 yield return anchorable;
+            }
         }
 
         #region HideWindowCommand
@@ -352,7 +407,10 @@ namespace AvalonDock.Controls
         {
             var root = Model?.Root;
             var manager = root?.Manager;
-            if (manager == null) return false;
+            if (manager == null)
+            {
+                return false;
+            }
 
             // TODO check CanHide of anchorables
             var canExecute = false;
@@ -388,7 +446,10 @@ namespace AvalonDock.Controls
             {
                 //if (manager.GetLayoutItemFromModel(anchorable) is LayoutAnchorableItem layoutAnchorableItem) layoutAnchorableItem.HideCommand.Execute(parameter);
                 //else
-                if (manager.GetLayoutItemFromModel(anchorable) is LayoutItem layoutItem) layoutItem.CloseCommand.Execute(parameter);
+                if (manager.GetLayoutItemFromModel(anchorable) is LayoutItem layoutItem)
+                {
+                    layoutItem.CloseCommand.Execute(parameter);
+                }
             }
         }
 
@@ -401,7 +462,10 @@ namespace AvalonDock.Controls
         private bool CanExecuteCloseWindowCommand(object parameter)
         {
             var manager = Model?.Root?.Manager;
-            if (manager == null) return false;
+            if (manager == null)
+            {
+                return false;
+            }
 
             var canExecute = false;
             foreach (var document in this.Model.Descendents().OfType<LayoutDocument>().ToArray())

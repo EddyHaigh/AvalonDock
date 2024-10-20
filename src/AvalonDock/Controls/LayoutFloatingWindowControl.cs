@@ -139,9 +139,13 @@ namespace AvalonDock.Controls
         protected virtual void OnIsDraggingChanged(DependencyPropertyChangedEventArgs e)
         {
             if ((bool)e.NewValue)
+            {
                 CaptureMouse();
+            }
             else
+            {
                 ReleaseMouseCapture();
+            }
         }
 
         #endregion IsDragging
@@ -323,21 +327,29 @@ namespace AvalonDock.Controls
                     var resourceDictionaryToRemove =
                         Resources.MergedDictionaries.FirstOrDefault(r => r.Source == oldTheme.GetResourceUri());
                     if (resourceDictionaryToRemove != null)
+                    {
                         Resources.MergedDictionaries.Remove(
                             resourceDictionaryToRemove);
+                    }
                 }
             }
 
             // Implicit parameter to this method is the new theme already set here
             var manager = _model.Root?.Manager;
-            if (manager?.Theme == null) return;
+            if (manager?.Theme == null)
+            {
+                return;
+            }
+
             if (manager.Theme is DictionaryTheme dictionaryTheme)
             {
                 currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
                 Resources.MergedDictionaries.Add(currentThemeResourceDictionary);
             }
             else
+            {
                 Resources.MergedDictionaries.Add(new ResourceDictionary { Source = manager.Theme.GetResourceUri() });
+            }
         }
 
         internal void AttachDrag(bool onActivated = true)
@@ -375,14 +387,20 @@ namespace AvalonDock.Controls
                         _dragService.Drop(mousePosition, out var dropFlag);
                         _dragService = null;
                         SetIsDragging(false);
-                        if (dropFlag) InternalClose();
+                        if (dropFlag)
+                        {
+                            InternalClose();
+                        }
                     }
                     break;
 
                 case Win32Helper.WM_MOVING:
                     {
                         UpdateDragPosition();
-                        if (IsMaximized) UpdateMaximizedState(false);
+                        if (IsMaximized)
+                        {
+                            UpdateMaximizedState(false);
+                        }
                     }
                     break;
 
@@ -397,7 +415,11 @@ namespace AvalonDock.Controls
 
                 case Win32Helper.WM_SYSCOMMAND:
                     var command = (int)wParam & 0xFFF0;
-                    if (command == Win32Helper.SC_MAXIMIZE || command == Win32Helper.SC_RESTORE) UpdateMaximizedState(command == Win32Helper.SC_MAXIMIZE);
+                    if (command == Win32Helper.SC_MAXIMIZE || command == Win32Helper.SC_RESTORE)
+                    {
+                        UpdateMaximizedState(command == Win32Helper.SC_MAXIMIZE);
+                    }
+
                     break;
             }
             return IntPtr.Zero;
@@ -418,7 +440,9 @@ namespace AvalonDock.Controls
                 .OfType<ContentPresenter>()
                 .FirstOrDefault(c => c.Content is LayoutContent);
             if (contentControl == null)
+            {
                 return;
+            }
             // The content control in the grid, this has a different tree to walk up
             var layoutContent = (LayoutContent)contentControl.Content;
             if (grid != null && layoutContent.Content is FrameworkElement content)
@@ -501,7 +525,11 @@ namespace AvalonDock.Controls
         internal void InternalClose(bool closeInitiatedByUser = false)
         {
             _internalCloseFlag = !closeInitiatedByUser;
-            if (_isClosing) return;
+            if (_isClosing)
+            {
+                return;
+            }
+
             _isClosing = true;
             Close();
         }
@@ -568,8 +596,16 @@ namespace AvalonDock.Controls
 
         private static object CoerceContentValue(DependencyObject sender, object content)
         {
-            if (!(sender is LayoutFloatingWindowControl lfwc)) return null;
-            if (lfwc.IsLoaded && lfwc.IsContentImmutable) return lfwc.Content;
+            if (!(sender is LayoutFloatingWindowControl lfwc))
+            {
+                return null;
+            }
+
+            if (lfwc.IsLoaded && lfwc.IsContentImmutable)
+            {
+                return lfwc.Content;
+            }
+
             return new FloatingWindowContentHost((LayoutFloatingWindowControl)sender) { Content = content as UIElement };
         }
 
@@ -593,15 +629,23 @@ namespace AvalonDock.Controls
             // according to OwnedByDockingManagerWindow property.
             var manager = Model?.Root?.Manager;
             if (OwnedByDockingManagerWindow && manager != null)
+            {
                 this.SetParentToMainWindowOf(manager);
+            }
             else
+            {
                 this.SetParentWindowToNull();
+            }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             Unloaded -= OnUnloaded;
-            if (_hwndSrc == null) return;
+            if (_hwndSrc == null)
+            {
+                return;
+            }
+
             _hwndSrc.RemoveHook(_hwndSrcHook);
             InternalClose();
         }
@@ -612,7 +656,10 @@ namespace AvalonDock.Controls
             // If this window was Closed not from InternalClose method,
             // mark it as closing to avoid "InvalidOperationException: : Cannot set Visibility to Visible or call Show, ShowDialog,
             // Close, or WindowInteropHelper.EnsureHandle while a Window is closing".
-            if (!_isClosing) _isClosing = true;
+            if (!_isClosing)
+            {
+                _isClosing = true;
+            }
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -629,7 +676,11 @@ namespace AvalonDock.Controls
         {
             Activated -= OnActivated;
 
-            if (!_attachDrag || Mouse.LeftButton != MouseButtonState.Pressed) return;
+            if (!_attachDrag || Mouse.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+
             var windowHandle = new WindowInteropHelper(this).Handle;
             var mousePosition = this.PointToScreenDPI(Mouse.GetPosition(this));
 
@@ -638,7 +689,11 @@ namespace AvalonDock.Controls
             // BugFix Issue #6
             // This code is initializes the drag when content (document or toolwindow) is dragged
             // A second chance back up plan if DragDelta is not set
-            if (DragDelta == default) DragDelta = new Point(3, 3);
+            if (DragDelta == default)
+            {
+                DragDelta = new Point(3, 3);
+            }
+
             Left = mousePosition.X - DragDelta.X;                 // BugFix Issue #6
             Top = mousePosition.Y - DragDelta.Y;
 
@@ -670,7 +725,10 @@ namespace AvalonDock.Controls
         private void UpdateMaximizedState(bool isMaximized)
         {
             foreach (var posElement in Model.Descendents().OfType<ILayoutElementForFloatingWindow>())
+            {
                 posElement.IsMaximized = isMaximized;
+            }
+
             IsMaximized = isMaximized;
             _isInternalChange = true;
 
@@ -759,9 +817,20 @@ namespace AvalonDock.Controls
             /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Content"/> property.</summary>
             protected virtual void OnContentChanged(UIElement oldValue, UIElement newValue)
             {
-                if (_rootPresenter != null) _rootPresenter.Child = Content;
-                if (oldValue is FrameworkElement oldContent) oldContent.SizeChanged -= Content_SizeChanged;
-                if (newValue is FrameworkElement newContent) newContent.SizeChanged += Content_SizeChanged;
+                if (_rootPresenter != null)
+                {
+                    _rootPresenter.Child = Content;
+                }
+
+                if (oldValue is FrameworkElement oldContent)
+                {
+                    oldContent.SizeChanged -= Content_SizeChanged;
+                }
+
+                if (newValue is FrameworkElement newContent)
+                {
+                    newContent.SizeChanged += Content_SizeChanged;
+                }
             }
 
             #endregion Content
@@ -785,7 +854,10 @@ namespace AvalonDock.Controls
             /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="SizeToContent"/> property.</summary>
             protected virtual void OnSizeToContentChanged(SizeToContent oldValue, SizeToContent newValue)
             {
-                if (_wpfContentHost != null) _wpfContentHost.SizeToContent = newValue;
+                if (_wpfContentHost != null)
+                {
+                    _wpfContentHost.SizeToContent = newValue;
+                }
             }
 
             #endregion SizeToContent
@@ -819,7 +891,11 @@ namespace AvalonDock.Controls
             protected override void DestroyWindowCore(HandleRef hwnd)
             {
                 _manager.InternalRemoveLogicalChild(_rootPresenter);
-                if (_wpfContentHost == null) return;
+                if (_wpfContentHost == null)
+                {
+                    return;
+                }
+
                 _wpfContentHost.Dispose();
                 _wpfContentHost = null;
             }
@@ -827,7 +903,11 @@ namespace AvalonDock.Controls
             /// <inheritdoc />
             protected override Size MeasureOverride(Size constraint)
             {
-                if (Content == null) return base.MeasureOverride(constraint);
+                if (Content == null)
+                {
+                    return base.MeasureOverride(constraint);
+                }
+
                 Content.Measure(constraint);
                 return Content.DesiredSize;
             }

@@ -81,10 +81,18 @@ namespace AvalonDock.Controls
         {
             get
             {
-                if (_view != null) return _view;
+                if (_view != null)
+                {
+                    return _view;
+                }
+
                 _view = new ContentPresenter();
                 _view.SetBinding(ContentPresenter.ContentProperty, new Binding(nameof(ContentPresenter.Content)) { Source = LayoutElement });
-                if (LayoutElement?.Root == null) return _view;
+                if (LayoutElement?.Root == null)
+                {
+                    return _view;
+                }
+
                 _view.SetBinding(ContentPresenter.ContentTemplateProperty, new Binding(nameof(DockingManager.LayoutItemTemplate)) { Source = LayoutElement.Root.Manager });
                 _view.SetBinding(ContentPresenter.ContentTemplateSelectorProperty, new Binding(nameof(DockingManager.LayoutItemTemplateSelector)) { Source = LayoutElement.Root.Manager });
                 LayoutElement.Root.Manager?.InternalAddLogicalChild(_view);
@@ -114,7 +122,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Title"/> property.</summary>
         protected virtual void OnTitleChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (LayoutElement != null) LayoutElement.Title = (string)e.NewValue;
+            if (LayoutElement != null)
+            {
+                LayoutElement.Title = (string)e.NewValue;
+            }
         }
 
         #endregion Title
@@ -139,7 +150,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="IconSource"/> property.</summary>
         protected virtual void OnIconSourceChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (LayoutElement != null) LayoutElement.IconSource = IconSource;
+            if (LayoutElement != null)
+            {
+                LayoutElement.IconSource = IconSource;
+            }
         }
 
         #endregion IconSource
@@ -164,7 +178,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="ContentId"/> property.</summary>
         protected virtual void OnContentIdChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (LayoutElement != null) LayoutElement.ContentId = (string)e.NewValue;
+            if (LayoutElement != null)
+            {
+                LayoutElement.ContentId = (string)e.NewValue;
+            }
         }
 
         #endregion ContentId
@@ -189,10 +206,17 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="IsSelected"/> property.</summary>
         protected virtual void OnIsSelectedChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (!_isSelectedReentrantFlag.CanEnter) return;
+            if (!_isSelectedReentrantFlag.CanEnter)
+            {
+                return;
+            }
+
             using (_isSelectedReentrantFlag.Enter())
             {
-                if (LayoutElement != null) LayoutElement.IsSelected = (bool)e.NewValue;
+                if (LayoutElement != null)
+                {
+                    LayoutElement.IsSelected = (bool)e.NewValue;
+                }
             }
         }
 
@@ -218,10 +242,17 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="IsActive"/> property.</summary>
         protected virtual void OnIsActiveChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (!_isActiveReentrantFlag.CanEnter) return;
+            if (!_isActiveReentrantFlag.CanEnter)
+            {
+                return;
+            }
+
             using (_isActiveReentrantFlag.Enter())
             {
-                if (LayoutElement != null) LayoutElement.IsActive = (bool)e.NewValue;
+                if (LayoutElement != null)
+                {
+                    LayoutElement.IsActive = (bool)e.NewValue;
+                }
             }
         }
 
@@ -247,7 +278,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="CanClose"/> property.</summary>
         protected virtual void OnCanCloseChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (LayoutElement != null) LayoutElement.CanClose = (bool)e.NewValue;
+            if (LayoutElement != null)
+            {
+                LayoutElement.CanClose = (bool)e.NewValue;
+            }
         }
 
         #endregion CanClose
@@ -272,7 +306,10 @@ namespace AvalonDock.Controls
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="CanFloat"/> property.</summary>
         protected virtual void OnCanFloatChanged(DependencyPropertyChangedEventArgs e)
         {
-            if (LayoutElement != null) LayoutElement.CanFloat = (bool)e.NewValue;
+            if (LayoutElement != null)
+            {
+                LayoutElement.CanFloat = (bool)e.NewValue;
+            }
         }
 
         #endregion CanFloat
@@ -407,7 +444,11 @@ namespace AvalonDock.Controls
         private bool CanExecuteCloseAllButThisCommand(object parameter)
         {
             var root = LayoutElement?.Root;
-            if (root == null) return false;
+            if (root == null)
+            {
+                return false;
+            }
+
             return LayoutElement.Root.Manager.Layout.Descendents().OfType<LayoutContent>().Any(d => d != LayoutElement && (d.Parent is LayoutDocumentPane || d.Parent is LayoutDocumentFloatingWindow));
         }
 
@@ -443,7 +484,11 @@ namespace AvalonDock.Controls
         private bool CanExecuteCloseAllCommand(object parameter)
         {
             var root = LayoutElement?.Root;
-            if (root == null) return false;
+            if (root == null)
+            {
+                return false;
+            }
+
             return LayoutElement.Root.Manager.Layout.Descendents().OfType<LayoutContent>().Any(d => d.Parent is LayoutDocumentPane || d.Parent is LayoutDocumentFloatingWindow);
         }
 
@@ -506,8 +551,16 @@ namespace AvalonDock.Controls
 
         private bool CanExecuteNewVerticalTabGroupCommand(object parameter)
         {
-            if (LayoutElement == null) return false;
-            if (LayoutElement is LayoutDocument layoutDocument && !layoutDocument.CanMove) return false;
+            if (LayoutElement == null)
+            {
+                return false;
+            }
+
+            if (LayoutElement is LayoutDocument layoutDocument && !layoutDocument.CanMove)
+            {
+                return false;
+            }
+
             var parentDocumentGroup = LayoutElement.FindParent<LayoutDocumentPaneGroup>();
             return (parentDocumentGroup == null ||
                       parentDocumentGroup.ChildrenCount == 1 ||
@@ -563,8 +616,16 @@ namespace AvalonDock.Controls
 
         private bool CanExecuteNewHorizontalTabGroupCommand(object parameter)
         {
-            if (LayoutElement == null) return false;
-            if (LayoutElement is LayoutDocument layoutDocument && !layoutDocument.CanMove) return false;
+            if (LayoutElement == null)
+            {
+                return false;
+            }
+
+            if (LayoutElement is LayoutDocument layoutDocument && !layoutDocument.CanMove)
+            {
+                return false;
+            }
+
             var parentDocumentGroup = LayoutElement.FindParent<LayoutDocumentPaneGroup>();
             return (parentDocumentGroup == null ||
                       parentDocumentGroup.ChildrenCount == 1 ||
@@ -620,7 +681,11 @@ namespace AvalonDock.Controls
 
         private bool CanExecuteMoveToNextTabGroupCommand(object parameter)
         {
-            if (LayoutElement == null) return false;
+            if (LayoutElement == null)
+            {
+                return false;
+            }
+
             var parentDocumentGroup = LayoutElement.FindParent<LayoutDocumentPaneGroup>();
             return parentDocumentGroup != null &&
                      LayoutElement.Parent is LayoutDocumentPane parentDocumentPane &&
@@ -667,7 +732,11 @@ namespace AvalonDock.Controls
 
         private bool CanExecuteMoveToPreviousTabGroupCommand(object parameter)
         {
-            if (LayoutElement == null) return false;
+            if (LayoutElement == null)
+            {
+                return false;
+            }
+
             var parentDocumentGroup = LayoutElement.FindParent<LayoutDocumentPaneGroup>();
             return parentDocumentGroup != null &&
                      LayoutElement.Parent is LayoutDocumentPane parentDocumentPane &&
@@ -711,49 +780,107 @@ namespace AvalonDock.Controls
         protected virtual void ClearDefaultBindings()
         {
             if (CloseCommand == _defaultCloseCommand)
+            {
                 BindingOperations.ClearBinding(this, CloseCommandProperty);
+            }
+
             if (FloatCommand == _defaultFloatCommand)
+            {
                 BindingOperations.ClearBinding(this, FloatCommandProperty);
+            }
+
             if (DockAsDocumentCommand == _defaultDockAsDocumentCommand)
+            {
                 BindingOperations.ClearBinding(this, DockAsDocumentCommandProperty);
+            }
+
             if (CloseAllButThisCommand == _defaultCloseAllButThisCommand)
+            {
                 BindingOperations.ClearBinding(this, CloseAllButThisCommandProperty);
+            }
+
             if (CloseAllCommand == _defaultCloseAllCommand)
+            {
                 BindingOperations.ClearBinding(this, CloseAllCommandProperty);
+            }
+
             if (ActivateCommand == _defaultActivateCommand)
+            {
                 BindingOperations.ClearBinding(this, ActivateCommandProperty);
+            }
+
             if (NewVerticalTabGroupCommand == _defaultNewVerticalTabGroupCommand)
+            {
                 BindingOperations.ClearBinding(this, NewVerticalTabGroupCommandProperty);
+            }
+
             if (NewHorizontalTabGroupCommand == _defaultNewHorizontalTabGroupCommand)
+            {
                 BindingOperations.ClearBinding(this, NewHorizontalTabGroupCommandProperty);
+            }
+
             if (MoveToNextTabGroupCommand == _defaultMoveToNextTabGroupCommand)
+            {
                 BindingOperations.ClearBinding(this, MoveToNextTabGroupCommandProperty);
+            }
+
             if (MoveToPreviousTabGroupCommand == _defaultMoveToPreviousTabGroupCommand)
+            {
                 BindingOperations.ClearBinding(this, MoveToPreviousTabGroupCommandProperty);
+            }
         }
 
         protected virtual void SetDefaultBindings()
         {
             if (CloseCommand == null)
+            {
                 CloseCommand = _defaultCloseCommand;
+            }
+
             if (FloatCommand == null)
+            {
                 FloatCommand = _defaultFloatCommand;
+            }
+
             if (DockAsDocumentCommand == null)
+            {
                 DockAsDocumentCommand = _defaultDockAsDocumentCommand;
+            }
+
             if (CloseAllButThisCommand == null)
+            {
                 CloseAllButThisCommand = _defaultCloseAllButThisCommand;
+            }
+
             if (CloseAllCommand == null)
+            {
                 CloseAllCommand = _defaultCloseAllCommand;
+            }
+
             if (ActivateCommand == null)
+            {
                 ActivateCommand = _defaultActivateCommand;
+            }
+
             if (NewVerticalTabGroupCommand == null)
+            {
                 NewVerticalTabGroupCommand = _defaultNewVerticalTabGroupCommand;
+            }
+
             if (NewHorizontalTabGroupCommand == null)
+            {
                 NewHorizontalTabGroupCommand = _defaultNewHorizontalTabGroupCommand;
+            }
+
             if (MoveToNextTabGroupCommand == null)
+            {
                 MoveToNextTabGroupCommand = _defaultMoveToNextTabGroupCommand;
+            }
+
             if (MoveToPreviousTabGroupCommand == null)
+            {
                 MoveToPreviousTabGroupCommand = _defaultMoveToPreviousTabGroupCommand;
+            }
 
             IsSelected = LayoutElement.IsSelected;
             IsActive = LayoutElement.IsActive;
@@ -763,7 +890,9 @@ namespace AvalonDock.Controls
         protected virtual void OnVisibilityChanged()
         {
             if (LayoutElement != null && Visibility == Visibility.Collapsed)
+            {
                 LayoutElement.Close();
+            }
         }
 
         internal virtual void Attach(LayoutContent model)
@@ -796,7 +925,11 @@ namespace AvalonDock.Controls
 
         private void LayoutElement_IsActiveChanged(object sender, EventArgs e)
         {
-            if (!_isActiveReentrantFlag.CanEnter) return;
+            if (!_isActiveReentrantFlag.CanEnter)
+            {
+                return;
+            }
+
             using (_isActiveReentrantFlag.Enter())
             {
                 var bnd = BindingOperations.GetBinding(this, IsActiveProperty);
@@ -807,7 +940,11 @@ namespace AvalonDock.Controls
 
         private void LayoutElement_IsSelectedChanged(object sender, EventArgs e)
         {
-            if (!_isSelectedReentrantFlag.CanEnter) return;
+            if (!_isSelectedReentrantFlag.CanEnter)
+            {
+                return;
+            }
+
             using (_isSelectedReentrantFlag.Enter())
             {
                 IsSelected = LayoutElement.IsSelected;
@@ -818,7 +955,10 @@ namespace AvalonDock.Controls
 
         private void OnToolTipChanged()
         {
-            if (LayoutElement != null) LayoutElement.ToolTip = ToolTip;
+            if (LayoutElement != null)
+            {
+                LayoutElement.ToolTip = ToolTip;
+            }
         }
 
         private static void OnVisibilityChanged(DependencyObject s, DependencyPropertyChangedEventArgs e) => ((LayoutItem)s).OnVisibilityChanged();

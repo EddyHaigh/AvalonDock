@@ -48,14 +48,20 @@ namespace Standard
             {
                 var left64 = Marshal.ReadInt64(left, offset);
                 var right64 = Marshal.ReadInt64(right, offset);
-                if (left64 != right64) return false;
+                if (left64 != right64)
+                {
+                    return false;
+                }
             }
 
             for (; offset < cb; offset += sizeof(byte))
             {
                 var left8 = Marshal.ReadByte(left, offset);
                 var right8 = Marshal.ReadByte(right, offset);
-                if (left8 != right8) return false;
+                if (left8 != right8)
+                {
+                    return false;
+                }
             }
 
             return true;
@@ -81,10 +87,25 @@ namespace Standard
 
         public static bool AreStreamsEqual(Stream left, Stream right)
         {
-            if (left == null) return right == null;
-            if (right == null) return false;
-            if (!left.CanRead || !right.CanRead) throw new NotSupportedException("The streams can't be read for comparison");
-            if (left.Length != right.Length) return false;
+            if (left == null)
+            {
+                return right == null;
+            }
+
+            if (right == null)
+            {
+                return false;
+            }
+
+            if (!left.CanRead || !right.CanRead)
+            {
+                throw new NotSupportedException("The streams can't be read for comparison");
+            }
+
+            if (left.Length != right.Length)
+            {
+                return false;
+            }
 
             var length = (int)left.Length;
 
@@ -120,8 +141,16 @@ namespace Standard
                     cbReadLeft = left.Read(leftBuffer, 0, leftBuffer.Length);
                     cbReadRight = right.Read(rightBuffer, 0, rightBuffer.Length);
                     // verify the contents are an exact match
-                    if (cbReadLeft != cbReadRight) return false;
-                    if (!_MemCmp(ptrLeft, ptrRight, cbReadLeft)) return false;
+                    if (cbReadLeft != cbReadRight)
+                    {
+                        return false;
+                    }
+
+                    if (!_MemCmp(ptrLeft, ptrRight, cbReadLeft))
+                    {
+                        return false;
+                    }
+
                     totalReadLeft += cbReadLeft;
                     totalReadRight += cbReadRight;
                 }
@@ -183,13 +212,18 @@ namespace Standard
         // Caller is responsible to ensure that GDI+ has been initialized.
         public static IntPtr GenerateHICON(ImageSource image, Size dimensions)
         {
-            if (image == null) return IntPtr.Zero;
+            if (image == null)
+            {
+                return IntPtr.Zero;
+            }
 
             // If we're getting this from a ".ico" resource, then it comes through as a BitmapFrame.
             // We can use leverage this as a shortcut to get the right 16x16 representation
             // because DrawImage doesn't do that for us.
             if (image is BitmapFrame bf)
+            {
                 bf = GetBestMatch(bf.Decoder.Frames, (int)dimensions.Width, (int)dimensions.Height);
+            }
             else
             {
                 // Constrain the dimensions based on the aspect ratio.
@@ -199,7 +233,9 @@ namespace Standard
                 var aspectRatio = image.Width / image.Height;
                 // If it's smaller than the requested size, then place it in the middle and pad the image.
                 if (image.Width <= dimensions.Width && image.Height <= dimensions.Height)
+                {
                     drawingDimensions = new Rect((dimensions.Width - image.Width) / 2, (dimensions.Height - image.Height) / 2, image.Width, image.Height);
+                }
                 else if (renderRatio > aspectRatio)
                 {
                     var scaledRenderWidth = image.Width / image.Height * dimensions.Width;
@@ -235,7 +271,11 @@ namespace Standard
                     try
                     {
                         var gpStatus = NativeMethods.GdipCreateBitmapFromStream(istm, out bitmap);
-                        if (Status.Ok != gpStatus) return IntPtr.Zero;
+                        if (Status.Ok != gpStatus)
+                        {
+                            return IntPtr.Zero;
+                        }
+
                         gpStatus = NativeMethods.GdipCreateHICONFromBitmap(bitmap, out var hicon);
                         return Status.Ok != gpStatus ? IntPtr.Zero : hicon;
                         // Caller is responsible for freeing this.
@@ -275,7 +315,11 @@ namespace Standard
             for (var i = 0; i < frames.Count && bestScore != 0; ++i)
             {
                 var currentIconBitDepth = isBitmapIconDecoder ? frames[i].Thumbnail.Format.BitsPerPixel : frames[i].Format.BitsPerPixel;
-                if (currentIconBitDepth == 0) currentIconBitDepth = 8;
+                if (currentIconBitDepth == 0)
+                {
+                    currentIconBitDepth = 8;
+                }
+
                 var score = _MatchImage(frames[i], bitDepth, width, height, currentIconBitDepth);
                 if (score < bestScore)
                 {
@@ -286,7 +330,11 @@ namespace Standard
                 else if (score == bestScore)
                 {
                     // Tie breaker: choose the higher color depth.  If that fails, choose first one.
-                    if (bestBpp >= currentIconBitDepth) continue;
+                    if (bestBpp >= currentIconBitDepth)
+                    {
+                        continue;
+                    }
+
                     bestIndex = i;
                     bestBpp = currentIconBitDepth;
                 }
@@ -299,7 +347,11 @@ namespace Standard
 
         private static int _GetBitDepth()
         {
-            if (s_bitDepth != 0) return s_bitDepth;
+            if (s_bitDepth != 0)
+            {
+                return s_bitDepth;
+            }
+
             using (var safeDC = SafeDC.GetDesktop())
             {
 
@@ -321,7 +373,10 @@ namespace Standard
         /// </remarks>
         public static void SafeDeleteFile(string path)
         {
-            if (!string.IsNullOrEmpty(path)) File.Delete(path);
+            if (!string.IsNullOrEmpty(path))
+            {
+                File.Delete(path);
+            }
         }
 
         /// <summary>GDI's DeleteObject</summary>
@@ -329,21 +384,30 @@ namespace Standard
         {
             var p = gdiObject;
             gdiObject = IntPtr.Zero;
-            if (p != IntPtr.Zero) NativeMethods.DeleteObject(p);
+            if (p != IntPtr.Zero)
+            {
+                NativeMethods.DeleteObject(p);
+            }
         }
 
         public static void SafeDestroyIcon(ref IntPtr hicon)
         {
             var p = hicon;
             hicon = IntPtr.Zero;
-            if (p != IntPtr.Zero) NativeMethods.DestroyIcon(p);
+            if (p != IntPtr.Zero)
+            {
+                NativeMethods.DestroyIcon(p);
+            }
         }
 
         public static void SafeDestroyWindow(ref IntPtr hwnd)
         {
             var p = hwnd;
             hwnd = IntPtr.Zero;
-            if (NativeMethods.IsWindow(p)) NativeMethods.DestroyWindow(p);
+            if (NativeMethods.IsWindow(p))
+            {
+                NativeMethods.DestroyWindow(p);
+            }
         }
 
         public static void SafeDispose<T>(ref T disposable) where T : IDisposable
@@ -360,28 +424,41 @@ namespace Standard
         {
             var p = gdipImage;
             gdipImage = IntPtr.Zero;
-            if (p != IntPtr.Zero) NativeMethods.GdipDisposeImage(p);
+            if (p != IntPtr.Zero)
+            {
+                NativeMethods.GdipDisposeImage(p);
+            }
         }
 
         public static void SafeCoTaskMemFree(ref IntPtr ptr)
         {
             var p = ptr;
             ptr = IntPtr.Zero;
-            if (p != IntPtr.Zero) Marshal.FreeCoTaskMem(p);
+            if (p != IntPtr.Zero)
+            {
+                Marshal.FreeCoTaskMem(p);
+            }
         }
 
         public static void SafeFreeHGlobal(ref IntPtr hglobal)
         {
             var p = hglobal;
             hglobal = IntPtr.Zero;
-            if (p != IntPtr.Zero) Marshal.FreeHGlobal(p);
+            if (p != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(p);
+            }
         }
 
         public static void SafeRelease<T>(ref T comObject) where T : class
         {
             var t = comObject;
             comObject = default(T);
-            if (t == null) return;
+            if (t == null)
+            {
+                return;
+            }
+
             Assert.IsTrue(Marshal.IsComObject(t));
             Marshal.ReleaseComObject(t);
         }
@@ -396,11 +473,17 @@ namespace Standard
         {
             Assert.IsNotNull(source);
             Assert.IsFalse(string.IsNullOrEmpty(propertyName));
-            if (source.Length != 0) source.Append(' ');
+            if (source.Length != 0)
+            {
+                source.Append(' ');
+            }
+
             source.Append(propertyName);
             source.Append(": ");
             if (string.IsNullOrEmpty(value))
+            {
                 source.Append("<null>");
+            }
             else
             {
                 source.Append('\"');
@@ -424,7 +507,11 @@ namespace Standard
             var sbRet = new StringBuilder();
             foreach (var property in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                if (sbRet.Length != 0) sbRet.Append(", ");
+                if (sbRet.Length != 0)
+                {
+                    sbRet.Append(", ");
+                }
+
                 Assert.AreEqual(0, property.GetIndexParameters().Length);
                 var value = property.GetValue(@object, null);
                 var format = null == value ? "{0}: <null>" : "{0}: \"{1}\"";
@@ -451,7 +538,10 @@ namespace Standard
             do
             {
                 cbRead = source.Read(buffer, 0, buffer.Length);
-                if (cbRead != 0) destination.Write(buffer, 0, cbRead);
+                if (cbRead != 0)
+                {
+                    destination.Write(buffer, 0, cbRead);
+                }
             }
             while (buffer.Length == cbRead);
 
@@ -465,14 +555,21 @@ namespace Standard
             var hashBuilder = new StringBuilder();
             using (var md5 = MD5.Create())
             {
-                foreach (var b in md5.ComputeHash(stm)) hashBuilder.Append(b.ToString("x2", CultureInfo.InvariantCulture));
+                foreach (var b in md5.ComputeHash(stm))
+                {
+                    hashBuilder.Append(b.ToString("x2", CultureInfo.InvariantCulture));
+                }
+
                 return hashBuilder.ToString();
             }
         }
 
         public static void EnsureDirectory(string path)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path));
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
         }
 
         public static bool MemCmp(byte[] left, byte[] right, int cb)
@@ -518,7 +615,11 @@ namespace Standard
 
             private void _FlushBytes()
             {
-                if (_byteCount <= 0) return;
+                if (_byteCount <= 0)
+                {
+                    return;
+                }
+
                 _charCount += _encoding.GetChars(_byteBuffer, 0, _byteCount, _charBuffer, _charCount);
                 _byteCount = 0;
             }
@@ -532,7 +633,10 @@ namespace Standard
 
         public static string UrlDecode(string url)
         {
-            if (url == null) return null;
+            if (url == null)
+            {
+                return null;
+            }
 
             var decoder = new _UrlDecoder(url.Length, Encoding.UTF8);
             var length = url.Length;
@@ -580,9 +684,13 @@ namespace Standard
 
                 // Add any 7bit character as a byte.
                 if ((ch & 0xFF80) == 0)
+                {
                     decoder.AddByte((byte)ch);
+                }
                 else
+                {
                     decoder.AddChar(ch);
+                }
             }
             return decoder.GetString();
         }
@@ -601,14 +709,20 @@ namespace Standard
         /// </remarks>
         public static string UrlEncode(string url)
         {
-            if (url == null) return null;
+            if (url == null)
+            {
+                return null;
+            }
+
             var bytes = Encoding.UTF8.GetBytes(url);
             var needsEncoding = false;
             var unsafeCharCount = 0;
             foreach (var b in bytes)
             {
                 if (b == ' ')
+                {
                     needsEncoding = true;
+                }
                 else if (!_UrlEncodeIsSafe(b))
                 {
                     ++unsafeCharCount;
@@ -616,15 +730,23 @@ namespace Standard
                 }
             }
 
-            if (!needsEncoding) return Encoding.ASCII.GetString(bytes);
+            if (!needsEncoding)
+            {
+                return Encoding.ASCII.GetString(bytes);
+            }
+
             var buffer = new byte[bytes.Length + unsafeCharCount * 2];
             var writeIndex = 0;
             foreach (var b in bytes)
             {
                 if (_UrlEncodeIsSafe(b))
+                {
                     buffer[writeIndex++] = b;
+                }
                 else if (b == ' ')
+                {
                     buffer[writeIndex++] = (byte)'+';
+                }
                 else
                 {
                     buffer[writeIndex++] = (byte)'%';
@@ -644,7 +766,10 @@ namespace Standard
         // Keeping that same pattern here just to be consistent.
         private static bool _UrlEncodeIsSafe(byte b)
         {
-            if (_IsAsciiAlphaNumeric(b)) return true;
+            if (_IsAsciiAlphaNumeric(b))
+            {
+                return true;
+            }
 
             switch ((char)b)
             {
@@ -673,16 +798,32 @@ namespace Standard
 
         private static int _HexToInt(char h)
         {
-            if (h >= '0' && h <= '9') return h - '0';
-            if (h >= 'a' && h <= 'f') return h - 'a' + 10;
-            if (h >= 'A' && h <= 'F') return h - 'A' + 10;
+            if (h >= '0' && h <= '9')
+            {
+                return h - '0';
+            }
+
+            if (h >= 'a' && h <= 'f')
+            {
+                return h - 'a' + 10;
+            }
+
+            if (h >= 'A' && h <= 'F')
+            {
+                return h - 'A' + 10;
+            }
+
             Assert.Fail("Invalid hex character " + h);
             return -1;
         }
 
         public static void AddDependencyPropertyChangeListener(object component, DependencyProperty property, EventHandler listener)
         {
-            if (component == null) return;
+            if (component == null)
+            {
+                return;
+            }
+
             Assert.IsNotNull(property);
             Assert.IsNotNull(listener);
             var dpd = DependencyPropertyDescriptor.FromProperty(property, component.GetType());
@@ -691,7 +832,11 @@ namespace Standard
 
         public static void RemoveDependencyPropertyChangeListener(object component, DependencyProperty property, EventHandler listener)
         {
-            if (component == null) return;
+            if (component == null)
+            {
+                return;
+            }
+
             Assert.IsNotNull(property);
             Assert.IsNotNull(listener);
             var dpd = DependencyPropertyDescriptor.FromProperty(property, component.GetType());
@@ -702,19 +847,51 @@ namespace Standard
 
         public static bool IsThicknessNonNegative(Thickness thickness)
         {
-            if (!IsDoubleFiniteAndNonNegative(thickness.Top)) return false;
-            if (!IsDoubleFiniteAndNonNegative(thickness.Left)) return false;
-            if (!IsDoubleFiniteAndNonNegative(thickness.Bottom)) return false;
-            if (!IsDoubleFiniteAndNonNegative(thickness.Right)) return false;
+            if (!IsDoubleFiniteAndNonNegative(thickness.Top))
+            {
+                return false;
+            }
+
+            if (!IsDoubleFiniteAndNonNegative(thickness.Left))
+            {
+                return false;
+            }
+
+            if (!IsDoubleFiniteAndNonNegative(thickness.Bottom))
+            {
+                return false;
+            }
+
+            if (!IsDoubleFiniteAndNonNegative(thickness.Right))
+            {
+                return false;
+            }
+
             return true;
         }
 
         public static bool IsCornerRadiusValid(CornerRadius cornerRadius)
         {
-            if (!IsDoubleFiniteAndNonNegative(cornerRadius.TopLeft)) return false;
-            if (!IsDoubleFiniteAndNonNegative(cornerRadius.TopRight)) return false;
-            if (!IsDoubleFiniteAndNonNegative(cornerRadius.BottomLeft)) return false;
-            if (!IsDoubleFiniteAndNonNegative(cornerRadius.BottomRight)) return false;
+            if (!IsDoubleFiniteAndNonNegative(cornerRadius.TopLeft))
+            {
+                return false;
+            }
+
+            if (!IsDoubleFiniteAndNonNegative(cornerRadius.TopRight))
+            {
+                return false;
+            }
+
+            if (!IsDoubleFiniteAndNonNegative(cornerRadius.BottomLeft))
+            {
+                return false;
+            }
+
+            if (!IsDoubleFiniteAndNonNegative(cornerRadius.BottomRight))
+            {
+                return false;
+            }
+
             return true;
         }
 

@@ -167,7 +167,9 @@ namespace AvalonDock.Controls
         private void _model_IsSelectedChanged(object sender, EventArgs e)
         {
             if (!_model.IsAutoHidden)
+            {
                 _model.IsSelectedChanged -= new EventHandler(_model_IsSelectedChanged);
+            }
             else if (_model.IsSelected)
             {
                 _model.Root.Manager.ShowAutoHideWindow(this);
@@ -178,9 +180,13 @@ namespace AvalonDock.Controls
         private void _model_IsActiveChanged(object sender, EventArgs e)
         {
             if (!_model.IsAutoHidden)
+            {
                 _model.IsActiveChanged -= new EventHandler(_model_IsActiveChanged);
+            }
             else if (_model.IsActive)
+            {
                 _model.Root.Manager.ShowAutoHideWindow(this);
+            }
         }
 
         private void _openUpTimer_Tick(object sender, EventArgs e)

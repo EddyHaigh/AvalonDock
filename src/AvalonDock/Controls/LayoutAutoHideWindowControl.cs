@@ -114,7 +114,10 @@ namespace AvalonDock.Controls
 
         internal void Show(LayoutAnchorControl anchor)
         {
-            if (_model != null) throw new InvalidOperationException();
+            if (_model != null)
+            {
+                throw new InvalidOperationException();
+            }
 
             _anchor = anchor;
             _model = anchor.Model as LayoutAnchorable;
@@ -134,7 +137,11 @@ namespace AvalonDock.Controls
         {
             StopListeningToViewboxZoomChange();
 
-            if (_model == null) return;
+            if (_model == null)
+            {
+                return;
+            }
+
             _model.PropertyChanged -= _model_PropertyChanged;
             RemoveInternalGrid();
             _anchor = null;
@@ -148,10 +155,17 @@ namespace AvalonDock.Controls
             get
             {
                 var ptMouse = new Win32Helper.Win32Point();
-                if (!Win32Helper.GetCursorPos(ref ptMouse)) return false;
+                if (!Win32Helper.GetCursorPos(ref ptMouse))
+                {
+                    return false;
+                }
+
                 var location = this.PointToScreenDPI(new Point());
                 var rectWindow = this.GetScreenArea();
-                if (rectWindow.Contains(new Point(ptMouse.X, ptMouse.Y))) return true;
+                if (rectWindow.Contains(new Point(ptMouse.X, ptMouse.Y)))
+                {
+                    return true;
+                }
 
                 var manager = Model?.Root.Manager;
                 var anchor = manager?.FindVisualChildren<LayoutAnchorControl>().FirstOrDefault(c => c.Model == Model);
@@ -186,7 +200,11 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            if (_internalHwndSource == null) return;
+            if (_internalHwndSource == null)
+            {
+                return;
+            }
+
             _internalHwndSource.Dispose();
             _internalHwndSource = null;
         }
@@ -201,7 +219,11 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override Size MeasureOverride(Size constraint)
         {
-            if (_internalHostPresenter == null) return base.MeasureOverride(constraint);
+            if (_internalHostPresenter == null)
+            {
+                return base.MeasureOverride(constraint);
+            }
+
             _internalHostPresenter.Measure(constraint);
             //return base.MeasureOverride(constraint);
             return _internalHostPresenter.DesiredSize;
@@ -210,7 +232,11 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override Size ArrangeOverride(Size finalSize)
         {
-            if (_internalHostPresenter == null) return base.ArrangeOverride(finalSize);
+            if (_internalHostPresenter == null)
+            {
+                return base.ArrangeOverride(finalSize);
+            }
+
             _internalHostPresenter.Arrange(new Rect(finalSize));
             return base.ArrangeOverride(finalSize);// new Size(_internalHostPresenter.ActualWidth, _internalHostPresenter.ActualHeight);
         }
@@ -221,8 +247,15 @@ namespace AvalonDock.Controls
 
         private void _model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(LayoutAnchorable.IsAutoHidden)) return;
-            if (!_model.IsAutoHidden) _manager.HideAutoHideWindow(_anchor);
+            if (e.PropertyName != nameof(LayoutAnchorable.IsAutoHidden))
+            {
+                return;
+            }
+
+            if (!_model.IsAutoHidden)
+            {
+                _manager.HideAutoHideWindow(_anchor);
+            }
         }
 
         private Transform ChildLayoutTransform
@@ -376,9 +409,13 @@ namespace AvalonDock.Controls
             _initialStartPoint = splitter.PointToScreenDPIWithoutFlowDirection(new Point()) - ptTopLeftScreen;
 
             if (_side == AnchorSide.Right || _side == AnchorSide.Left)
+            {
                 Canvas.SetLeft(_resizerGhost, _initialStartPoint.X);
+            }
             else
+            {
                 Canvas.SetTop(_resizerGhost, _initialStartPoint.Y);
+            }
 
             var panelHostResizer = new Canvas { HorizontalAlignment = HorizontalAlignment.Stretch, VerticalAlignment = VerticalAlignment.Stretch };
             panelHostResizer.Children.Add(_resizerGhost);
@@ -404,7 +441,11 @@ namespace AvalonDock.Controls
 
         private void HideResizerOverlayWindow()
         {
-            if (_resizerWindowHost == null) return;
+            if (_resizerWindowHost == null)
+            {
+                return;
+            }
+
             _resizerWindowHost.Close();
             _resizerWindowHost = null;
         }
@@ -421,37 +462,69 @@ namespace AvalonDock.Controls
 
             double delta;
             if (_side == AnchorSide.Right || _side == AnchorSide.Left)
+            {
                 delta = deltaPoint.X;
+            }
             else
+            {
                 delta = deltaPoint.Y;
+            }
 
             switch (_side)
             {
                 case AnchorSide.Right:
                     {
-                        if (_model.AutoHideWidth == 0.0) _model.AutoHideWidth = _internalHost.ActualWidth - delta;
-                        else _model.AutoHideWidth -= delta;
+                        if (_model.AutoHideWidth == 0.0)
+                        {
+                            _model.AutoHideWidth = _internalHost.ActualWidth - delta;
+                        }
+                        else
+                        {
+                            _model.AutoHideWidth -= delta;
+                        }
+
                         _internalGrid.ColumnDefinitions[1].Width = new GridLength(_model.AutoHideWidth, GridUnitType.Pixel);
                         break;
                     }
                 case AnchorSide.Left:
                     {
-                        if (_model.AutoHideWidth == 0.0) _model.AutoHideWidth = _internalHost.ActualWidth + delta;
-                        else _model.AutoHideWidth += delta;
+                        if (_model.AutoHideWidth == 0.0)
+                        {
+                            _model.AutoHideWidth = _internalHost.ActualWidth + delta;
+                        }
+                        else
+                        {
+                            _model.AutoHideWidth += delta;
+                        }
+
                         _internalGrid.ColumnDefinitions[0].Width = new GridLength(_model.AutoHideWidth, GridUnitType.Pixel);
                         break;
                     }
                 case AnchorSide.Top:
                     {
-                        if (_model.AutoHideHeight == 0.0) _model.AutoHideHeight = _internalHost.ActualHeight + delta;
-                        else _model.AutoHideHeight += delta;
+                        if (_model.AutoHideHeight == 0.0)
+                        {
+                            _model.AutoHideHeight = _internalHost.ActualHeight + delta;
+                        }
+                        else
+                        {
+                            _model.AutoHideHeight += delta;
+                        }
+
                         _internalGrid.RowDefinitions[0].Height = new GridLength(_model.AutoHideHeight, GridUnitType.Pixel);
                         break;
                     }
                 case AnchorSide.Bottom:
                     {
-                        if (_model.AutoHideHeight == 0.0) _model.AutoHideHeight = _internalHost.ActualHeight - delta;
-                        else _model.AutoHideHeight -= delta;
+                        if (_model.AutoHideHeight == 0.0)
+                        {
+                            _model.AutoHideHeight = _internalHost.ActualHeight - delta;
+                        }
+                        else
+                        {
+                            _model.AutoHideHeight -= delta;
+                        }
+
                         _internalGrid.RowDefinitions[1].Height = new GridLength(_model.AutoHideHeight, GridUnitType.Pixel);
                         break;
                     }
@@ -475,11 +548,17 @@ namespace AvalonDock.Controls
 
             if (_side == AnchorSide.Right || _side == AnchorSide.Left)
             {
-                if (GetFlowDirection(_internalHost) == FlowDirection.RightToLeft) transformedDelta.X = -transformedDelta.X;
+                if (GetFlowDirection(_internalHost) == FlowDirection.RightToLeft)
+                {
+                    transformedDelta.X = -transformedDelta.X;
+                }
+
                 Canvas.SetLeft(_resizerGhost, MathHelper.MinMax(_initialStartPoint.X + transformedDelta.X, 0.0, _resizerWindowHost.Width - _resizerGhost.Width));
             }
             else
+            {
                 Canvas.SetTop(_resizerGhost, MathHelper.MinMax(_initialStartPoint.Y + transformedDelta.Y, 0.0, _resizerWindowHost.Height - _resizerGhost.Height));
+            }
         }
 
         private void OnResizerDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)

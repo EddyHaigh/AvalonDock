@@ -306,7 +306,9 @@ namespace AvalonDock.Controls
                         }
 
                         foreach (var cntToTransfer in floatingWindow.RootPanel.Descendents().OfType<LayoutAnchorable>().ToArray())
+                        {
                             newLayoutDocumentPane.Children.Add(cntToTransfer);
+                        }
                     }
                     break;
 
@@ -347,7 +349,9 @@ namespace AvalonDock.Controls
                         }
 
                         foreach (var cntToTransfer in floatingWindow.RootPanel.Descendents().OfType<LayoutAnchorable>().ToArray())
+                        {
                             newLayoutDocumentPane.Children.Add(cntToTransfer);
+                        }
                     }
                     break;
 
@@ -388,7 +392,9 @@ namespace AvalonDock.Controls
                         }
 
                         foreach (var cntToTransfer in floatingWindow.RootPanel.Descendents().OfType<LayoutAnchorable>().ToArray())
+                        {
                             newLayoutDocumentPane.Children.Add(cntToTransfer);
+                        }
                     }
                     break;
 
@@ -429,7 +435,9 @@ namespace AvalonDock.Controls
                         }
 
                         foreach (var cntToTransfer in floatingWindow.RootPanel.Descendents().OfType<LayoutAnchorable>().ToArray())
+                        {
                             newLayoutDocumentPane.Children.Add(cntToTransfer);
+                        }
                     }
                     break;
 

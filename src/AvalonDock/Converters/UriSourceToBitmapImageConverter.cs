@@ -37,7 +37,9 @@ namespace AvalonDock.Converters
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)
+            {
                 return Binding.DoNothing;
+            }
 
             return new Image() { Source = new BitmapImage((Uri)value) };
         }
