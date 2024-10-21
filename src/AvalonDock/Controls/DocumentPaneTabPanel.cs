@@ -21,32 +21,12 @@ namespace AvalonDock.Controls
     /// </summary>
     public class DocumentPaneTabPanel : Panel
     {
-        #region Constructors
-
         /// <summary>
         /// Static constructor
         /// </summary>
         public DocumentPaneTabPanel()
         {
             this.FlowDirection = System.Windows.FlowDirection.LeftToRight;
-        }
-
-        #endregion Constructors
-
-        #region Overrides
-
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            Size desideredSize = new Size();
-            foreach (FrameworkElement child in Children)
-            {
-                child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                desideredSize.Width += child.DesiredSize.Width;
-
-                desideredSize.Height = Math.Max(desideredSize.Height, child.DesiredSize.Height);
-            }
-
-            return new Size(Math.Min(desideredSize.Width, availableSize.Width), desideredSize.Height);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -93,6 +73,20 @@ namespace AvalonDock.Controls
             return finalSize;
         }
 
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            Size desideredSize = new Size();
+            foreach (FrameworkElement child in Children)
+            {
+                child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                desideredSize.Width += child.DesiredSize.Width;
+
+                desideredSize.Height = Math.Max(desideredSize.Height, child.DesiredSize.Height);
+            }
+
+            return new Size(Math.Min(desideredSize.Width, availableSize.Width), desideredSize.Height);
+        }
+
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
         {
             //if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed &&
@@ -108,7 +102,5 @@ namespace AvalonDock.Controls
 
             base.OnMouseLeave(e);
         }
-
-        #endregion Overrides
     }
 }

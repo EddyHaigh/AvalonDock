@@ -20,7 +20,21 @@ namespace AvalonDock.Controls
     /// <seealso cref="Thumb"/>
     public class LayoutGridResizerControl : Thumb
     {
-        #region Constructors
+        /// <summary><see cref="BackgroundWhileDragging"/> dependency property.</summary>
+        public static readonly DependencyProperty BackgroundWhileDraggingProperty
+            = DependencyProperty.Register(
+                nameof(BackgroundWhileDragging),
+                typeof(Brush),
+                typeof(LayoutGridResizerControl),
+                new FrameworkPropertyMetadata(Brushes.Black));
+
+        /// <summary><see cref="OpacityWhileDragging"/> dependency property.</summary>
+        public static readonly DependencyProperty OpacityWhileDraggingProperty
+            = DependencyProperty.Register(
+                nameof(OpacityWhileDragging),
+                typeof(double),
+                typeof(LayoutGridResizerControl),
+                new FrameworkPropertyMetadata(0.5));
 
         static LayoutGridResizerControl()
         {
@@ -32,43 +46,24 @@ namespace AvalonDock.Controls
             BackgroundProperty.OverrideMetadata(typeof(LayoutGridResizerControl), new FrameworkPropertyMetadata(Brushes.Transparent));
             IsHitTestVisibleProperty.OverrideMetadata(typeof(LayoutGridResizerControl), new FrameworkPropertyMetadata(true, null));
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        #region BackgroundWhileDragging
-
-        /// <summary><see cref="BackgroundWhileDragging"/> dependency property.</summary>
-        public static readonly DependencyProperty BackgroundWhileDraggingProperty = DependencyProperty.Register(nameof(BackgroundWhileDragging), typeof(Brush), typeof(LayoutGridResizerControl),
-                new FrameworkPropertyMetadata(Brushes.Black));
-
         /// <summary>Gets/sets the background brush of the control being dragged.</summary>
-        [Bindable(true), Description("Gets/sets the background brush of the control being dragged."), Category("Other")]
+        [Bindable(true)]
+        [Description("Gets/sets the background brush of the control being dragged.")]
+        [Category("Other")]
         public Brush BackgroundWhileDragging
         {
             get => (Brush)GetValue(BackgroundWhileDraggingProperty);
             set => SetValue(BackgroundWhileDraggingProperty, value);
         }
 
-        #endregion BackgroundWhileDragging
-
-        #region OpacityWhileDragging
-
-        /// <summary><see cref="OpacityWhileDragging"/> dependency property.</summary>
-        public static readonly DependencyProperty OpacityWhileDraggingProperty = DependencyProperty.Register(nameof(OpacityWhileDragging), typeof(double), typeof(LayoutGridResizerControl),
-                new FrameworkPropertyMetadata(0.5));
-
         /// <summary>Gets/sets the opacity while the control is being dragged.</summary>
-        [Bindable(true), Description("Gets/sets the opacity while the control is being dragged."), Category("Other")]
+        [Bindable(true)]
+        [Description("Gets/sets the opacity while the control is being dragged.")]
+        [Category("Other")]
         public double OpacityWhileDragging
         {
             get => (double)GetValue(OpacityWhileDraggingProperty);
             set => SetValue(OpacityWhileDraggingProperty, value);
         }
-
-        #endregion OpacityWhileDragging
-
-        #endregion Properties
     }
 }

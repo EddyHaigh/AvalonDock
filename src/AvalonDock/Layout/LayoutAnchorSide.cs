@@ -20,15 +20,11 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutAnchorSide : LayoutGroup<LayoutAnchorGroup>
     {
-        #region fields
-
         private AnchorSide _side;
 
-        #endregion fields
-
-        #region Properties
-
-        /// <summary>Gets the side (top, bottom, left, right) that this layout is anchored in the layout.</summary>
+        /// <summary>
+        /// Gets the side (top, bottom, left, right) that this layout is anchored in the layout.
+        /// </summary>
         public AnchorSide Side
         {
             get => _side;
@@ -45,10 +41,6 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Properties
-
-        #region Overrides
-
         /// <inheritdoc />
         protected override bool GetVisibility() => Children.Count > 0;
 
@@ -58,10 +50,6 @@ namespace AvalonDock.Layout
             base.OnParentChanged(oldValue, newValue);
             UpdateSide();
         }
-
-        #endregion Overrides
-
-        #region Private Methods
 
         private void UpdateSide()
         {
@@ -82,7 +70,5 @@ namespace AvalonDock.Layout
                 Side = AnchorSide.Bottom;
             }
         }
-
-        #endregion Private Methods
     }
 }

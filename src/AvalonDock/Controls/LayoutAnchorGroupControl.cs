@@ -23,14 +23,8 @@ namespace AvalonDock.Controls
     /// </summary>
     public class LayoutAnchorGroupControl : Control, ILayoutControl
     {
-        #region fields
-
         private ObservableCollection<LayoutAnchorControl> _childViews = new ObservableCollection<LayoutAnchorControl>();
         private LayoutAnchorGroup _model;
-
-        #endregion fields
-
-        #region Constructors
 
         static LayoutAnchorGroupControl()
         {
@@ -44,10 +38,6 @@ namespace AvalonDock.Controls
 
             _model.Children.CollectionChanged += (s, e) => OnModelChildrenCollectionChanged(e);
         }
-
-        #endregion Constructors
-
-        #region Properties
 
         public ObservableCollection<LayoutAnchorControl> Children
         {
@@ -64,10 +54,6 @@ namespace AvalonDock.Controls
                 return _model;
             }
         }
-
-        #endregion Properties
-
-        #region Private Methods
 
         private void CreateChildrenViews()
         {
@@ -117,7 +103,5 @@ namespace AvalonDock.Controls
                 }
             }
         }
-
-        #endregion Private Methods
     }
 }

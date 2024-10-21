@@ -25,22 +25,16 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutAnchorable : LayoutContent
     {
-        #region fields
-
-        private double _autohideWidth = 0.0;
-        private double _autohideMinWidth = 100.0;
         private double _autohideHeight = 0.0;
         private double _autohideMinHeight = 100.0;
-        private bool _canHide = true;
+        private double _autohideMinWidth = 100.0;
+        private double _autohideWidth = 0.0;
         private bool _canAutoHide = true;
         private bool _canDockAsTabbedDocument = true;
+        private bool _canHide = true;
         // BD: 17.08.2020 Remove that bodge and handle CanClose=false && CanHide=true in XAML
         //private bool _canCloseValueBeforeInternalSet;
         private bool _canMove = true;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>Class constructor</summary>
         public LayoutAnchorable()
@@ -51,58 +45,10 @@ namespace AvalonDock.Layout
             _canClose = _canCloseDefault = false;
         }
 
-        #endregion Constructors
-
-        #region Events
+        public event EventHandler<CancelEventArgs> Hiding;
 
         /// <summary>Event is invoked when the visibility of this object has changed.</summary>
         public event EventHandler IsVisibleChanged;
-
-        public event EventHandler<CancelEventArgs> Hiding;
-
-        #endregion Events
-
-        #region Properties
-
-        /// <summary>Gets/sets the width for this anchorable in AutoHide mode.</summary>
-        public double AutoHideWidth
-        {
-            get => _autohideWidth;
-            set
-            {
-                if (value == _autohideWidth)
-                {
-                    return;
-                }
-
-                RaisePropertyChanging(nameof(AutoHideWidth));
-                value = Math.Max(value, _autohideMinWidth);
-                _autohideWidth = value;
-                RaisePropertyChanged(nameof(AutoHideWidth));
-            }
-        }
-
-        /// <summary>Gets/sets the minimum width for this anchorable in AutoHide mode.</summary>
-        public double AutoHideMinWidth
-        {
-            get => _autohideMinWidth;
-            set
-            {
-                if (value == _autohideMinWidth)
-                {
-                    return;
-                }
-
-                RaisePropertyChanging(nameof(AutoHideMinWidth));
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), "Negative value is not allowed.");
-                }
-
-                _autohideMinWidth = value;
-                RaisePropertyChanged(nameof(AutoHideMinWidth));
-            }
-        }
 
         /// <summary>Gets/sets the height for this anchorable in AutoHide mode.</summary>
         public double AutoHideHeight
@@ -144,19 +90,43 @@ namespace AvalonDock.Layout
             }
         }
 
-        /// <summary>Gets/sets whether the anchorable can hide (be invisible in the UI) or not.</summary>
-        public bool CanHide
+        /// <summary>Gets/sets the minimum width for this anchorable in AutoHide mode.</summary>
+        public double AutoHideMinWidth
         {
-            get => _canHide;
+            get => _autohideMinWidth;
             set
             {
-                if (value == _canHide)
+                if (value == _autohideMinWidth)
                 {
                     return;
                 }
 
-                _canHide = value;
-                RaisePropertyChanged(nameof(CanHide));
+                RaisePropertyChanging(nameof(AutoHideMinWidth));
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Negative value is not allowed.");
+                }
+
+                _autohideMinWidth = value;
+                RaisePropertyChanged(nameof(AutoHideMinWidth));
+            }
+        }
+
+        /// <summary>Gets/sets the width for this anchorable in AutoHide mode.</summary>
+        public double AutoHideWidth
+        {
+            get => _autohideWidth;
+            set
+            {
+                if (value == _autohideWidth)
+                {
+                    return;
+                }
+
+                RaisePropertyChanging(nameof(AutoHideWidth));
+                value = Math.Max(value, _autohideMinWidth);
+                _autohideWidth = value;
+                RaisePropertyChanged(nameof(AutoHideWidth));
             }
         }
 
@@ -189,6 +159,22 @@ namespace AvalonDock.Layout
 
                 _canDockAsTabbedDocument = value;
                 RaisePropertyChanged(nameof(CanDockAsTabbedDocument));
+            }
+        }
+
+        /// <summary>Gets/sets whether the anchorable can hide (be invisible in the UI) or not.</summary>
+        public bool CanHide
+        {
+            get => _canHide;
+            set
+            {
+                if (value == _canHide)
+                {
+                    return;
+                }
+
+                _canHide = value;
+                RaisePropertyChanged(nameof(CanHide));
             }
         }
 
@@ -231,288 +217,6 @@ namespace AvalonDock.Layout
                     Hide();
                 }
             }
-        }
-
-        #endregion Properties
-
-        #region Overrides
-
-        /// <inheritdoc />
-        protected override void OnParentChanged(ILayoutContainer oldValue, ILayoutContainer newValue)
-        {
-            UpdateParentVisibility();
-            RaisePropertyChanged(nameof(IsVisible));
-            NotifyIsVisibleChanged();
-            RaisePropertyChanged(nameof(IsHidden));
-            RaisePropertyChanged(nameof(IsAutoHidden));
-            base.OnParentChanged(oldValue, newValue);
-        }
-
-        /// <inheritdoc />
-        protected override void InternalDock()
-        {
-            var root = Root as LayoutRoot;
-            LayoutAnchorablePane anchorablePane = null;
-
-            //look for active content parent pane
-            if (root.ActiveContent != null && root.ActiveContent != this)
-            {
-                anchorablePane = root.ActiveContent.Parent as LayoutAnchorablePane;
-            }
-            //look for a pane on the right side
-            if (anchorablePane == null)
-            {
-                anchorablePane = root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
-            }
-            //look for an available pane
-            if (anchorablePane == null)
-            {
-                anchorablePane = root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
-            }
-
-            var added = false;
-            if (root.Manager.LayoutUpdateStrategy != null)
-            {
-                added = root.Manager.LayoutUpdateStrategy.BeforeInsertAnchorable(root, this, anchorablePane);
-            }
-
-            if (!added)
-            {
-                if (anchorablePane == null)
-                {
-                    var mainLayoutPanel = new LayoutPanel { Orientation = Orientation.Horizontal };
-                    if (root.RootPanel != null)
-                    {
-                        mainLayoutPanel.Children.Add(root.RootPanel);
-                    }
-
-                    root.RootPanel = mainLayoutPanel;
-                    anchorablePane = new LayoutAnchorablePane { DockWidth = new GridLength(200.0, GridUnitType.Pixel) };
-                    mainLayoutPanel.Children.Add(anchorablePane);
-                }
-                anchorablePane.Children.Add(this);
-            }
-            root.Manager.LayoutUpdateStrategy?.AfterInsertAnchorable(root, this);
-            base.InternalDock();
-        }
-
-        /// <inheritdoc />
-        public override void ReadXml(System.Xml.XmlReader reader)
-        {
-            if (reader.MoveToAttribute(nameof(CanHide)))
-            {
-                CanHide = bool.Parse(reader.Value);
-            }
-
-            if (reader.MoveToAttribute(nameof(CanAutoHide)))
-            {
-                CanAutoHide = bool.Parse(reader.Value);
-            }
-
-            if (reader.MoveToAttribute(nameof(AutoHideWidth)))
-            {
-                AutoHideWidth = double.Parse(reader.Value, CultureInfo.InvariantCulture);
-            }
-
-            if (reader.MoveToAttribute(nameof(AutoHideHeight)))
-            {
-                AutoHideHeight = double.Parse(reader.Value, CultureInfo.InvariantCulture);
-            }
-
-            if (reader.MoveToAttribute(nameof(AutoHideMinWidth)))
-            {
-                AutoHideMinWidth = double.Parse(reader.Value, CultureInfo.InvariantCulture);
-            }
-
-            if (reader.MoveToAttribute(nameof(AutoHideMinHeight)))
-            {
-                AutoHideMinHeight = double.Parse(reader.Value, CultureInfo.InvariantCulture);
-            }
-
-            if (reader.MoveToAttribute(nameof(CanDockAsTabbedDocument)))
-            {
-                CanDockAsTabbedDocument = bool.Parse(reader.Value);
-            }
-
-            if (reader.MoveToAttribute(nameof(CanMove)))
-            {
-                CanMove = bool.Parse(reader.Value);
-            }
-
-            base.ReadXml(reader);
-        }
-
-        /// <inheritdoc />
-        public override void WriteXml(System.Xml.XmlWriter writer)
-        {
-            if (!CanHide)
-            {
-                writer.WriteAttributeString(nameof(CanHide), CanHide.ToString());
-            }
-
-            if (!CanAutoHide)
-            {
-                writer.WriteAttributeString(nameof(CanAutoHide), CanAutoHide.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (AutoHideWidth > 0)
-            {
-                writer.WriteAttributeString(nameof(AutoHideWidth), AutoHideWidth.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (AutoHideHeight > 0)
-            {
-                writer.WriteAttributeString(nameof(AutoHideHeight), AutoHideHeight.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (AutoHideMinWidth != 25.0)
-            {
-                writer.WriteAttributeString(nameof(AutoHideMinWidth), AutoHideMinWidth.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (AutoHideMinHeight != 25.0)
-            {
-                writer.WriteAttributeString(nameof(AutoHideMinHeight), AutoHideMinHeight.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (!CanDockAsTabbedDocument)
-            {
-                writer.WriteAttributeString(nameof(CanDockAsTabbedDocument), CanDockAsTabbedDocument.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (!CanMove)
-            {
-                writer.WriteAttributeString(nameof(CanMove), CanMove.ToString());
-            }
-
-            base.WriteXml(writer);
-        }
-
-        /// <inheritdoc />
-        public override void Close()
-        {
-            if (Root?.Manager != null)
-            {
-                var dockingManager = Root.Manager;
-                dockingManager.ExecuteCloseCommand(this);
-            }
-            else
-            {
-                CloseAnchorable();
-            }
-        }
-
-#if TRACE
-        /// <inheritdoc />
-        public override void ConsoleDump(int tab)
-        {
-            System.Diagnostics.Trace.TraceInformation("{0}Anchorable()", new string(' ', tab * 4));
-        }
-#endif
-
-        /// <summary>Method can be invoked to fire the <see cref="Hiding"/> event.</summary>
-        /// <param name="args"></param>
-        protected virtual void OnHiding(CancelEventArgs args) => Hiding?.Invoke(this, args);
-
-        #endregion Overrides
-
-        #region Public Methods
-        public void Hide()
-        {
-            if (Root?.Manager is DockingManager dockingManager)
-            {
-                dockingManager.ExecuteHideCommand(this);
-            }
-            else
-            {
-                HideAnchorable(true);
-            }
-        }
-
-        /// <summary>Hide this contents.</summary>
-        /// <remarks>Add this content to <see cref="ILayoutRoot.Hidden"/> collection of parent root.</remarks>
-        /// <param name="cancelable"></param>
-        internal bool HideAnchorable(bool cancelable)
-        {
-            if (!IsVisible)
-            {
-                IsSelected = true;
-                IsActive = true;
-                return false;
-            }
-
-            if (cancelable)
-            {
-                var args = new CancelEventArgs();
-                OnHiding(args);
-                if (args.Cancel)
-                {
-                    return false;
-                }
-            }
-
-            RaisePropertyChanging(nameof(IsHidden));
-            RaisePropertyChanging(nameof(IsVisible));
-            if (Parent is ILayoutGroup layoutGroup)
-            {
-                var parentAsGroup = layoutGroup;
-                PreviousContainer = parentAsGroup;
-                PreviousContainerIndex = parentAsGroup.IndexOfChild(this);
-            }
-            Root?.Hidden?.Add(this);
-            RaisePropertyChanged(nameof(IsVisible));
-            RaisePropertyChanged(nameof(IsHidden));
-            NotifyIsVisibleChanged();
-
-            return true;
-        }
-
-        /// <summary>Show the content.</summary>
-        /// <remarks>Try to show the content where it was previously hidden.</remarks>
-        public void Show()
-        {
-            if (IsVisible)
-            {
-                return;
-            }
-
-            if (!IsHidden)
-            {
-                throw new InvalidOperationException();
-            }
-
-            RaisePropertyChanging(nameof(IsHidden));
-            RaisePropertyChanging(nameof(IsVisible));
-            var added = false;
-            var root = Root;
-            if (root?.Manager?.LayoutUpdateStrategy != null)
-            {
-                added = root.Manager.LayoutUpdateStrategy.BeforeInsertAnchorable(root as LayoutRoot, this, PreviousContainer);
-            }
-
-            if (!added && PreviousContainer != null)
-            {
-                var previousContainerAsLayoutGroup = PreviousContainer as ILayoutGroup;
-                if (PreviousContainerIndex < previousContainerAsLayoutGroup.ChildrenCount)
-                {
-                    previousContainerAsLayoutGroup.InsertChildAt(PreviousContainerIndex, this);
-                }
-                else
-                {
-                    previousContainerAsLayoutGroup.InsertChildAt(previousContainerAsLayoutGroup.ChildrenCount, this);
-                }
-
-                Parent = previousContainerAsLayoutGroup;
-                IsSelected = true;
-                IsActive = true;
-            }
-
-            root?.Manager?.LayoutUpdateStrategy?.AfterInsertAnchorable(root as LayoutRoot, this);
-            PreviousContainer = null;
-            PreviousContainerIndex = -1;
-            RaisePropertyChanged(nameof(IsVisible));
-            RaisePropertyChanged(nameof(IsHidden));
-            NotifyIsVisibleChanged();
         }
 
         /// <summary>Add the anchorable to a <see cref="DockingManager"/> layout.</summary>
@@ -611,16 +315,143 @@ namespace AvalonDock.Layout
             }
         }
 
+        /// <inheritdoc />
+        public override void Close()
+        {
+            if (Root?.Manager != null)
+            {
+                var dockingManager = Root.Manager;
+                dockingManager.ExecuteCloseCommand(this);
+            }
+            else
+            {
+                CloseAnchorable();
+            }
+        }
+
+#if TRACE
+        /// <inheritdoc />
+        public override void ConsoleDump(int tab)
+        {
+            System.Diagnostics.Trace.TraceInformation("{0}Anchorable()", new string(' ', tab * 4));
+        }
+#endif
+
+        public void Hide()
+        {
+            if (Root?.Manager is DockingManager dockingManager)
+            {
+                dockingManager.ExecuteHideCommand(this);
+            }
+            else
+            {
+                HideAnchorable(true);
+            }
+        }
+
+        /// <inheritdoc />
+        public override void ReadXml(System.Xml.XmlReader reader)
+        {
+            if (reader.MoveToAttribute(nameof(CanHide)))
+            {
+                CanHide = bool.Parse(reader.Value);
+            }
+
+            if (reader.MoveToAttribute(nameof(CanAutoHide)))
+            {
+                CanAutoHide = bool.Parse(reader.Value);
+            }
+
+            if (reader.MoveToAttribute(nameof(AutoHideWidth)))
+            {
+                AutoHideWidth = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
+            if (reader.MoveToAttribute(nameof(AutoHideHeight)))
+            {
+                AutoHideHeight = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
+            if (reader.MoveToAttribute(nameof(AutoHideMinWidth)))
+            {
+                AutoHideMinWidth = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
+            if (reader.MoveToAttribute(nameof(AutoHideMinHeight)))
+            {
+                AutoHideMinHeight = double.Parse(reader.Value, CultureInfo.InvariantCulture);
+            }
+
+            if (reader.MoveToAttribute(nameof(CanDockAsTabbedDocument)))
+            {
+                CanDockAsTabbedDocument = bool.Parse(reader.Value);
+            }
+
+            if (reader.MoveToAttribute(nameof(CanMove)))
+            {
+                CanMove = bool.Parse(reader.Value);
+            }
+
+            base.ReadXml(reader);
+        }
+
+        /// <summary>Show the content.</summary>
+        /// <remarks>Try to show the content where it was previously hidden.</remarks>
+        public void Show()
+        {
+            if (IsVisible)
+            {
+                return;
+            }
+
+            if (!IsHidden)
+            {
+                throw new InvalidOperationException();
+            }
+
+            RaisePropertyChanging(nameof(IsHidden));
+            RaisePropertyChanging(nameof(IsVisible));
+            var added = false;
+            var root = Root;
+            if (root?.Manager?.LayoutUpdateStrategy != null)
+            {
+                added = root.Manager.LayoutUpdateStrategy.BeforeInsertAnchorable(root as LayoutRoot, this, PreviousContainer);
+            }
+
+            if (!added && PreviousContainer != null)
+            {
+                var previousContainerAsLayoutGroup = PreviousContainer as ILayoutGroup;
+                if (PreviousContainerIndex < previousContainerAsLayoutGroup.ChildrenCount)
+                {
+                    previousContainerAsLayoutGroup.InsertChildAt(PreviousContainerIndex, this);
+                }
+                else
+                {
+                    previousContainerAsLayoutGroup.InsertChildAt(previousContainerAsLayoutGroup.ChildrenCount, this);
+                }
+
+                Parent = previousContainerAsLayoutGroup;
+                IsSelected = true;
+                IsActive = true;
+            }
+
+            root?.Manager?.LayoutUpdateStrategy?.AfterInsertAnchorable(root as LayoutRoot, this);
+            PreviousContainer = null;
+            PreviousContainerIndex = -1;
+            RaisePropertyChanged(nameof(IsVisible));
+            RaisePropertyChanged(nameof(IsHidden));
+            NotifyIsVisibleChanged();
+        }
+
         /// <summary>
         /// Reduce this object into an achored side panel position if it is currently docked or
         /// dock this object in the parent group if it is currently anchored in a side panel (AutoHide is active).
         /// </summary>
         public void ToggleAutoHide()
         {
-            #region Anchorable is already auto hidden
-
             if (IsAutoHidden)
             {
+                // Anchorable is already auto hidden
                 var parentGroup = Parent as LayoutAnchorGroup;
                 var parentSide = parentGroup.Parent as LayoutAnchorSide;
                 var previousContainer = ((ILayoutPreviousContainer)parentGroup).PreviousContainer as LayoutAnchorablePane;
@@ -776,13 +607,9 @@ namespace AvalonDock.Layout
                     parent = parent.Parent as LayoutGroupBase;
                 }
             }
-
-            #endregion Anchorable is already auto hidden
-
-            #region Anchorable is docked
-
             else if (Parent is LayoutAnchorablePane layoutAnchorablePane)
             {
+                // Anchorable is docked
                 var root = Root;
                 var newAnchorGroup = new LayoutAnchorGroup();
                 ((ILayoutPreviousContainer)newAnchorGroup).PreviousContainer = layoutAnchorablePane;
@@ -803,13 +630,53 @@ namespace AvalonDock.Layout
                     case AnchorSide.Bottom: root.BottomSide?.Children.Add(newAnchorGroup); break;
                 }
             }
-
-            #endregion Anchorable is docked
         }
 
-        #endregion Public Methods
+        /// <inheritdoc />
+        public override void WriteXml(System.Xml.XmlWriter writer)
+        {
+            if (!CanHide)
+            {
+                writer.WriteAttributeString(nameof(CanHide), CanHide.ToString());
+            }
 
-        #region Internal Methods
+            if (!CanAutoHide)
+            {
+                writer.WriteAttributeString(nameof(CanAutoHide), CanAutoHide.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (AutoHideWidth > 0)
+            {
+                writer.WriteAttributeString(nameof(AutoHideWidth), AutoHideWidth.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (AutoHideHeight > 0)
+            {
+                writer.WriteAttributeString(nameof(AutoHideHeight), AutoHideHeight.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (AutoHideMinWidth != 25.0)
+            {
+                writer.WriteAttributeString(nameof(AutoHideMinWidth), AutoHideMinWidth.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (AutoHideMinHeight != 25.0)
+            {
+                writer.WriteAttributeString(nameof(AutoHideMinHeight), AutoHideMinHeight.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (!CanDockAsTabbedDocument)
+            {
+                writer.WriteAttributeString(nameof(CanDockAsTabbedDocument), CanDockAsTabbedDocument.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (!CanMove)
+            {
+                writer.WriteAttributeString(nameof(CanMove), CanMove.ToString());
+            }
+
+            base.WriteXml(writer);
+        }
 
         internal bool CloseAnchorable()
         {
@@ -827,6 +694,44 @@ namespace AvalonDock.Layout
             return true;
         }
 
+        /// <summary>Hide this contents.</summary>
+        /// <remarks>Add this content to <see cref="ILayoutRoot.Hidden"/> collection of parent root.</remarks>
+        /// <param name="cancelable"></param>
+        internal bool HideAnchorable(bool cancelable)
+        {
+            if (!IsVisible)
+            {
+                IsSelected = true;
+                IsActive = true;
+                return false;
+            }
+
+            if (cancelable)
+            {
+                var args = new CancelEventArgs();
+                OnHiding(args);
+                if (args.Cancel)
+                {
+                    return false;
+                }
+            }
+
+            RaisePropertyChanging(nameof(IsHidden));
+            RaisePropertyChanging(nameof(IsVisible));
+            if (Parent is ILayoutGroup layoutGroup)
+            {
+                var parentAsGroup = layoutGroup;
+                PreviousContainer = parentAsGroup;
+                PreviousContainerIndex = parentAsGroup.IndexOfChild(this);
+            }
+            Root?.Hidden?.Add(this);
+            RaisePropertyChanged(nameof(IsVisible));
+            RaisePropertyChanged(nameof(IsHidden));
+            NotifyIsVisibleChanged();
+
+            return true;
+        }
+
         // BD: 17.08.2020 Remove that bodge and handle CanClose=false && CanHide=true in XAML
         //internal void SetCanCloseInternal(bool canClose)
         //{
@@ -839,9 +744,68 @@ namespace AvalonDock.Layout
         //	_canClose = _canCloseValueBeforeInternalSet;
         //}
 
-        #endregion Internal Methods
+        /// <inheritdoc />
+        protected override void InternalDock()
+        {
+            var root = Root as LayoutRoot;
+            LayoutAnchorablePane anchorablePane = null;
 
-        #region Private Methods
+            //look for active content parent pane
+            if (root.ActiveContent != null && root.ActiveContent != this)
+            {
+                anchorablePane = root.ActiveContent.Parent as LayoutAnchorablePane;
+            }
+            //look for a pane on the right side
+            if (anchorablePane == null)
+            {
+                anchorablePane = root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
+            }
+            //look for an available pane
+            if (anchorablePane == null)
+            {
+                anchorablePane = root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
+            }
+
+            var added = false;
+            if (root.Manager.LayoutUpdateStrategy != null)
+            {
+                added = root.Manager.LayoutUpdateStrategy.BeforeInsertAnchorable(root, this, anchorablePane);
+            }
+
+            if (!added)
+            {
+                if (anchorablePane == null)
+                {
+                    var mainLayoutPanel = new LayoutPanel { Orientation = Orientation.Horizontal };
+                    if (root.RootPanel != null)
+                    {
+                        mainLayoutPanel.Children.Add(root.RootPanel);
+                    }
+
+                    root.RootPanel = mainLayoutPanel;
+                    anchorablePane = new LayoutAnchorablePane { DockWidth = new GridLength(200.0, GridUnitType.Pixel) };
+                    mainLayoutPanel.Children.Add(anchorablePane);
+                }
+                anchorablePane.Children.Add(this);
+            }
+            root.Manager.LayoutUpdateStrategy?.AfterInsertAnchorable(root, this);
+            base.InternalDock();
+        }
+
+        /// <summary>Method can be invoked to fire the <see cref="Hiding"/> event.</summary>
+        /// <param name="args"></param>
+        protected virtual void OnHiding(CancelEventArgs args) => Hiding?.Invoke(this, args);
+
+        /// <inheritdoc />
+        protected override void OnParentChanged(ILayoutContainer oldValue, ILayoutContainer newValue)
+        {
+            UpdateParentVisibility();
+            RaisePropertyChanged(nameof(IsVisible));
+            NotifyIsVisibleChanged();
+            RaisePropertyChanged(nameof(IsHidden));
+            RaisePropertyChanged(nameof(IsAutoHidden));
+            base.OnParentChanged(oldValue, newValue);
+        }
 
         private void NotifyIsVisibleChanged() => IsVisibleChanged?.Invoke(this, EventArgs.Empty);
 
@@ -860,7 +824,5 @@ namespace AvalonDock.Layout
                 parentPane.ComputeVisibility();
             }
         }
-
-        #endregion Private Methods
     }
 }

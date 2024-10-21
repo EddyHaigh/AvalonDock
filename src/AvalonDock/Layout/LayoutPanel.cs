@@ -20,13 +20,17 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutPanel : LayoutPositionableGroup<ILayoutPanelElement>, ILayoutPanelElement, ILayoutOrientableGroup
     {
-        #region fields
+        /// <summary>
+        /// Using a DependencyProperty as the backing store for thhe <see cref="CanDock"/> property.
+        /// </summary>
+        public static readonly DependencyProperty CanDockProperty =
+            DependencyProperty.Register(
+                "CanDock",
+                typeof(bool),
+                typeof(LayoutPanel),
+                new PropertyMetadata(true));
 
         private Orientation _orientation;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>Class constructor</summary>
         public LayoutPanel()
@@ -39,36 +43,6 @@ namespace AvalonDock.Layout
         {
             Children.Add(firstChild);
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        /// <summary>Gets/sets the orientation for this panel.</summary>
-        public Orientation Orientation
-        {
-            get => _orientation;
-            set
-            {
-                if (value == _orientation)
-                {
-                    return;
-                }
-
-                RaisePropertyChanging(nameof(Orientation));
-                _orientation = value;
-                RaisePropertyChanged(nameof(Orientation));
-            }
-        }
-
-        #region CanDock
-
-        /// <summary>
-        /// Using a DependencyProperty as the backing store for thhe <see cref="CanDock"/> property.
-        /// </summary>
-        public static readonly DependencyProperty CanDockProperty =
-            DependencyProperty.Register("CanDock", typeof(bool),
-                typeof(LayoutPanel), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets/sets dependency property that determines whether docking of dragged items
@@ -87,27 +61,35 @@ namespace AvalonDock.Layout
             set { SetValue(CanDockProperty, value); }
         }
 
-        #endregion CanDock
-
-        #endregion Properties
-
-        #region Overrides
-
-        /// <inheritdoc />
-        protected override bool GetVisibility() => Children.Any(c => c.IsVisible);
-
-        /// <inheritdoc />
-        public override void WriteXml(System.Xml.XmlWriter writer)
+        /// <summary>Gets/sets the orientation for this panel.</summary>
+        public Orientation Orientation
         {
-            writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
-
-            if (CanDock == false)
+            get => _orientation;
+            set
             {
-                writer.WriteAttributeString(nameof(CanDock), CanDock.ToString());
-            }
+                if (value == _orientation)
+                {
+                    return;
+                }
 
-            base.WriteXml(writer);
+                RaisePropertyChanging(nameof(Orientation));
+                _orientation = value;
+                RaisePropertyChanged(nameof(Orientation));
+            }
         }
+
+#if TRACE
+        /// <inheritdoc />
+        public override void ConsoleDump(int tab)
+        {
+            System.Diagnostics.Trace.TraceInformation("{0}Panel({1})", new string(' ', tab * 4), Orientation);
+
+            foreach (var child in Children.Cast<LayoutElement>())
+            {
+                child.ConsoleDump(tab + 1);
+            }
+        }
+#endif
 
         /// <inheritdoc />
         /// <summary>
@@ -132,19 +114,20 @@ namespace AvalonDock.Layout
             base.ReadXml(reader);
         }
 
-#if TRACE
         /// <inheritdoc />
-        public override void ConsoleDump(int tab)
+        public override void WriteXml(System.Xml.XmlWriter writer)
         {
-            System.Diagnostics.Trace.TraceInformation("{0}Panel({1})", new string(' ', tab * 4), Orientation);
+            writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
 
-            foreach (var child in Children.Cast<LayoutElement>())
+            if (CanDock == false)
             {
-                child.ConsoleDump(tab + 1);
+                writer.WriteAttributeString(nameof(CanDock), CanDock.ToString());
             }
-        }
-#endif
 
-        #endregion Overrides
+            base.WriteXml(writer);
+        }
+
+        /// <inheritdoc />
+        protected override bool GetVisibility() => Children.Any(c => c.IsVisible);
     }
 }

@@ -55,8 +55,6 @@ namespace Standard
 
         // Comments are taken from MSDN IStream documentation.
 
-        #region IStream Members
-
         /// <summary>
         /// Creates a new stream object with its own seek pointer that
         /// references the same bytes as the original stream.
@@ -301,13 +299,7 @@ namespace Standard
             }
         }
 
-        #endregion IStream Members
-
-        #region IDisposable Members
-
         /// <inheritdoc />
         public void Dispose() => _source = null;
-
-        #endregion IDisposable Members
     }
 }

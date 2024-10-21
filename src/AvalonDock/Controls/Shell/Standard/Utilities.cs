@@ -843,8 +843,6 @@ namespace Standard
             dpd.RemoveValueChanged(component, listener);
         }
 
-        #region Extension Methods
-
         public static bool IsThicknessNonNegative(Thickness thickness)
         {
             if (!IsDoubleFiniteAndNonNegative(thickness.Top))
@@ -896,7 +894,5 @@ namespace Standard
         }
 
         public static bool IsDoubleFiniteAndNonNegative(double d) => !double.IsNaN(d) && !double.IsInfinity(d) && !(d < 0);
-
-        #endregion Extension Methods
     }
 }

@@ -29,13 +29,7 @@ namespace AvalonDock.Controls
     /// <seealso cref="ILayoutControl"/>
     public class LayoutDocumentPaneControl : TabControlEx, ILayoutControl//, ILogicalChildrenContainer
     {
-        #region fields
-
         private readonly LayoutDocumentPane _model;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>Static class constructor to register WPF style keys.</summary>
         static LayoutDocumentPaneControl()
@@ -57,30 +51,33 @@ namespace AvalonDock.Controls
             this.SizeChanged += OnSizeChanged;
         }
 
-        #endregion Constructors
-
-        #region Properties
-
         /// <summary>Gets the layout model of this control.</summary>
-        [Bindable(false), Description("Gets the layout model of this control."), Category("Other")]
+        [Bindable(false)]
+        [Description("Gets the layout model of this control.")]
+        [Category("Other")]
         public ILayoutElement Model => _model;
 
-        #endregion Properties
-
-        #region Overrides
-
-        /// <summary>
-        /// Invoked when an unhandled SelectionChanged routed event is raised on this element. Implement this method
-        /// to add class handling for this event.
-        /// </summary>
-        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> that contains the event data.
-        /// The event reports that the selection changed.</param>
-        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
-            base.OnSelectionChanged(e);
-            if (_model.SelectedContent != null)
+            base.OnItemsChanged(e);
+            if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                _model.SelectedContent.IsActive = true;
+                foreach (var item in e.OldItems)
+                {
+                    if (item is LayoutContent layoutContent && layoutContent.TabItem != null)
+                    {
+                        layoutContent.TabItem.Model = null;
+                        layoutContent.TabItem.ContextMenu = null;
+                        layoutContent.TabItem.Content = null;
+                        var panel = layoutContent.TabItem.FindVisualAncestor<Panel>();
+                        if (panel != null)
+                        {
+                            panel.Children.Remove(layoutContent.TabItem);
+                        }
+
+                        layoutContent.TabItem = null;
+                    }
+                }
             }
         }
 
@@ -116,33 +113,20 @@ namespace AvalonDock.Controls
             }
         }
 
-        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
+        /// <summary>
+        /// Invoked when an unhandled SelectionChanged routed event is raised on this element. Implement this method
+        /// to add class handling for this event.
+        /// </summary>
+        /// <param name="e">The <see cref="SelectionChangedEventArgs"/> that contains the event data.
+        /// The event reports that the selection changed.</param>
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
-            base.OnItemsChanged(e);
-            if (e.Action == NotifyCollectionChangedAction.Remove)
+            base.OnSelectionChanged(e);
+            if (_model.SelectedContent != null)
             {
-                foreach (var item in e.OldItems)
-                {
-                    if (item is LayoutContent layoutContent && layoutContent.TabItem != null)
-                    {
-                        layoutContent.TabItem.Model = null;
-                        layoutContent.TabItem.ContextMenu = null;
-                        layoutContent.TabItem.Content = null;
-                        var panel = layoutContent.TabItem.FindVisualAncestor<Panel>();
-                        if (panel != null)
-                        {
-                            panel.Children.Remove(layoutContent.TabItem);
-                        }
-
-                        layoutContent.TabItem = null;
-                    }
-                }
+                _model.SelectedContent.IsActive = true;
             }
         }
-
-        #endregion Overrides
-
-        #region Private Methods
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -150,7 +134,5 @@ namespace AvalonDock.Controls
             modelWithAtcualSize.ActualWidth = ActualWidth;
             modelWithAtcualSize.ActualHeight = ActualHeight;
         }
-
-        #endregion Private Methods
     }
 }

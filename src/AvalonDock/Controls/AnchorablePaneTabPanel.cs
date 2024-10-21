@@ -21,39 +21,9 @@ namespace AvalonDock.Controls
     /// </summary>
     public class AnchorablePaneTabPanel : Panel
     {
-        #region Constructors
-
         public AnchorablePaneTabPanel()
         {
             this.FlowDirection = System.Windows.FlowDirection.LeftToRight;
-        }
-
-        #endregion Constructors
-
-        #region Overrides
-
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            double totWidth = 0;
-            double maxHeight = 0;
-            var visibleChildren = Children.Cast<UIElement>().Where(ch => ch.Visibility != System.Windows.Visibility.Collapsed);
-            foreach (var child in visibleChildren)
-            {
-                child.Measure(new Size(double.PositiveInfinity, availableSize.Height));
-                totWidth += child.DesiredSize.Width;
-                maxHeight = Math.Max(maxHeight, child.DesiredSize.Height);
-            }
-
-            if (totWidth > availableSize.Width)
-            {
-                double childFinalDesideredWidth = availableSize.Width / visibleChildren.Count();
-                foreach (var child in visibleChildren)
-                {
-                    child.Measure(new Size(childFinalDesideredWidth, availableSize.Height));
-                }
-            }
-
-            return new Size(Math.Min(availableSize.Width, totWidth), maxHeight);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -88,6 +58,29 @@ namespace AvalonDock.Controls
             return finalSize;
         }
 
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            double totWidth = 0;
+            double maxHeight = 0;
+            var visibleChildren = Children.Cast<UIElement>().Where(ch => ch.Visibility != System.Windows.Visibility.Collapsed);
+            foreach (var child in visibleChildren)
+            {
+                child.Measure(new Size(double.PositiveInfinity, availableSize.Height));
+                totWidth += child.DesiredSize.Width;
+                maxHeight = Math.Max(maxHeight, child.DesiredSize.Height);
+            }
+
+            if (totWidth > availableSize.Width)
+            {
+                double childFinalDesideredWidth = availableSize.Width / visibleChildren.Count();
+                foreach (var child in visibleChildren)
+                {
+                    child.Measure(new Size(childFinalDesideredWidth, availableSize.Height));
+                }
+            }
+
+            return new Size(Math.Min(availableSize.Width, totWidth), maxHeight);
+        }
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
         {
             if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed &&
@@ -102,7 +95,5 @@ namespace AvalonDock.Controls
 
             base.OnMouseLeave(e);
         }
-
-        #endregion Overrides
     }
 }

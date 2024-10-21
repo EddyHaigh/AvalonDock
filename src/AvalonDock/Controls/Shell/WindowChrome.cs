@@ -55,8 +55,6 @@ namespace Microsoft.Windows.Shell
         // Named property available for fully extending the glass frame.
         public static Thickness GlassFrameCompleteThickness => new Thickness(-1);
 
-        #region Attached Properties
-
         public static readonly DependencyProperty WindowChromeProperty = DependencyProperty.RegisterAttached("WindowChrome", typeof(WindowChrome), typeof(WindowChrome),
             new PropertyMetadata(null, _OnChromeChanged));
 
@@ -126,10 +124,6 @@ namespace Microsoft.Windows.Shell
             dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
 
-        #endregion Attached Properties
-
-        #region Dependency Properties
-
         public static readonly DependencyProperty CaptionHeightProperty = DependencyProperty.Register(nameof(CaptionHeight), typeof(double), typeof(WindowChrome),
             new PropertyMetadata(0d, (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()), value => (double)value >= 0d);
 
@@ -176,8 +170,6 @@ namespace Microsoft.Windows.Shell
 
         /// <summary>Gets or sets the ShowSystemMenu property.  This dependency property indicates if the system menu should be shown at right click on the caption. </summary>
         public bool ShowSystemMenu { get; set; }
-
-        #endregion Dependency Properties
 
         /// <inheritdoc />
         protected override Freezable CreateInstanceCore()

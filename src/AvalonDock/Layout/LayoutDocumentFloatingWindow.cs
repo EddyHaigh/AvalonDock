@@ -22,20 +22,49 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutDocumentFloatingWindow : LayoutFloatingWindow, ILayoutElementWithVisibility
     {
-        #region fields
-
-        private LayoutDocumentPaneGroup _rootPanel = null;
-
         [NonSerialized]
         private bool _isVisible = true;
 
-        #endregion fields
-
+        private LayoutDocumentPaneGroup _rootPanel = null;
         public event EventHandler IsVisibleChanged;
 
-        #region Properties
+        /// <inheritdoc />
+        public override IEnumerable<ILayoutElement> Children
+        {
+            get
+            {
+                if (ChildrenCount == 1)
+                {
+                    yield return RootPanel;
+                }
+            }
+        }
 
-        #region RootPanel
+        /// <inheritdoc />
+        public override int ChildrenCount => RootPanel == null ? 0 : 1;
+
+        public bool IsSinglePane => RootPanel?.Descendents().OfType<LayoutDocumentPane>().Count(p => p.IsVisible) == 1;
+
+        /// <inheritdoc />
+        public override bool IsValid => RootPanel != null;
+
+        [XmlIgnore]
+        public bool IsVisible
+        {
+            get => _isVisible;
+            private set
+            {
+                if (_isVisible == value)
+                {
+                    return;
+                }
+
+                RaisePropertyChanging(nameof(IsVisible));
+                _isVisible = value;
+                RaisePropertyChanged(nameof(IsVisible));
+                IsVisibleChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         public LayoutDocumentPaneGroup RootPanel
         {
@@ -72,18 +101,6 @@ namespace AvalonDock.Layout
             }
         }
 
-        private void _rootPanel_ChildrenTreeChanged(object sender, ChildrenTreeChangedEventArgs e)
-        {
-            RaisePropertyChanged(nameof(IsSinglePane));
-            RaisePropertyChanged(nameof(SinglePane));
-        }
-
-        #endregion RootPanel
-
-        #region IsSinglePane
-
-        public bool IsSinglePane => RootPanel?.Descendents().OfType<LayoutDocumentPane>().Count(p => p.IsVisible) == 1;
-
         public LayoutDocumentPane SinglePane
         {
             get
@@ -99,61 +116,15 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion IsSinglePane
-
-        [XmlIgnore]
-        public bool IsVisible
-        {
-            get => _isVisible;
-            private set
-            {
-                if (_isVisible == value)
-                {
-                    return;
-                }
-
-                RaisePropertyChanging(nameof(IsVisible));
-                _isVisible = value;
-                RaisePropertyChanged(nameof(IsVisible));
-                IsVisibleChanged?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        #endregion Properties
-
-        #region Overrides
-
-        /// <inheritdoc />
-        public override IEnumerable<ILayoutElement> Children
-        {
-            get { if (ChildrenCount == 1)
-                {
-                    yield return RootPanel;
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        public override void RemoveChild(ILayoutElement element)
-        {
-            Debug.Assert(element == RootPanel && element != null);
-            RootPanel = null;
-        }
-
-        /// <inheritdoc />
-        public override void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
-        {
-            Debug.Assert(oldElement == RootPanel && oldElement != null);
-            RootPanel = newElement as LayoutDocumentPaneGroup;
-        }
-
-        /// <inheritdoc />
-        public override int ChildrenCount => RootPanel == null ? 0 : 1;
-
         void ILayoutElementWithVisibility.ComputeVisibility() => IsVisible = RootPanel != null && RootPanel.IsVisible;
 
-        /// <inheritdoc />
-        public override bool IsValid => RootPanel != null;
+#if TRACE
+        public override void ConsoleDump(int tab)
+        {
+            System.Diagnostics.Trace.TraceInformation("{0}FloatingDocumentWindow()", new string(' ', tab * 4));
+            RootPanel.ConsoleDump(tab + 1);
+        }
+#endif
 
         /// <inheritdoc />
         public override void ReadXml(XmlReader reader)
@@ -202,14 +173,24 @@ namespace AvalonDock.Layout
             reader.ReadEndElement();
         }
 
-#if TRACE
-        public override void ConsoleDump(int tab)
+        /// <inheritdoc />
+        public override void RemoveChild(ILayoutElement element)
         {
-            System.Diagnostics.Trace.TraceInformation("{0}FloatingDocumentWindow()", new string(' ', tab * 4));
-            RootPanel.ConsoleDump(tab + 1);
+            Debug.Assert(element == RootPanel && element != null);
+            RootPanel = null;
         }
-#endif
 
-        #endregion Overrides
+        /// <inheritdoc />
+        public override void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
+        {
+            Debug.Assert(oldElement == RootPanel && oldElement != null);
+            RootPanel = newElement as LayoutDocumentPaneGroup;
+        }
+
+        private void _rootPanel_ChildrenTreeChanged(object sender, ChildrenTreeChangedEventArgs e)
+        {
+            RaisePropertyChanged(nameof(IsSinglePane));
+            RaisePropertyChanged(nameof(SinglePane));
+        }
     }
 }

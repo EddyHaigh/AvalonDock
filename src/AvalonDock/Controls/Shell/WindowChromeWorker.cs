@@ -31,8 +31,6 @@ namespace Microsoft.Windows.Shell
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
-        #region fields
-
         private const SWP _SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
 
         private readonly List<HANDLE_MESSAGE> _messageTable;
@@ -65,8 +63,6 @@ namespace Microsoft.Windows.Shell
 
         private WindowState _lastMenuState;
         private bool _isGlassEnabled;
-
-        #endregion fields
 
         public WindowChromeWorker()
         {
@@ -430,8 +426,6 @@ namespace Microsoft.Windows.Shell
             }
         }
 
-        #region WindowProc and Message Handlers
-
         private IntPtr _WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             // Only expecting messages for our cached HWND.
@@ -669,8 +663,6 @@ namespace Microsoft.Windows.Shell
             handled = false;
             return IntPtr.Zero;
         }
-
-        #endregion WindowProc and Message Handlers
 
         /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
         /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
@@ -1097,7 +1089,7 @@ namespace Microsoft.Windows.Shell
             return ht;
         }
 
-        #region Remove Custom Chrome Methods
+        // Remove Custom Chrome Methods
 
         private void _RestoreStandardChromeState(bool isClosing)
         {
@@ -1174,7 +1166,5 @@ namespace Microsoft.Windows.Shell
             _ClearRoundingRegion();
             NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
         }
-
-        #endregion Remove Custom Chrome Methods
     }
 }

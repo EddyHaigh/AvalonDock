@@ -308,8 +308,6 @@ namespace Standard
             return (int)(error & 0xFFFF);
         }
 
-        #region Overrides
-
         /// <summary>
         /// Get a string representation of this HRESULT.
         /// </summary>
@@ -375,8 +373,6 @@ namespace Standard
 
         /// <inheritdoc />
         public override int GetHashCode() => _value.GetHashCode();
-
-        #endregion Overrides
 
         public static bool operator ==(HRESULT hrLeft, HRESULT hrRight) => hrLeft._value == hrRight._value;
 

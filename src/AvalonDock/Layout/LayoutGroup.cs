@@ -24,14 +24,8 @@ namespace AvalonDock.Layout
     [Serializable]
     public abstract class LayoutGroup<T> : LayoutGroupBase, ILayoutGroup, IXmlSerializable where T : class, ILayoutElement
     {
-        #region fields
-
         private readonly ObservableCollection<T> _children = new ObservableCollection<T>();
         private bool _isVisible = true;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>Class constructor.</summary>
         internal LayoutGroup()
@@ -39,18 +33,14 @@ namespace AvalonDock.Layout
             _children.CollectionChanged += Children_CollectionChanged;
         }
 
-        #endregion Constructors
-
-        #region Properties
-
         /// <summary>Gets a collection of children objects below this object.</summary>
         public ObservableCollection<T> Children => _children;
 
-        /// <summary>Gets the number of of children objects below this object.</summary>
-        public int ChildrenCount => _children.Count;
-
         /// <summary>Gets a collection of <see cref="ILayoutElement"/> based children objects below this object.</summary>
         IEnumerable<ILayoutElement> ILayoutContainer.Children => _children.Cast<ILayoutElement>();
+
+        /// <summary>Gets the number of of children objects below this object.</summary>
+        public int ChildrenCount => _children.Count;
 
         /// <summary>Gets whether this object is visible or not.</summary>
         public bool IsVisible
@@ -70,30 +60,11 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Properties
-
-        #region Public Methods
-
         /// <inheritdoc cref="ILayoutElementWithVisibility" />
         public void ComputeVisibility() => IsVisible = GetVisibility();
 
-        /// <inheritdoc cref="ILayoutPane" />
-        public void MoveChild(int oldIndex, int newIndex)
-        {
-            if (oldIndex == newIndex)
-            {
-                return;
-            }
-
-            _children.Move(oldIndex, newIndex);
-            ChildMoved(oldIndex, newIndex);
-        }
-
-        /// <inheritdoc cref="ILayoutGroup" />
-        public void RemoveChildAt(int childIndex)
-        {
-            _children.RemoveAt(childIndex);
-        }
+        /// <inheritdoc cref=" IXmlSerializable." />
+        System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema() => null;
 
         /// <inheritdoc cref="ILayoutGroup" />
         public int IndexOfChild(ILayoutElement element)
@@ -110,34 +81,17 @@ namespace AvalonDock.Layout
             }
         }
 
-        /// <inheritdoc cref="ILayoutContainer" />
-        public void RemoveChild(ILayoutElement element)
+        /// <inheritdoc cref="ILayoutPane" />
+        public void MoveChild(int oldIndex, int newIndex)
         {
-            if (element is T t)
+            if (oldIndex == newIndex)
             {
-                _children.Remove(t);
+                return;
             }
-        }
 
-        /// <inheritdoc cref="ILayoutContainer" />
-        public void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
-        {
-            if (oldElement is T oldT && newElement is T newT)
-            {
-                var index = _children.IndexOf(oldT);
-                _children.Insert(index, newT);
-                _children.RemoveAt(index + 1);
-            }
+            _children.Move(oldIndex, newIndex);
+            ChildMoved(oldIndex, newIndex);
         }
-
-        /// <inheritdoc cref="ILayoutGroup" />
-        public void ReplaceChildAt(int index, ILayoutElement element)
-        {
-            _children[index] = (T)element;
-        }
-
-        /// <inheritdoc cref=" IXmlSerializable." />
-        System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema() => null;
 
         /// <inheritdoc cref=" IXmlSerializable." />
         /// <summary>provides a standard overridable implementation for deriving classes.</summary>
@@ -185,6 +139,37 @@ namespace AvalonDock.Layout
             reader.ReadEndElement();
         }
 
+        /// <inheritdoc cref="ILayoutContainer" />
+        public void RemoveChild(ILayoutElement element)
+        {
+            if (element is T t)
+            {
+                _children.Remove(t);
+            }
+        }
+
+        /// <inheritdoc cref="ILayoutGroup" />
+        public void RemoveChildAt(int childIndex)
+        {
+            _children.RemoveAt(childIndex);
+        }
+        /// <inheritdoc cref="ILayoutContainer" />
+        public void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
+        {
+            if (oldElement is T oldT && newElement is T newT)
+            {
+                var index = _children.IndexOf(oldT);
+                _children.Insert(index, newT);
+                _children.RemoveAt(index + 1);
+            }
+        }
+
+        /// <inheritdoc cref="ILayoutGroup" />
+        public void ReplaceChildAt(int index, ILayoutElement element)
+        {
+            _children[index] = (T)element;
+        }
+
         /// <inheritdoc cref=" IXmlSerializable." />
         /// <summary>provides a standard overridable implementation for deriving classes.</summary>
         public virtual void WriteXml(System.Xml.XmlWriter writer)
@@ -197,35 +182,22 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Public Methods
+        protected virtual void ChildMoved(int oldIndex, int newIndex)
+        {
+        }
 
-        #region Internal Methods
+        protected abstract bool GetVisibility();
 
         protected virtual void OnIsVisibleChanged()
         {
             UpdateParentVisibility();
         }
-
-        protected abstract bool GetVisibility();
-
-        protected virtual void ChildMoved(int oldIndex, int newIndex)
-        {
-        }
-
-        #endregion Internal Methods
-
-        #region Overrides
-
         /// <inheritdoc />
         protected override void OnParentChanged(ILayoutContainer oldValue, ILayoutContainer newValue)
         {
             base.OnParentChanged(oldValue, newValue);
             ComputeVisibility();
         }
-
-        #endregion Overrides
-
-        #region Private Methods
 
         private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -275,14 +247,6 @@ namespace AvalonDock.Layout
             RaisePropertyChanged(nameof(ChildrenCount));
         }
 
-        private void UpdateParentVisibility()
-        {
-            if (Parent is ILayoutElementWithVisibility parentPane)
-            {
-                parentPane.ComputeVisibility();
-            }
-        }
-
         private Type FindType(string name)
         {
             foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
@@ -299,6 +263,12 @@ namespace AvalonDock.Layout
             return null;
         }
 
-        #endregion Private Methods
+        private void UpdateParentVisibility()
+        {
+            if (Parent is ILayoutElementWithVisibility parentPane)
+            {
+                parentPane.ComputeVisibility();
+            }
+        }
     }
 }

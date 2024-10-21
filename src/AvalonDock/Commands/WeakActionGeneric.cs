@@ -4,13 +4,7 @@ namespace AvalonDock.Commands
 {
     internal class WeakAction<T> : WeakAction, IExecuteWithObject
     {
-        #region Private Fields
-
         private Action<T> _staticAction;
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the WeakAction class.
@@ -45,10 +39,6 @@ namespace AvalonDock.Commands
             ActionReference = new WeakReference(action.Target);
             Reference = new WeakReference(target);
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         /// <summary>
         /// Gets a value indicating whether the Action's owner is still alive, or if it was collected
@@ -92,10 +82,6 @@ namespace AvalonDock.Commands
                 return Method.Name;
             }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Executes the action. This only happens if the action's owner
@@ -165,7 +151,5 @@ namespace AvalonDock.Commands
             _staticAction = null;
             base.MarkForDeletion();
         }
-
-        #endregion Public Methods
     }
 }

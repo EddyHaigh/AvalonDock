@@ -20,14 +20,8 @@ namespace AvalonDock.Controls
     /// <typeparam name="V"></typeparam>
     internal class WeakDictionary<K, V> where K : class
     {
-        #region fields
-
         private List<WeakReference> _keys = new List<WeakReference>();
         private List<V> _values = new List<V>();
-
-        #endregion fields
-
-        #region Public Methods
 
         /// <summary>
         /// Get a value by its key index.
@@ -106,10 +100,6 @@ namespace AvalonDock.Controls
             return true;
         }
 
-        #endregion Public Methods
-
-        #region Private Methods
-
         /// <summary>
         /// Removes all entries where the key has already been garbage collected.
         /// </summary>
@@ -128,7 +118,5 @@ namespace AvalonDock.Controls
             }
             while (vIndex >= 0);
         }
-
-        #endregion Private Methods
     }
 }

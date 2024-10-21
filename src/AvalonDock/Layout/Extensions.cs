@@ -16,8 +16,6 @@ namespace AvalonDock.Layout
     /// <summary>Provides extension methods for WPF specific (Visual Tree) capabilities.</summary>
     public static class Extensions
     {
-        #region Public Methods
-
         public static IEnumerable<ILayoutElement> Descendents(this ILayoutElement element)
         {
             if (!(element is ILayoutContainer container))
@@ -109,10 +107,6 @@ namespace AvalonDock.Layout
             return AnchorSide.Right;
         }
 
-        #endregion Public Methods
-
-        #region Internal Methods
-
         /// <summary>
         /// Removed with Issue 20 since Win32 definition seems to be buggy here
         /// (GetMonitorInfo always returns false on rectangle returned from <see cref="Win32Helper.MonitorFromRect"/>)
@@ -165,7 +159,5 @@ namespace AvalonDock.Layout
                 paneInsideFloatingWindow.FloatingTop = monitorInfo.Work.Bottom - (paneInsideFloatingWindow.FloatingHeight + 10);
             }
         }
-
-        #endregion Internal Methods
     }
 }

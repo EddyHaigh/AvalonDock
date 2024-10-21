@@ -21,23 +21,13 @@ namespace AvalonDock.Controls
     /// </summary>
     public class LayoutPanelControl : LayoutGridControl<ILayoutPanelElement>
     {
-        #region fields
-
         private readonly LayoutPanel _model;
-
-        #endregion fields
-
-        #region Constructors
 
         internal LayoutPanelControl(LayoutPanel model)
             : base(model, model.Orientation)
         {
             _model = model;
         }
-
-        #endregion Constructors
-
-        #region Overrides
 
         protected override void OnFixChildrenDockLengths()
         {
@@ -46,7 +36,7 @@ namespace AvalonDock.Controls
                 return;
             }
 
-            #region Setup DockWidth/Height for children
+            // Setup DockWidth/Height for children
 
             if (_model.Orientation == Orientation.Horizontal)
             {
@@ -138,10 +128,6 @@ namespace AvalonDock.Controls
                     }
                 }
             }
-
-            #endregion Setup DockWidth/Height for children
         }
-
-        #endregion Overrides
     }
 }

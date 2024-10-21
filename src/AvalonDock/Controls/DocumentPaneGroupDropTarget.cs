@@ -1,4 +1,4 @@
-﻿/************************************************************************
+﻿ /************************************************************************
    AvalonDock
 
    Copyright (C) 2007-2013 Xceed Software Inc.
@@ -21,13 +21,7 @@ namespace AvalonDock.Controls
     /// </summary>
     internal class DocumentPaneGroupDropTarget : DropTarget<LayoutDocumentPaneGroupControl>
     {
-        #region fields
-
         private LayoutDocumentPaneGroupControl _targetPane;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>
         /// Class contructor
@@ -35,17 +29,40 @@ namespace AvalonDock.Controls
         /// <param name="paneControl"></param>
         /// <param name="detectionRect"></param>
         /// <param name="type"></param>
-        internal DocumentPaneGroupDropTarget(LayoutDocumentPaneGroupControl paneControl,
-                                             Rect detectionRect,
-                                             DropTargetType type)
+        internal DocumentPaneGroupDropTarget(
+            LayoutDocumentPaneGroupControl paneControl,
+            Rect detectionRect,
+            DropTargetType type)
             : base(paneControl, detectionRect, type)
         {
             _targetPane = paneControl;
         }
 
-        #endregion Constructors
+        /// <summary>
+        /// Gets a <see cref="Geometry"/> that is used to highlight/preview the docking position
+        /// of this drop target for a <paramref name="floatingWindow"/> being docked inside an
+        /// <paramref name="overlayWindow"/>.
+        /// </summary>
+        /// <param name="overlayWindow"></param>
+        /// <param name="floatingWindow"></param>
+        /// <returns>The geometry of the preview/highlighting WPF figure path.</returns>
+        public override Geometry GetPreviewPath(
+            OverlayWindow overlayWindow,
+            LayoutFloatingWindow floatingWindow)
+        {
+            switch (Type)
+            {
+                case DropTargetType.DocumentPaneGroupDockInside:
+                    {
+                        var targetScreenRect = TargetElement.GetScreenArea();
+                        targetScreenRect.Offset(-overlayWindow.Left, -overlayWindow.Top);
 
-        #region Overrides
+                        return new RectangleGeometry(targetScreenRect);
+                    }
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Method is invoked to complete a drag & drop operation with a (new) docking position
@@ -59,19 +76,11 @@ namespace AvalonDock.Controls
             switch (Type)
             {
                 case DropTargetType.DocumentPaneGroupDockInside:
-
-                    #region DropTargetType.DocumentPaneGroupDockInside
-
                     {
                         var paneGroupModel = targetModel as LayoutDocumentPaneGroup;
-                        var paneModel = paneGroupModel as LayoutDocumentPaneGroup;
-                        var sourceModel = floatingWindow.RootPanel as LayoutDocumentPaneGroup;
-
-                        paneModel.Children.Insert(0, sourceModel);
+                        paneGroupModel.Children.Insert(0, floatingWindow.RootPanel);
                     }
                     break;
-
-                    #endregion DropTargetType.DocumentPaneGroupDockInside
             }
 
             base.Drop(floatingWindow);
@@ -89,16 +98,12 @@ namespace AvalonDock.Controls
             switch (Type)
             {
                 case DropTargetType.DocumentPaneGroupDockInside:
-
-                    #region DropTargetType.DocumentPaneGroupDockInside
-
                     {
                         var paneGroupModel = targetModel as LayoutDocumentPaneGroup;
                         var paneModel = paneGroupModel.Children[0] as LayoutDocumentPane;
-                        var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
 
                         int i = 0;
-                        foreach (var anchorableToImport in layoutAnchorablePaneGroup.Descendents().OfType<LayoutAnchorable>().ToArray())
+                        foreach (var anchorableToImport in floatingWindow.RootPanel.Descendents().OfType<LayoutAnchorable>().ToArray())
                         {
                             // BD: 18.07.2020 Remove that bodge and handle CanClose=false && CanHide=true in XAML
                             //anchorableToImport.SetCanCloseInternal(true);
@@ -108,43 +113,9 @@ namespace AvalonDock.Controls
                         }
                     }
                     break;
-
-                    #endregion DropTargetType.DocumentPaneGroupDockInside
             }
 
             base.Drop(floatingWindow);
         }
-
-        /// <summary>
-        /// Gets a <see cref="Geometry"/> that is used to highlight/preview the docking position
-        /// of this drop target for a <paramref name="floatingWindowModel"/> being docked inside an
-        /// <paramref name="overlayWindow"/>.
-        /// </summary>
-        /// <param name="overlayWindow"></param>
-        /// <param name="floatingWindowModel"></param>
-        /// <returns>The geometry of the preview/highlighting WPF figure path.</returns>
-        public override Geometry GetPreviewPath(OverlayWindow overlayWindow,
-                                                LayoutFloatingWindow floatingWindowModel)
-        {
-            switch (Type)
-            {
-                case DropTargetType.DocumentPaneGroupDockInside:
-
-                    #region DropTargetType.DocumentPaneGroupDockInside
-
-                    {
-                        var targetScreenRect = TargetElement.GetScreenArea();
-                        targetScreenRect.Offset(-overlayWindow.Left, -overlayWindow.Top);
-
-                        return new RectangleGeometry(targetScreenRect);
-                    }
-
-                    #endregion DropTargetType.DocumentPaneGroupDockInside
-            }
-
-            return null;
-        }
-
-        #endregion Overrides
     }
 }

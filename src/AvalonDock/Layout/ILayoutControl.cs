@@ -13,9 +13,6 @@ namespace AvalonDock.Layout
     public interface ILayoutControl
     {
         /// <summary>Gets the <see cref="ILayoutElement"/> model for this control.</summary>
-        ILayoutElement Model
-        {
-            get;
-        }
+        ILayoutElement Model { get; }
     }
 }

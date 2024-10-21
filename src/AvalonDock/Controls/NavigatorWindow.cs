@@ -32,28 +32,23 @@ namespace AvalonDock.Controls
     [TemplatePart(Name = PART_DocumentListBox, Type = typeof(ListBox))]
     public class NavigatorWindow : Window
     {
-        #region fields
-        private ResourceDictionary currentThemeResourceDictionary; // = null
-
         private const string PART_AnchorableListBox = "PART_AnchorableListBox";
         private const string PART_DocumentListBox = "PART_DocumentListBox";
-
-        private DockingManager _manager;
-        private bool _isSelectingDocument;
         private ListBox _anchorableListBox;
         private ListBox _documentListBox;
-        private bool _internalSetSelectedDocument = false;
         private bool _internalSetSelectedAnchorable = false;
-
-        #endregion fields
-
-        #region Constructors
-
+        private bool _internalSetSelectedDocument = false;
+        private bool _isSelectingDocument;
+        private DockingManager _manager;
+        private ResourceDictionary currentThemeResourceDictionary; // = null
         static NavigatorWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigatorWindow), new FrameworkPropertyMetadata(typeof(NavigatorWindow)));
             ShowActivatedProperty.OverrideMetadata(typeof(NavigatorWindow), new FrameworkPropertyMetadata(false));
             ShowInTaskbarProperty.OverrideMetadata(typeof(NavigatorWindow), new FrameworkPropertyMetadata(false));
+
+            AnchorablesProperty = AnchorablesPropertyKey.DependencyProperty;
+            DocumentsProperty = DocumentsPropertyKey.DependencyProperty;
         }
 
         internal NavigatorWindow(DockingManager manager)
@@ -103,54 +98,43 @@ namespace AvalonDock.Controls
             UpdateThemeResources();
         }
 
-        #endregion Constructors
-
-        #region Properties
-
-        #region Documents
+        public static readonly DependencyProperty DocumentsProperty;
 
         /// <summary><see cref="Documents"/> read-only dependency property.</summary>
         private static readonly DependencyPropertyKey DocumentsPropertyKey = DependencyProperty.RegisterReadOnly(nameof(Documents), typeof(IEnumerable<LayoutDocumentItem>), typeof(NavigatorWindow),
                 new FrameworkPropertyMetadata(null));
 
-        public static readonly DependencyProperty DocumentsProperty = DocumentsPropertyKey.DependencyProperty;
-
         /// <summary>Gets the list of documents managed in this framework.</summary>
-        [Bindable(true), Description("Gets the list of documents managed in this framework."), Category("Document")]
+        [Bindable(true)]
+        [Description("Gets the list of documents managed in this framework.")]
+        [Category("Document")]
         public LayoutDocumentItem[] Documents => (LayoutDocumentItem[])GetValue(DocumentsProperty);
 
-        #endregion Documents
-
-        #region Anchorables
+        public static readonly DependencyProperty AnchorablesProperty;
 
         /// <summary><see cref="Anchorables"/> read-only dependency property.</summary>
         private static readonly DependencyPropertyKey AnchorablesPropertyKey = DependencyProperty.RegisterReadOnly(nameof(Anchorables), typeof(IEnumerable<LayoutAnchorableItem>), typeof(NavigatorWindow),
                 new FrameworkPropertyMetadata((IEnumerable<LayoutAnchorableItem>)null));
 
-        public static readonly DependencyProperty AnchorablesProperty = AnchorablesPropertyKey.DependencyProperty;
-
         /// <summary>Gets the list of anchorables managed in the framework.</summary>
-        [Bindable(true), Description("Gets the list of anchorables managed in the framework."), Category("Anchorable")]
+        [Bindable(true)]
+        [Description("Gets the list of anchorables managed in the framework.")]
+        [Category("Anchorable")]
         public IEnumerable<LayoutAnchorableItem> Anchorables => (IEnumerable<LayoutAnchorableItem>)GetValue(AnchorablesProperty);
-
-        #endregion Anchorables
-
-        #region SelectedDocument
 
         /// <summary><see cref="SelectedDocument"/> dependency property.</summary>
         public static readonly DependencyProperty SelectedDocumentProperty = DependencyProperty.Register(nameof(SelectedDocument), typeof(LayoutDocumentItem), typeof(NavigatorWindow),
                 new FrameworkPropertyMetadata(null, OnSelectedDocumentChanged));
 
         /// <summary>Gets/sets the currently selected document.</summary>
-        [Bindable(true), Description("Gets/sets the currently selected document."), Category("Document")]
+        [Bindable(true)]
+        [Description("Gets/sets the currently selected document.")]
+        [Category("Document")]
         public LayoutDocumentItem SelectedDocument
         {
             get => (LayoutDocumentItem)GetValue(SelectedDocumentProperty);
             set => SetValue(SelectedDocumentProperty, value);
         }
-
-        /// <summary>Handles changes to the <see cref="SelectedDocument"/> property.</summary>
-        private static void OnSelectedDocumentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((NavigatorWindow)d).OnSelectedDocumentChanged(e);
 
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="SelectedDocument"/> property.</summary>
         protected virtual void OnSelectedDocumentChanged(DependencyPropertyChangedEventArgs e)
@@ -169,24 +153,22 @@ namespace AvalonDock.Controls
             SelectedDocument.ActivateCommand.Execute(null);
         }
 
-        #endregion SelectedDocument
-
-        #region SelectedAnchorable
+        /// <summary>Handles changes to the <see cref="SelectedDocument"/> property.</summary>
+        private static void OnSelectedDocumentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((NavigatorWindow)d).OnSelectedDocumentChanged(e);
 
         /// <summary><see cref="SelectedAnchorable"/> dependency property.</summary>
         public static readonly DependencyProperty SelectedAnchorableProperty = DependencyProperty.Register(nameof(SelectedAnchorable), typeof(LayoutAnchorableItem), typeof(NavigatorWindow),
                 new FrameworkPropertyMetadata(null, OnSelectedAnchorableChanged));
 
         /// <summary>Gets/sets the currently selected anchorable.</summary>
-        [Bindable(true), Description("Gets/sets the currently selected anchorable."), Category("Anchorable")]
+        [Bindable(true)]
+        [Description("Gets/sets the currently selected anchorable.")]
+        [Category("Anchorable")]
         public LayoutAnchorableItem SelectedAnchorable
         {
             get => (LayoutAnchorableItem)GetValue(SelectedAnchorableProperty);
             set => SetValue(SelectedAnchorableProperty, value);
         }
-
-        /// <summary>Handles changes to the <see cref="SelectedAnchorable"/> property.</summary>
-        private static void OnSelectedAnchorableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((NavigatorWindow)d).OnSelectedAnchorableChanged(e);
 
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="SelectedAnchorable"/> property.</summary>
         protected virtual void OnSelectedAnchorableChanged(DependencyPropertyChangedEventArgs e)
@@ -204,11 +186,8 @@ namespace AvalonDock.Controls
             }
         }
 
-        #endregion SelectedAnchorable
-
-        #endregion Properties
-
-        #region Overrides
+        /// <summary>Handles changes to the <see cref="SelectedAnchorable"/> property.</summary>
+        private static void OnSelectedAnchorableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((NavigatorWindow)d).OnSelectedAnchorableChanged(e);
 
         /// <inheritdoc />
         public override void OnApplyTemplate()
@@ -228,52 +207,114 @@ namespace AvalonDock.Controls
             }
         }
 
-        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+        internal void SelectNextAnchorable()
         {
-            bool isListOfDocuments = sender == _documentListBox.ItemContainerGenerator;
-            var itemsCollection = isListOfDocuments ? (IEnumerable)Documents : Anchorables.ToArray();
-            ItemContainerGenerator generator = (ItemContainerGenerator)sender;
-            switch (generator.Status)
+            if (SelectedAnchorable == null)
             {
-                case GeneratorStatus.ContainersGenerated:
-                    foreach (object item in itemsCollection)
+                return;
+            }
+
+            var anchorablesArray = Anchorables.ToArray();
+            var anchorableIndex = anchorablesArray.IndexOf(SelectedAnchorable);
+            anchorableIndex++;
+            if (anchorableIndex == anchorablesArray.Length)
+            {
+                anchorableIndex = 0;
+            }
+
+            InternalSetSelectedAnchorable(anchorablesArray[anchorableIndex]);
+        }
+
+        internal void SelectNextDocument()
+        {
+            if (SelectedDocument == null)
+            {
+                return;
+            }
+
+            var docIndex = Documents.IndexOf(SelectedDocument);
+            docIndex++;
+            if (docIndex == Documents.Length)
+            {
+                docIndex = 0;
+            }
+
+            InternalSetSelectedDocument(Documents[docIndex]);
+        }
+
+        internal void SelectPreviousAnchorable()
+        {
+            if (SelectedAnchorable == null)
+            {
+                return;
+            }
+
+            var anchorablesArray = Anchorables.ToArray();
+            var anchorableIndex = anchorablesArray.IndexOf(SelectedAnchorable);
+            anchorableIndex--;
+            if (anchorableIndex < 0)
+            {
+                anchorableIndex = anchorablesArray.Length - 1;
+            }
+
+            InternalSetSelectedAnchorable(anchorablesArray[anchorableIndex]);
+        }
+
+        internal void SelectPreviousDocument()
+        {
+            if (SelectedDocument == null)
+            {
+                return;
+            }
+
+            var docIndex = Documents.IndexOf(SelectedDocument);
+            docIndex--;
+            if (docIndex < 0)
+            {
+                docIndex = Documents.Length - 1;
+            }
+
+            InternalSetSelectedDocument(Documents[docIndex]);
+        }
+
+        /// <summary>Is Invoked when AvalonDock's WPF Theme changes via the <see cref="DockingManager.OnThemeChanged()"/> method.</summary>
+        /// <param name="oldTheme"></param>
+        internal void UpdateThemeResources(Theme oldTheme = null)
+        {
+            if (oldTheme != null) // Remove the old theme if present
+            {
+                if (oldTheme is DictionaryTheme)
+                {
+                    if (currentThemeResourceDictionary != null)
                     {
-                        ListBoxItem container = (ListBoxItem)generator.ContainerFromItem(item);
-                        if (container != null)
-                        {
-                            if (isListOfDocuments)
-                            {
-                                container.IsKeyboardFocusedChanged += DocumentsItemContainer_IsKeyboardFocusedChanged;
-                            }
-                            else
-                            {
-                                container.IsKeyboardFocusedChanged += AnchorablesItemContainer_IsKeyboardFocusedChanged;
-                            }
-                        }
+                        Resources.MergedDictionaries.Remove(currentThemeResourceDictionary);
+                        currentThemeResourceDictionary = null;
                     }
-                    break;
+                }
+                else
+                {
+                    var resourceDictionaryToRemove = Resources.MergedDictionaries.FirstOrDefault(r => r.Source == oldTheme.GetResourceUri());
+                    if (resourceDictionaryToRemove != null)
+                    {
+                        Resources.MergedDictionaries.Remove(resourceDictionaryToRemove);
+                    }
+                }
             }
-        }
 
-        private void AnchorablesItemContainer_IsKeyboardFocusedChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            ListBoxItem item = (ListBoxItem)sender;
-            if (item.IsKeyboardFocused)
+            // Implicit parameter to this method is the new theme already set here
+            if (_manager.Theme == null)
             {
-                _internalSetSelectedAnchorable = true;
-                item.IsSelected = true;
-                _internalSetSelectedAnchorable = false;
+                return;
             }
-        }
 
-        private void DocumentsItemContainer_IsKeyboardFocusedChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            ListBoxItem item = (ListBoxItem)sender;
-            if (item.IsKeyboardFocused)
+            if (_manager.Theme is DictionaryTheme dictionaryTheme)
             {
-                _internalSetSelectedDocument = true;
-                item.IsSelected = true;
-                _internalSetSelectedDocument = false;
+                currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
+                Resources.MergedDictionaries.Add(currentThemeResourceDictionary);
+            }
+            else
+            {
+                Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = _manager.Theme.GetResourceUri() });
             }
         }
 
@@ -391,10 +432,6 @@ namespace AvalonDock.Controls
             base.OnKeyUp(e);
         }
 
-        #endregion Overrides
-
-        #region Internal Methods
-
         /// <summary>
         /// Provides a secure method for setting the Anchorables property.
         /// This dependency property indicates the list of anchorables.
@@ -409,120 +446,54 @@ namespace AvalonDock.Controls
         /// <param name="value">The new value for the property.</param>
         protected void SetDocuments(LayoutDocumentItem[] value) => SetValue(DocumentsPropertyKey, value);
 
-        /// <summary>Is Invoked when AvalonDock's WPF Theme changes via the <see cref="DockingManager.OnThemeChanged()"/> method.</summary>
-        /// <param name="oldTheme"></param>
-        internal void UpdateThemeResources(Theme oldTheme = null)
+        private void AnchorablesItemContainer_IsKeyboardFocusedChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (oldTheme != null) // Remove the old theme if present
+            ListBoxItem item = (ListBoxItem)sender;
+            if (item.IsKeyboardFocused)
             {
-                if (oldTheme is DictionaryTheme)
+                _internalSetSelectedAnchorable = true;
+                item.IsSelected = true;
+                _internalSetSelectedAnchorable = false;
+            }
+        }
+
+        private void CloseAndActiveSelected()
+        {
+            Deactivated -= OnDeactivated;
+            Close();
+            if (SelectedDocument != null && SelectedDocument.ActivateCommand.CanExecute(null))
+            {
+                SelectedDocument.ActivateCommand.Execute(null);
+            }
+
+            if (SelectedDocument == null && SelectedAnchorable != null && SelectedAnchorable.ActivateCommand.CanExecute(null))
+            {
+                SelectedAnchorable.ActivateCommand.Execute(null);
+            }
+        }
+
+        private void DocumentsItemContainer_IsKeyboardFocusedChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ListBoxItem item = (ListBoxItem)sender;
+            if (item.IsKeyboardFocused)
+            {
+                _internalSetSelectedDocument = true;
+                item.IsSelected = true;
+                _internalSetSelectedDocument = false;
+            }
+        }
+
+        private void FocusSelectedItem(ListBox list)
+        {
+            if (list.SelectedIndex >= 0)
+            {
+                var listBoxItem = (ListBoxItem)list.ItemContainerGenerator.ContainerFromIndex(list.SelectedIndex);
+                if (listBoxItem != null)
                 {
-                    if (currentThemeResourceDictionary != null)
-                    {
-                        Resources.MergedDictionaries.Remove(currentThemeResourceDictionary);
-                        currentThemeResourceDictionary = null;
-                    }
-                }
-                else
-                {
-                    var resourceDictionaryToRemove = Resources.MergedDictionaries.FirstOrDefault(r => r.Source == oldTheme.GetResourceUri());
-                    if (resourceDictionaryToRemove != null)
-                    {
-                        Resources.MergedDictionaries.Remove(resourceDictionaryToRemove);
-                    }
+                    this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, (Func<bool>)listBoxItem.Focus);
                 }
             }
-
-            // Implicit parameter to this method is the new theme already set here
-            if (_manager.Theme == null)
-            {
-                return;
-            }
-
-            if (_manager.Theme is DictionaryTheme dictionaryTheme)
-            {
-                currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
-                Resources.MergedDictionaries.Add(currentThemeResourceDictionary);
-            }
-            else
-            {
-                Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = _manager.Theme.GetResourceUri() });
-            }
         }
-
-        internal void SelectNextDocument()
-        {
-            if (SelectedDocument == null)
-            {
-                return;
-            }
-
-            var docIndex = Documents.IndexOf(SelectedDocument);
-            docIndex++;
-            if (docIndex == Documents.Length)
-            {
-                docIndex = 0;
-            }
-
-            InternalSetSelectedDocument(Documents[docIndex]);
-        }
-
-        internal void SelectNextAnchorable()
-        {
-            if (SelectedAnchorable == null)
-            {
-                return;
-            }
-
-            var anchorablesArray = Anchorables.ToArray();
-            var anchorableIndex = anchorablesArray.IndexOf(SelectedAnchorable);
-            anchorableIndex++;
-            if (anchorableIndex == anchorablesArray.Length)
-            {
-                anchorableIndex = 0;
-            }
-
-            InternalSetSelectedAnchorable(anchorablesArray[anchorableIndex]);
-        }
-
-        internal void SelectPreviousDocument()
-        {
-            if (SelectedDocument == null)
-            {
-                return;
-            }
-
-            var docIndex = Documents.IndexOf(SelectedDocument);
-            docIndex--;
-            if (docIndex < 0)
-            {
-                docIndex = Documents.Length - 1;
-            }
-
-            InternalSetSelectedDocument(Documents[docIndex]);
-        }
-
-        internal void SelectPreviousAnchorable()
-        {
-            if (SelectedAnchorable == null)
-            {
-                return;
-            }
-
-            var anchorablesArray = Anchorables.ToArray();
-            var anchorableIndex = anchorablesArray.IndexOf(SelectedAnchorable);
-            anchorableIndex--;
-            if (anchorableIndex < 0)
-            {
-                anchorableIndex = anchorablesArray.Length - 1;
-            }
-
-            InternalSetSelectedAnchorable(anchorablesArray[anchorableIndex]);
-        }
-
-        #endregion Internal Methods
-
-        #region Private Methods
 
         private void InternalSetSelectedAnchorable(LayoutAnchorableItem anchorableToSelect)
         {
@@ -546,6 +517,38 @@ namespace AvalonDock.Controls
             }
         }
 
+        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+        {
+            bool isListOfDocuments = sender == _documentListBox.ItemContainerGenerator;
+            var itemsCollection = isListOfDocuments ? (IEnumerable)Documents : Anchorables.ToArray();
+            ItemContainerGenerator generator = (ItemContainerGenerator)sender;
+            switch (generator.Status)
+            {
+                case GeneratorStatus.ContainersGenerated:
+                    foreach (object item in itemsCollection)
+                    {
+                        ListBoxItem container = (ListBoxItem)generator.ContainerFromItem(item);
+                        if (container != null)
+                        {
+                            if (isListOfDocuments)
+                            {
+                                container.IsKeyboardFocusedChanged += DocumentsItemContainer_IsKeyboardFocusedChanged;
+                            }
+                            else
+                            {
+                                container.IsKeyboardFocusedChanged += AnchorablesItemContainer_IsKeyboardFocusedChanged;
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private void OnDeactivated(object sender, EventArgs e)
+        {
+            CloseAndActiveSelected();
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Loaded -= OnLoaded;
@@ -561,39 +564,5 @@ namespace AvalonDock.Controls
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e) => Unloaded -= OnUnloaded;
-
-        private void OnDeactivated(object sender, EventArgs e)
-        {
-            CloseAndActiveSelected();
-        }
-
-        private void CloseAndActiveSelected()
-        {
-            Deactivated -= OnDeactivated;
-            Close();
-            if (SelectedDocument != null && SelectedDocument.ActivateCommand.CanExecute(null))
-            {
-                SelectedDocument.ActivateCommand.Execute(null);
-            }
-
-            if (SelectedDocument == null && SelectedAnchorable != null && SelectedAnchorable.ActivateCommand.CanExecute(null))
-            {
-                SelectedAnchorable.ActivateCommand.Execute(null);
-            }
-        }
-
-        private void FocusSelectedItem(ListBox list)
-        {
-            if (list.SelectedIndex >= 0)
-            {
-                var listBoxItem = (ListBoxItem)list.ItemContainerGenerator.ContainerFromIndex(list.SelectedIndex);
-                if (listBoxItem != null)
-                {
-                    this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, (Func<bool>)listBoxItem.Focus);
-                }
-            }
-        }
-
-        #endregion Private Methods
     }
 }

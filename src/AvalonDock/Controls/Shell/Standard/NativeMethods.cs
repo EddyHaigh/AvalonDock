@@ -32,7 +32,7 @@ namespace Standard
     // Interesting ones to remember in System.Runtime.InteropServices.ComTypes are:
     using IStream = System.Runtime.InteropServices.ComTypes.IStream;
 
-    #region Native Values
+    // Native Values
 
     internal static class Win32Value
     {
@@ -916,12 +916,10 @@ namespace Standard
 
         GETTITLEBARINFOEX = 0x033F,
 
-        #region Windows 7
+        // Windows 7
 
         DWMSENDICONICTHUMBNAIL = 0x0323,
         DWMSENDICONICLIVEPREVIEWBITMAP = 0x0326,
-
-        #endregion Windows 7
 
         USER = 0x0400,
 
@@ -1335,9 +1333,7 @@ namespace Standard
         REDRAW = HREDRAW | VREDRAW,
     }
 
-    #endregion Native Values
-
-    #region SafeHandles
+    // SafeHandles
 
     internal sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
@@ -1454,9 +1450,7 @@ namespace Standard
         }
     }
 
-    #endregion SafeHandles
-
-    #region Native Types
+    // Native Types
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct BLENDFUNCTION
@@ -1686,8 +1680,6 @@ namespace Standard
             Assert.IsTrue(hr.Succeeded);
         }
 
-        #region IDisposable Pattern
-
         /// <inheritdoc />
         public void Dispose()
         {
@@ -1704,8 +1696,6 @@ namespace Standard
         {
             Clear();
         }
-
-        #endregion IDisposable Pattern
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -2141,8 +2131,6 @@ namespace Standard
         public ulong cPixelsDrawn;
         public ulong cBuffersEmpty;
     }
-
-    #endregion Native Types
 
     /// <summary>Delegate declaration that matches native WndProc signatures.</summary>
     internal delegate IntPtr WndProc(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam);
@@ -2998,7 +2986,7 @@ namespace Standard
             }
         }
 
-        #region Win7 declarations
+        // Win7 declarations
 
         [DllImport("shell32.dll", EntryPoint = "SHAddToRecentDocs")]
         private static extern void _SHAddToRecentDocs_String(SHARD uFlags, [MarshalAs(UnmanagedType.LPWStr)] string pv);
@@ -3068,7 +3056,5 @@ namespace Standard
         /// <param name="AppID"></param>
         [DllImport("shell32.dll")]
         public static extern HRESULT GetCurrentProcessExplicitAppUserModelID([Out, MarshalAs(UnmanagedType.LPWStr)] out string AppID);
-
-        #endregion Win7 declarations
     }
 }
