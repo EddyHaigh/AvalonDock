@@ -9,6 +9,10 @@
 
 using System;
 
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+
 namespace AvalonDock.Controls
 {
     internal class FocusChangeEventArgs : EventArgs
@@ -45,7 +49,7 @@ namespace AvalonDock.Controls
                 Win32Helper.HookType.WH_CBT,
                 _hookProc,
                 IntPtr.Zero,
-                (int)Win32Helper.GetCurrentThreadId());
+                (int)PInvoke.GetCurrentThreadId());
         }
 
         public void Detach()

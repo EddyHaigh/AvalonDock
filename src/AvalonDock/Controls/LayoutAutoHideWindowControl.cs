@@ -22,6 +22,8 @@ using System.Windows.Media;
 
 using AvalonDock.Layout;
 
+using Windows.Win32;
+
 namespace AvalonDock.Controls
 {
     /// <summary>
@@ -105,8 +107,7 @@ namespace AvalonDock.Controls
         {
             get
             {
-                var ptMouse = new Win32Helper.Win32Point();
-                if (!Win32Helper.GetCursorPos(ref ptMouse))
+                if (!PInvoke.GetCursorPos(out System.Drawing.Point ptMouse))
                 {
                     return false;
                 }

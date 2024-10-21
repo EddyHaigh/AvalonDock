@@ -9,3 +9,6 @@ PostMessage
 SetWindowPos
 IsChild
 SetFocus
+GetCursorPos
+GetCurrentThreadId
+SetWindowsHookExW
