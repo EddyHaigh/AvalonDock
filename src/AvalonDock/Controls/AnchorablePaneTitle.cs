@@ -24,13 +24,17 @@ namespace AvalonDock.Controls
     /// </summary>
     public class AnchorablePaneTitle : Control
     {
-        #region fields
+        public static readonly DependencyProperty LayoutItemProperty;
+
+        /// <summary><see cref="Model"/> dependency property.</summary>
+        public static readonly DependencyProperty ModelProperty = DependencyProperty.Register(nameof(Model), typeof(LayoutAnchorable), typeof(AnchorablePaneTitle),
+                new FrameworkPropertyMetadata(null, _OnModelChanged));
+
+        /// <summary><see cref="LayoutItem"/> Read-Only dependency property.</summary>
+        private static readonly DependencyPropertyKey LayoutItemPropertyKey = DependencyProperty.RegisterReadOnly(nameof(LayoutItem), typeof(LayoutItem), typeof(AnchorablePaneTitle),
+                new FrameworkPropertyMetadata((LayoutItem)null));
 
         private bool _isMouseDown = false;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>
         /// Static class constructor
@@ -40,25 +44,24 @@ namespace AvalonDock.Controls
             IsHitTestVisibleProperty.OverrideMetadata(typeof(AnchorablePaneTitle), new FrameworkPropertyMetadata(true));
             FocusableProperty.OverrideMetadata(typeof(AnchorablePaneTitle), new FrameworkPropertyMetadata(false));
             DefaultStyleKeyProperty.OverrideMetadata(typeof(AnchorablePaneTitle), new FrameworkPropertyMetadata(typeof(AnchorablePaneTitle)));
+            LayoutItemProperty = LayoutItemPropertyKey.DependencyProperty;
         }
 
-        #endregion Constructors
-
-        #region Model
-
-        /// <summary><see cref="Model"/> dependency property.</summary>
-        public static readonly DependencyProperty ModelProperty = DependencyProperty.Register(nameof(Model), typeof(LayoutAnchorable), typeof(AnchorablePaneTitle),
-                new FrameworkPropertyMetadata(null, _OnModelChanged));
+        /// <summary>Gets the <see cref="LayoutItem"/> (<see cref="LayoutAnchorableItem"/> or <see cref="LayoutDocumentItem"/>) attached to this view.</summary>
+        [Bindable(true)]
+        [Description("Gets the LayoutItem (LayoutAnchorableItem or LayoutDocumentItem) attached to this object.")]
+        [Category("Layout")]
+        public LayoutItem LayoutItem => (LayoutItem)GetValue(LayoutItemProperty);
 
         /// <summary>Gets/sets the <see cref="LayoutAnchorable"/> model attached of this view.</summary>
-        [Bindable(true), Description("Gets/sets the LayoutAnchorable model attached of this view."), Category("Anchorable")]
+        [Bindable(true)]
+        [Description("Gets/sets the LayoutAnchorable model attached of this view.")]
+        [Category("Anchorable")]
         public LayoutAnchorable Model
         {
             get => (LayoutAnchorable)GetValue(ModelProperty);
             set => SetValue(ModelProperty, value);
         }
-
-        private static void _OnModelChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e) => ((AnchorablePaneTitle)sender).OnModelChanged(e);
 
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Model"/> property.</summary>
         protected virtual void OnModelChanged(DependencyPropertyChangedEventArgs e)
@@ -71,42 +74,6 @@ namespace AvalonDock.Controls
             {
                 SetLayoutItem(null);
             }
-        }
-
-        #endregion Model
-
-        #region LayoutItem
-
-        /// <summary><see cref="LayoutItem"/> Read-Only dependency property.</summary>
-        private static readonly DependencyPropertyKey LayoutItemPropertyKey = DependencyProperty.RegisterReadOnly(nameof(LayoutItem), typeof(LayoutItem), typeof(AnchorablePaneTitle),
-                new FrameworkPropertyMetadata((LayoutItem)null));
-
-        public static readonly DependencyProperty LayoutItemProperty = LayoutItemPropertyKey.DependencyProperty;
-
-        /// <summary>Gets the <see cref="LayoutItem"/> (<see cref="LayoutAnchorableItem"/> or <see cref="LayoutDocumentItem"/>) attached to this view.</summary>
-        [Bindable(true), Description("Gets the LayoutItem (LayoutAnchorableItem or LayoutDocumentItem) attached to this object."), Category("Layout")]
-        public LayoutItem LayoutItem => (LayoutItem)GetValue(LayoutItemProperty);
-
-        /// <summary>
-        /// Provides a secure method for setting the <see cref="LayoutItem"/> property.
-        /// This dependency property indicates the <see cref="AvalonDock.Controls.LayoutItem"/> attached to this tag item.
-        /// </summary>
-        /// <param name="value">The new value for the property.</param>
-        protected void SetLayoutItem(LayoutItem value) => SetValue(LayoutItemPropertyKey, value);
-
-        #endregion LayoutItem
-
-        #region Overrides
-
-        /// <inheritdoc />
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            if (e.LeftButton != MouseButtonState.Pressed)
-            {
-                _isMouseDown = false;
-            }
-
-            base.OnMouseMove(e);
         }
 
         /// <inheritdoc />
@@ -174,6 +141,24 @@ namespace AvalonDock.Controls
             }
         }
 
-        #endregion Overrides
+        /// <inheritdoc />
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                _isMouseDown = false;
+            }
+
+            base.OnMouseMove(e);
+        }
+
+        /// <summary>
+        /// Provides a secure method for setting the <see cref="LayoutItem"/> property.
+        /// This dependency property indicates the <see cref="AvalonDock.Controls.LayoutItem"/> attached to this tag item.
+        /// </summary>
+        /// <param name="value">The new value for the property.</param>
+        protected void SetLayoutItem(LayoutItem value) => SetValue(LayoutItemPropertyKey, value);
+
+        private static void _OnModelChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e) => ((AnchorablePaneTitle)sender).OnModelChanged(e);
     }
 }

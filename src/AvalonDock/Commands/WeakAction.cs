@@ -8,16 +8,10 @@ namespace AvalonDock.Commands
     /// </summary>
     internal class WeakAction
     {
-        #region Private Fields
-
         /// <summary>
         /// The static action
         /// </summary>
         private Action _staticAction;
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WeakAction" /> class.
@@ -53,20 +47,12 @@ namespace AvalonDock.Commands
             Reference = new WeakReference(target);
         }
 
-        #endregion Public Constructors
-
-        #region Protected Constructors
-
         /// <summary>
         /// Initializes an empty instance of the <see cref="WeakAction" /> class.
         /// </summary>
         protected WeakAction()
         {
         }
-
-        #endregion Protected Constructors
-
-        #region Public Properties
 
         /// <summary>
         /// Gets a value indicating whether the Action's owner is still alive, or if it was collected
@@ -148,10 +134,6 @@ namespace AvalonDock.Commands
             }
         }
 
-        #endregion Public Properties
-
-        #region Protected Properties
-
         /// <summary>
         /// Gets or sets a WeakReference to this WeakAction's action's target.
         /// This is not necessarily the same as
@@ -206,10 +188,6 @@ namespace AvalonDock.Commands
             set;
         }
 
-        #endregion Protected Properties
-
-        #region Public Methods
-
         /// <summary>
         /// Executes the action. This only happens if the action's owner
         /// is still alive.
@@ -262,7 +240,5 @@ namespace AvalonDock.Commands
             _action = null;
 #endif
         }
-
-        #endregion Public Methods
     }
 }

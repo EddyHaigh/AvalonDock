@@ -23,19 +23,26 @@ namespace AvalonDock.Controls
     /// </summary>
     public class LayoutAnchorControl : Control, ILayoutControl
     {
-        #region fields
+        public static readonly DependencyProperty SideProperty;
+
+        /// <summary>
+        /// Side Read-Only Dependency Property
+        /// </summary>
+        private static readonly DependencyPropertyKey SidePropertyKey
+            = DependencyProperty.RegisterReadOnly(
+                "Side",
+                typeof(AnchorSide),
+                typeof(LayoutAnchorControl),
+                new FrameworkPropertyMetadata((AnchorSide)AnchorSide.Left));
 
         private LayoutAnchorable _model;
         private DispatcherTimer _openUpTimer = null;
-
-        #endregion fields
-
-        #region Constructors
 
         static LayoutAnchorControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(LayoutAnchorControl), new FrameworkPropertyMetadata(typeof(LayoutAnchorControl)));
             Control.IsHitTestVisibleProperty.AddOwner(typeof(LayoutAnchorControl), new FrameworkPropertyMetadata(true));
+            SideProperty = SidePropertyKey.DependencyProperty;
         }
 
         internal LayoutAnchorControl(LayoutAnchorable model)
@@ -47,10 +54,6 @@ namespace AvalonDock.Controls
             SetSide(_model.FindParent<LayoutAnchorSide>().Side);
         }
 
-        #endregion Constructors
-
-        #region Properties
-
         public ILayoutElement Model
         {
             get
@@ -59,18 +62,10 @@ namespace AvalonDock.Controls
             }
         }
 
-        #region Side
-
-        /// <summary>
-        /// Side Read-Only Dependency Property
-        /// </summary>
-        private static readonly DependencyPropertyKey SidePropertyKey = DependencyProperty.RegisterReadOnly("Side", typeof(AnchorSide), typeof(LayoutAnchorControl),
-                new FrameworkPropertyMetadata((AnchorSide)AnchorSide.Left));
-
-        public static readonly DependencyProperty SideProperty = SidePropertyKey.DependencyProperty;
-
         /// <summary>Gets the anchor side of the control.</summary>
-        [Bindable(true), Description("Gets the anchor side of the control."), Category("Anchor")]
+        [Bindable(true)]
+        [Description("Gets the anchor side of the control.")]
+        [Category("Anchor")]
         public AnchorSide Side
         {
             get
@@ -79,21 +74,30 @@ namespace AvalonDock.Controls
             }
         }
 
-        /// <summary>
-        /// Provides a secure method for setting the Side property.
-        /// This dependency property indicates the anchor side of the control.
-        /// </summary>
-        /// <param name="value">The new value for the property.</param>
-        protected void SetSide(AnchorSide value)
+        protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
-            SetValue(SidePropertyKey, value);
+            base.OnMouseDown(e);
+
+            if (!e.Handled)
+            {
+                _model.Root.Manager.ShowAutoHideWindow(this);
+                _model.IsActive = true;
+            }
         }
 
-        #endregion Side
+        protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
+        {
+            base.OnMouseEnter(e);
 
-        #endregion Properties
-
-        #region Overrides
+            // If the model wants to auto-show itself on hover then initiate the show action
+            if (!e.Handled && _model.CanShowOnHover)
+            {
+                _openUpTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
+                _openUpTimer.Interval = TimeSpan.FromMilliseconds(400);
+                _openUpTimer.Tick += new EventHandler(_openUpTimer_Tick);
+                _openUpTimer.Start();
+            }
+        }
 
         //protected override void OnVisualParentChanged(DependencyObject oldParent)
         //{
@@ -124,31 +128,6 @@ namespace AvalonDock.Controls
         //    }
         //}
 
-        protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
-        {
-            base.OnMouseDown(e);
-
-            if (!e.Handled)
-            {
-                _model.Root.Manager.ShowAutoHideWindow(this);
-                _model.IsActive = true;
-            }
-        }
-
-        protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
-        {
-            base.OnMouseEnter(e);
-
-            // If the model wants to auto-show itself on hover then initiate the show action
-            if (!e.Handled && _model.CanShowOnHover)
-            {
-                _openUpTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
-                _openUpTimer.Interval = TimeSpan.FromMilliseconds(400);
-                _openUpTimer.Tick += new EventHandler(_openUpTimer_Tick);
-                _openUpTimer.Start();
-            }
-        }
-
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
         {
             if (_openUpTimer != null)
@@ -160,22 +139,16 @@ namespace AvalonDock.Controls
             base.OnMouseLeave(e);
         }
 
-        #endregion Overrides
-
-        #region Private Methods
-
-        private void _model_IsSelectedChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Provides a secure method for setting the Side property.
+        /// This dependency property indicates the anchor side of the control.
+        /// </summary>
+        /// <param name="value">The new value for the property.</param>
+        protected void SetSide(AnchorSide value)
         {
-            if (!_model.IsAutoHidden)
-            {
-                _model.IsSelectedChanged -= new EventHandler(_model_IsSelectedChanged);
-            }
-            else if (_model.IsSelected)
-            {
-                _model.Root.Manager.ShowAutoHideWindow(this);
-                _model.IsSelected = false;
-            }
+            SetValue(SidePropertyKey, value);
         }
+
 
         private void _model_IsActiveChanged(object sender, EventArgs e)
         {
@@ -189,6 +162,18 @@ namespace AvalonDock.Controls
             }
         }
 
+        private void _model_IsSelectedChanged(object sender, EventArgs e)
+        {
+            if (!_model.IsAutoHidden)
+            {
+                _model.IsSelectedChanged -= new EventHandler(_model_IsSelectedChanged);
+            }
+            else if (_model.IsSelected)
+            {
+                _model.Root.Manager.ShowAutoHideWindow(this);
+                _model.IsSelected = false;
+            }
+        }
         private void _openUpTimer_Tick(object sender, EventArgs e)
         {
             _openUpTimer.Tick -= new EventHandler(_openUpTimer_Tick);
@@ -196,7 +181,5 @@ namespace AvalonDock.Controls
             _openUpTimer = null;
             _model.Root.Manager.ShowAutoHideWindow(this);
         }
-
-        #endregion Private Methods
     }
 }

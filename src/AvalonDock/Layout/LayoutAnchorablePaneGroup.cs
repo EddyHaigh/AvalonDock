@@ -23,13 +23,7 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutAnchorablePaneGroup : LayoutPositionableGroup<ILayoutAnchorablePane>, ILayoutAnchorablePane, ILayoutOrientableGroup
     {
-        #region fields
-
         private Orientation _orientation;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>Class constructor</summary>
         public LayoutAnchorablePaneGroup()
@@ -41,10 +35,6 @@ namespace AvalonDock.Layout
         {
             Children.Add(firstChild);
         }
-
-        #endregion Constructors
-
-        #region Properties
 
         /// <summary>
         /// Gets/sets the <see cref="System.Windows.Controls.Orientation"/> of this object.
@@ -65,41 +55,39 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Properties
+#if TRACE
+        /// <inheritdoc />
+        public override void ConsoleDump(int tab)
+        {
+            System.Diagnostics.Trace.TraceInformation("{0}AnchorablePaneGroup({1})", new string(' ', tab * 4), Orientation);
 
-        #region Overrides
+            foreach (var child in Children.Cast<LayoutElement>())
+            {
+                child.ConsoleDump(tab + 1);
+            }
+        }
+#endif
+
+        /// <inheritdoc />
+        public override void ReadXml(System.Xml.XmlReader reader)
+        {
+            if (reader.MoveToAttribute(nameof(Orientation)))
+            {
+                Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
+            }
+
+            base.ReadXml(reader);
+        }
+
+        /// <inheritdoc />
+        public override void WriteXml(System.Xml.XmlWriter writer)
+        {
+            writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
+            base.WriteXml(writer);
+        }
 
         /// <inheritdoc />
         protected override bool GetVisibility() => Children.Count > 0 && Children.Any(c => c.IsVisible);
-
-        /// <inheritdoc />
-        protected override void OnIsVisibleChanged()
-        {
-            UpdateParentVisibility();
-            base.OnIsVisibleChanged();
-        }
-
-        /// <inheritdoc />
-        protected override void OnDockWidthChanged()
-        {
-            if (DockWidth.IsAbsolute && ChildrenCount == 1)
-            {
-                ((ILayoutPositionableElement)Children[0]).DockWidth = DockWidth;
-            }
-
-            base.OnDockWidthChanged();
-        }
-
-        /// <inheritdoc />
-        protected override void OnDockHeightChanged()
-        {
-            if (DockHeight.IsAbsolute && ChildrenCount == 1)
-            {
-                ((ILayoutPositionableElement)Children[0]).DockHeight = DockHeight;
-            }
-
-            base.OnDockHeightChanged();
-        }
 
         /// <inheritdoc />
         protected override void OnChildrenCollectionChanged()
@@ -118,39 +106,33 @@ namespace AvalonDock.Layout
         }
 
         /// <inheritdoc />
-        public override void WriteXml(System.Xml.XmlWriter writer)
+        protected override void OnDockHeightChanged()
         {
-            writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
-            base.WriteXml(writer);
+            if (DockHeight.IsAbsolute && ChildrenCount == 1)
+            {
+                ((ILayoutPositionableElement)Children[0]).DockHeight = DockHeight;
+            }
+
+            base.OnDockHeightChanged();
         }
 
         /// <inheritdoc />
-        public override void ReadXml(System.Xml.XmlReader reader)
+        protected override void OnDockWidthChanged()
         {
-            if (reader.MoveToAttribute(nameof(Orientation)))
+            if (DockWidth.IsAbsolute && ChildrenCount == 1)
             {
-                Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
+                ((ILayoutPositionableElement)Children[0]).DockWidth = DockWidth;
             }
 
-            base.ReadXml(reader);
+            base.OnDockWidthChanged();
         }
 
-#if TRACE
         /// <inheritdoc />
-        public override void ConsoleDump(int tab)
+        protected override void OnIsVisibleChanged()
         {
-            System.Diagnostics.Trace.TraceInformation("{0}AnchorablePaneGroup({1})", new string(' ', tab * 4), Orientation);
-
-            foreach (var child in Children.Cast<LayoutElement>())
-            {
-                child.ConsoleDump(tab + 1);
-            }
+            UpdateParentVisibility();
+            base.OnIsVisibleChanged();
         }
-#endif
-
-        #endregion Overrides
-
-        #region Private Methods
 
         private void UpdateParentVisibility()
         {
@@ -159,7 +141,5 @@ namespace AvalonDock.Layout
                 parentPane.ComputeVisibility();
             }
         }
-
-        #endregion Private Methods
     }
 }

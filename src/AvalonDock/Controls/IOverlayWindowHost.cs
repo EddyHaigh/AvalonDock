@@ -18,17 +18,26 @@ namespace AvalonDock.Controls
     /// </summary>
     internal interface IOverlayWindowHost
     {
-        #region Properties
-
         /// <summary>
         /// Gets the <see cref="DockingManager"/> control that should be invoked to do the actual docking
         /// if docking into this <see cref="IOverlayWindowHost"/> should be performed.
         /// </summary>
         DockingManager Manager { get; }
 
-        #endregion Properties
+        /// <summary>
+        /// Is invoked by the <see cref="DragService"/> of a <see cref="LayoutFloatingWindowControl"/>
+        /// to enumerate and show all overlay buttons in an <see cref="IOverlayWindow"/> when the
+        /// floating window is dragged over an <see cref="IOverlayWindowHost"/>.
+        /// </summary>
+        /// <param name="draggingWindow">The window to examine.</param>
+        /// <returns>The associated drop areas.</returns>
+        IEnumerable<IDropArea> GetDropAreas(LayoutFloatingWindowControl draggingWindow);
 
-        #region Methods
+        /// <summary>
+        /// Is invoked by the <see cref="DragService"/> of a <see cref="LayoutFloatingWindowControl"/>
+        /// to hide the <see cref="IOverlayWindow"/> for this <see cref="IOverlayWindowHost"/>.
+        /// </summary>
+        void HideOverlayWindow();
 
         /// <summary>
         /// Determines whether the given screen coordinates are part of the <see cref="IOverlayWindowHost"/>
@@ -47,22 +56,5 @@ namespace AvalonDock.Controls
         /// <param name="draggingWindow">The control being dragged.</param>
         /// <returns>The window encapsulating the dragged item.</returns>
         IOverlayWindow ShowOverlayWindow(LayoutFloatingWindowControl draggingWindow);
-
-        /// <summary>
-        /// Is invoked by the <see cref="DragService"/> of a <see cref="LayoutFloatingWindowControl"/>
-        /// to hide the <see cref="IOverlayWindow"/> for this <see cref="IOverlayWindowHost"/>.
-        /// </summary>
-        void HideOverlayWindow();
-
-        /// <summary>
-        /// Is invoked by the <see cref="DragService"/> of a <see cref="LayoutFloatingWindowControl"/>
-        /// to enumerate and show all overlay buttons in an <see cref="IOverlayWindow"/> when the
-        /// floating window is dragged over an <see cref="IOverlayWindowHost"/>.
-        /// </summary>
-        /// <param name="draggingWindow">The window to examine.</param>
-        /// <returns>The associated drop areas.</returns>
-        IEnumerable<IDropArea> GetDropAreas(LayoutFloatingWindowControl draggingWindow);
-
-        #endregion Methods
     }
 }

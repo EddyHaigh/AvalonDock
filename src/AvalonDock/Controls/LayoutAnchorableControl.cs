@@ -20,7 +20,23 @@ namespace AvalonDock.Controls
     /// <seealso cref="Control"/>
     public class LayoutAnchorableControl : Control
     {
-        #region Constructors
+        public static readonly DependencyProperty LayoutItemProperty;
+
+        /// <summary><see cref="Model"/> dependency property.</summary>
+        public static readonly DependencyProperty ModelProperty
+            = DependencyProperty.Register(
+                nameof(Model),
+                typeof(LayoutAnchorable),
+                typeof(LayoutAnchorableControl),
+                new FrameworkPropertyMetadata(null, OnModelChanged));
+
+        /// <summary><see cref="LayoutItem"/> read-only dependency property.</summary>
+        private static readonly DependencyPropertyKey LayoutItemPropertyKey
+            = DependencyProperty.RegisterReadOnly(
+                nameof(LayoutItem),
+                typeof(LayoutItem),
+                typeof(LayoutAnchorableControl),
+                new FrameworkPropertyMetadata(null));
 
         /// <summary>
         /// Static class constructor
@@ -29,6 +45,7 @@ namespace AvalonDock.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(LayoutAnchorableControl), new FrameworkPropertyMetadata(typeof(LayoutAnchorableControl)));
             FocusableProperty.OverrideMetadata(typeof(LayoutAnchorableControl), new FrameworkPropertyMetadata(false));
+            LayoutItemProperty = LayoutItemPropertyKey.DependencyProperty;
         }
 
         /// <summary>
@@ -39,27 +56,32 @@ namespace AvalonDock.Controls
             //SetBinding(FlowDirectionProperty, new Binding("Model.Root.Manager.FlowDirection") { Source = this });
             Unloaded += LayoutAnchorableControl_Unloaded;
         }
-
-        #endregion Constructors
-
-        #region Properties
-
-        #region Model
-
-        /// <summary><see cref="Model"/> dependency property.</summary>
-        public static readonly DependencyProperty ModelProperty = DependencyProperty.Register(nameof(Model), typeof(LayoutAnchorable), typeof(LayoutAnchorableControl),
-                new FrameworkPropertyMetadata(null, OnModelChanged));
+        /// <summary>Gets the the LayoutItem attached to this tag item.</summary>
+        [Bindable(true)]
+        [Description("Gets the the LayoutItem attached to this tag item.")]
+        [Category("Other")]
+        public LayoutItem LayoutItem => (LayoutItem)GetValue(LayoutItemProperty);
 
         /// <summary>Gets/sets the model attached to this view.</summary>
-        [Bindable(true), Description("Gets/sets the model attached to this view."), Category("Other")]
+        [Bindable(true)]
+        [Description("Gets/sets the model attached to this view.")]
+        [Category("Other")]
         public LayoutAnchorable Model
         {
             get => (LayoutAnchorable)GetValue(ModelProperty);
             set => SetValue(ModelProperty, value);
         }
 
-        /// <summary>Handles changes to the <see cref="Model"/> property.</summary>
-        private static void OnModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((LayoutAnchorableControl)d).OnModelChanged(e);
+        /// <inheritdoc/>
+        protected override void OnGotKeyboardFocus(System.Windows.Input.KeyboardFocusChangedEventArgs e)
+        {
+            if (Model != null)
+            {
+                Model.IsActive = true;
+            }
+
+            base.OnGotKeyboardFocus(e);
+        }
 
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Model"/> property.</summary>
         protected virtual void OnModelChanged(DependencyPropertyChangedEventArgs e)
@@ -78,6 +100,33 @@ namespace AvalonDock.Controls
             {
                 SetLayoutItem(null);
             }
+        }
+
+        /// <summary>
+        /// Provides a secure method for setting the <see cref="LayoutItem"/> property.
+        /// This dependency property indicates the LayoutItem attached to this tag item.
+        /// </summary>
+        /// <param name="value">The new value for the property.</param>
+        protected void SetLayoutItem(LayoutItem value) => SetValue(LayoutItemPropertyKey, value);
+
+        /// <summary>Handles changes to the <see cref="Model"/> property.</summary>
+        private static void OnModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+            => ((LayoutAnchorableControl)d).OnModelChanged(e);
+
+        /// <summary>
+        /// Executes when the element is removed from within an element tree of loaded elements.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LayoutAnchorableControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            // prevent memory leak via event handler
+            if (Model != null)
+            {
+                Model.PropertyChanged -= Model_PropertyChanged;
+            }
+
+            Unloaded -= LayoutAnchorableControl_Unloaded;
         }
 
         private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -103,61 +152,5 @@ namespace AvalonDock.Controls
                 layoutAnchorablePane.SetNextSelectedIndex();
             }
         }
-
-        #endregion Model
-
-        #region LayoutItem
-
-        /// <summary><see cref="LayoutItem"/> read-only dependency property.</summary>
-        private static readonly DependencyPropertyKey LayoutItemPropertyKey = DependencyProperty.RegisterReadOnly(nameof(LayoutItem), typeof(LayoutItem), typeof(LayoutAnchorableControl),
-                new FrameworkPropertyMetadata(null));
-
-        public static readonly DependencyProperty LayoutItemProperty = LayoutItemPropertyKey.DependencyProperty;
-
-        /// <summary>Gets the the LayoutItem attached to this tag item.</summary>
-        [Bindable(true), Description("Gets the the LayoutItem attached to this tag item."), Category("Other")]
-        public LayoutItem LayoutItem => (LayoutItem)GetValue(LayoutItemProperty);
-
-        /// <summary>
-        /// Provides a secure method for setting the <see cref="LayoutItem"/> property.
-        /// This dependency property indicates the LayoutItem attached to this tag item.
-        /// </summary>
-        /// <param name="value">The new value for the property.</param>
-        protected void SetLayoutItem(LayoutItem value) => SetValue(LayoutItemPropertyKey, value);
-
-        #endregion LayoutItem
-
-        #endregion Properties
-
-        #region Methods
-
-        /// <inheritdoc/>
-        protected override void OnGotKeyboardFocus(System.Windows.Input.KeyboardFocusChangedEventArgs e)
-        {
-            if (Model != null)
-            {
-                Model.IsActive = true;
-            }
-
-            base.OnGotKeyboardFocus(e);
-        }
-
-        /// <summary>
-        /// Executes when the element is removed from within an element tree of loaded elements.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void LayoutAnchorableControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // prevent memory leak via event handler
-            if (Model != null)
-            {
-                Model.PropertyChanged -= Model_PropertyChanged;
-            }
-
-            Unloaded -= LayoutAnchorableControl_Unloaded;
-        }
-
-        #endregion Methods
     }
 }

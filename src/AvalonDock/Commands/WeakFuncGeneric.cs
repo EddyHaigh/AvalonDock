@@ -11,16 +11,10 @@ namespace AvalonDock.Commands
     /// <seealso cref="AvalonDock.Commands.IExecuteWithObjectAndResult" />
     internal class WeakFunc<T, TResult> : WeakFunc<TResult>, IExecuteWithObjectAndResult
     {
-        #region Private Fields
-
         /// <summary>
         /// The static function
         /// </summary>
         private Func<T, TResult> _staticFunc;
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         /// <summary>
         /// Initializes a new instance of the WeakFunc class.
@@ -55,10 +49,6 @@ namespace AvalonDock.Commands
             FuncReference = new WeakReference(func.Target);
             Reference = new WeakReference(target);
         }
-
-        #endregion Public Constructors
-
-        #region Public Properties
 
         /// <summary>
         /// Gets a value indicating whether the Func's owner is still alive, or if it was collected
@@ -104,10 +94,6 @@ namespace AvalonDock.Commands
                 return Method.Name;
             }
         }
-
-        #endregion Public Properties
-
-        #region Public Methods
 
         /// <summary>
         /// Executes the Func. This only happens if the Func's owner
@@ -177,7 +163,5 @@ namespace AvalonDock.Commands
             _staticFunc = null;
             base.MarkForDeletion();
         }
-
-        #endregion Public Methods
     }
 }

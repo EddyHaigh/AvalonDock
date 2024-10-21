@@ -15,7 +15,7 @@ namespace AvalonDock.Controls
     /// </summary>
     public enum DropTargetType
     {
-        #region DockingManager
+        // DockingManager Enums
 
         /// <summary>The specific drop area is the left of the <see cref="DockingManager"/> control.</summary>
         DockingManagerDockLeft,
@@ -29,9 +29,7 @@ namespace AvalonDock.Controls
         /// <summary>The specific drop area is the bottom of the <see cref="DockingManager"/> control.</summary>
         DockingManagerDockBottom,
 
-        #endregion DockingManager
-
-        #region DocumentPane
+        // DocumentPane Enums
 
         /// <summary>The specific drop area is the left of a <see cref="LayoutDocumentPaneControl"/> control.</summary>
         DocumentPaneDockLeft,
@@ -49,13 +47,13 @@ namespace AvalonDock.Controls
         /// and the drop target will be part of a tabbed display).</summary>
         DocumentPaneDockInside,
 
-        #endregion DocumentPane
+        // Document Pane Group enums
 
         /// <summary>The specific drop area is a <see cref="LayoutDocumentPaneGroupControl"/> control (the dropped control
         /// and the drop target will be part of a tabbed display).</summary>
         DocumentPaneGroupDockInside,
 
-        #region AnchorablePane
+        // AnchorablePane enums
 
         /// <summary>The specific drop area is the left of a <see cref="LayoutAnchorablePaneControl"/> control.</summary>
         AnchorablePaneDockLeft,
@@ -73,15 +71,11 @@ namespace AvalonDock.Controls
         /// and the drop target will be part of a tabbed display).</summary>
         AnchorablePaneDockInside,
 
-        #endregion AnchorablePane
-
-        #region DocumentPaneDockAsAnchorable
+        // DocumentPaneDockAsAnchorable enums
 
         DocumentPaneDockAsAnchorableLeft,
         DocumentPaneDockAsAnchorableTop,
         DocumentPaneDockAsAnchorableRight,
         DocumentPaneDockAsAnchorableBottom,
-
-        #endregion DocumentPaneDockAsAnchorable
     }
 }

@@ -66,7 +66,7 @@ namespace Standard
         /// <summary>IID_IUnknown</summary>
         public const string Unknown = "00000000-0000-0000-C000-000000000046";
 
-        #region Win7 IIDs
+       // Win7 IIDs
 
         /// <summary>IID_IApplicationDestinations</summary>
         public const string ApplicationDestinations = "12337d35-94c6-48a0-bce7-6a9c69d4d600";
@@ -88,8 +88,6 @@ namespace Standard
 
         /// <summary>IID_ITaskbarList4</summary>
         public const string TaskbarList4 = "c43dc798-95d1-4bea-9030-bb99e2983a1a";
-
-        #endregion Win7 IIDs
     }
 
     internal static partial class CLSID
@@ -108,7 +106,7 @@ namespace Standard
         /// <remarks>IID_IShellLink</remarks>
         public const string ShellLink = "00021401-0000-0000-C000-000000000046";
 
-        #region Win7 CLSIDs
+        // Win7 CLSIDs
 
         /// <summary>CLSID_DestinationList</summary>
         /// <remarks>IID_ICustomDestinationList</remarks>
@@ -121,7 +119,5 @@ namespace Standard
         /// <summary>CLSID_ApplicationDocumentLists</summary>
         /// <remarks>IID_IApplicationDocumentLists</remarks>
         public const string ApplicationDocumentLists = "86bec222-30f2-47e0-9f25-60d11cd75c28";
-
-        #endregion Win7 CLSIDs
     }
 }

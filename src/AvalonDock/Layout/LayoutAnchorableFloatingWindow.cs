@@ -22,25 +22,35 @@ namespace AvalonDock.Layout
     [ContentProperty(nameof(RootPanel))]
     public class LayoutAnchorableFloatingWindow : LayoutFloatingWindow, ILayoutElementWithVisibility
     {
-        #region fields
-
-        private LayoutAnchorablePaneGroup _rootPanel;
-
         [NonSerialized]
         private bool _isVisible = true;
 
-        #endregion fields
-
-        #region Events
+        private LayoutAnchorablePaneGroup _rootPanel;
 
         /// <summary>Event is invoked when the visibility of this object has changed.</summary>
         public event EventHandler IsVisibleChanged;
 
-        #endregion Events
+        /// <inheritdoc />
+        public override IEnumerable<ILayoutElement> Children
+        {
+            get
+            {
+                if (ChildrenCount == 1)
+                {
+                    yield return RootPanel;
+                }
+            }
+        }
 
-        #region Properties
+        /// <inheritdoc />
+        public override int ChildrenCount => RootPanel == null ? 0 : 1;
 
-        public bool IsSinglePane => RootPanel != null && RootPanel.Descendents().OfType<ILayoutAnchorablePane>().Count(p => p.IsVisible) == 1;
+        public bool IsSinglePane =>
+                            RootPanel != null
+            && RootPanel.Descendents().OfType<ILayoutAnchorablePane>().Count(p => p.IsVisible) == 1;
+
+        /// <inheritdoc />
+        public override bool IsValid => RootPanel != null;
 
         /// <summary>Gets/sets whether this object is in a state where it is visible in the UI or not.</summary>
         [XmlIgnore]
@@ -108,46 +118,18 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Properties
-
-        #region ILayoutElementWithVisibility Interface
-
         /// <inheritdoc />
         void ILayoutElementWithVisibility.ComputeVisibility() => ComputeVisibility();
 
-        #endregion ILayoutElementWithVisibility Interface
-
-        #region Overrides
-
+#if TRACE
         /// <inheritdoc />
-        public override IEnumerable<ILayoutElement> Children
+        public override void ConsoleDump(int tab)
         {
-            get { if (ChildrenCount == 1)
-                {
-                    yield return RootPanel;
-                }
-            }
+            System.Diagnostics.Trace.TraceInformation("{0}FloatingAnchorableWindow()", new string(' ', tab * 4));
+
+            RootPanel.ConsoleDump(tab + 1);
         }
-
-        /// <inheritdoc />
-        public override void RemoveChild(ILayoutElement element)
-        {
-            Debug.Assert(element == RootPanel && element != null);
-            RootPanel = null;
-        }
-
-        /// <inheritdoc />
-        public override void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
-        {
-            Debug.Assert(oldElement == RootPanel && oldElement != null);
-            RootPanel = newElement as LayoutAnchorablePaneGroup;
-        }
-
-        /// <inheritdoc />
-        public override int ChildrenCount => RootPanel == null ? 0 : 1;
-
-        /// <inheritdoc />
-        public override bool IsValid => RootPanel != null;
+#endif
 
         /// <inheritdoc />
         public override void ReadXml(XmlReader reader)
@@ -196,19 +178,19 @@ namespace AvalonDock.Layout
             reader.ReadEndElement();
         }
 
-#if TRACE
         /// <inheritdoc />
-        public override void ConsoleDump(int tab)
+        public override void RemoveChild(ILayoutElement element)
         {
-            System.Diagnostics.Trace.TraceInformation("{0}FloatingAnchorableWindow()", new string(' ', tab * 4));
-
-            RootPanel.ConsoleDump(tab + 1);
+            Debug.Assert(element == RootPanel && element != null);
+            RootPanel = null;
         }
-#endif
 
-        #endregion Overrides
-
-        #region Private Methods
+        /// <inheritdoc />
+        public override void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
+        {
+            Debug.Assert(oldElement == RootPanel && oldElement != null);
+            RootPanel = newElement as LayoutAnchorablePaneGroup;
+        }
 
         private void _rootPanel_ChildrenTreeChanged(object sender, ChildrenTreeChangedEventArgs e)
         {
@@ -217,7 +199,5 @@ namespace AvalonDock.Layout
         }
 
         private void ComputeVisibility() => IsVisible = RootPanel != null && RootPanel.IsVisible;
-
-        #endregion Private Methods
     }
 }

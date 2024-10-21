@@ -18,14 +18,8 @@ namespace AvalonDock.Controls
     [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]
     public class TabControlEx : TabControl
     {
-        #region fields
-
         private Panel ItemsHolderPanel = null;
         private readonly bool _IsVirtualizing;
-
-        #endregion fields
-
-        #region constructors
 
         /// <summary>
         /// Class constructor from virtualization parameter.
@@ -49,17 +43,11 @@ namespace AvalonDock.Controls
             ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
         }
 
-        #endregion constructors
-
-        #region properties
-
         /// <summary>Gets whether the control and its inheriting classes are virtualizing their items or not.</summary>
-        [Bindable(false), Description("Gets whether the control and its inheriting classes are virtualizing their items or not."), Category("Other")]
+        [Bindable(false)]
+        [Description("Gets whether the control and its inheriting classes are virtualizing their items or not.")]
+        [Category("Other")]
         public bool IsVirtualiting => _IsVirtualizing;
-
-        #endregion properties
-
-        #region methods
 
         /// <summary>
         /// Get the ItemsHolder and generate any children
@@ -291,7 +279,5 @@ namespace AvalonDock.Controls
 
             return null;
         }
-
-        #endregion methods
     }
 }

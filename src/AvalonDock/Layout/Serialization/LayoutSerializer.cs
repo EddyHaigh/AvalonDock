@@ -15,14 +15,8 @@ namespace AvalonDock.Layout.Serialization
     /// <summary>Implements a base class for the layout serialization/deserialization of the docking framework.</summary>
     public abstract class LayoutSerializer
     {
-        #region fields
-
         private LayoutAnchorable[] _previousAnchorables = null;
         private LayoutDocument[] _previousDocuments = null;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>
         /// Class constructor from <see cref="DockingManager"/> instance.
@@ -35,28 +29,22 @@ namespace AvalonDock.Layout.Serialization
             _previousDocuments = Manager.Layout.Descendents().OfType<LayoutDocument>().ToArray();
         }
 
-        #endregion Constructors
-
-        #region Events
-
         /// <summary>Raises an event when the layout serializer is about to deserialize an item to ask the
         /// client application whether the item should be deserialized and re-displayed and what content
         /// should be used if so.
         /// </summary>
         public event EventHandler<LayoutSerializationCallbackEventArgs> LayoutSerializationCallback;
 
-        #endregion Events
-
-        #region Properties
-
         /// <summary>
         /// Gets the <see cref="DockingManager"/> root of the docking library.
         /// </summary>
         public DockingManager Manager { get; }
 
-        #endregion Properties
-
-        #region Methods
+        protected void EndDeserialization()
+        {
+            Manager.SuspendDocumentsSourceBinding = false;
+            Manager.SuspendAnchorablesSourceBinding = false;
+        }
 
         protected virtual void FixupLayout(LayoutRoot layout)
         {
@@ -167,13 +155,5 @@ namespace AvalonDock.Layout.Serialization
             Manager.SuspendDocumentsSourceBinding = true;
             Manager.SuspendAnchorablesSourceBinding = true;
         }
-
-        protected void EndDeserialization()
-        {
-            Manager.SuspendDocumentsSourceBinding = false;
-            Manager.SuspendAnchorablesSourceBinding = false;
-        }
-
-        #endregion Methods
     }
 }

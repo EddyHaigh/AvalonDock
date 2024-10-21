@@ -16,8 +16,6 @@ namespace AvalonDock.Layout.Serialization
     /// <summary>Implements a layout serialization/deserialization method of the docking framework.</summary>
     public class XmlLayoutSerializer : LayoutSerializer
     {
-        #region Constructors
-
         /// <summary>
         /// Class constructor from <see cref="DockingManager"/> instance.
         /// </summary>
@@ -27,9 +25,6 @@ namespace AvalonDock.Layout.Serialization
         {
         }
 
-        #endregion Constructors
-
-        #region Private Methods
         /// <returns>Desererialized LayoutRoot</returns>
         /// <summary> Function for LayoutRoot deserialization. </summary>
 
@@ -51,9 +46,6 @@ namespace AvalonDock.Layout.Serialization
                 EndDeserialization();
             }
         }
-        #endregion
-
-        #region Public Methods
 
         readonly XmlSerializer _serializer = XmlSerializersCache.GetSerializer<LayoutRoot>();
 
@@ -123,7 +115,5 @@ namespace AvalonDock.Layout.Serialization
                 Deserialize(stream);
             }
         }
-
-        #endregion Public Methods
     }
 }

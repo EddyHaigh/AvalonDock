@@ -20,8 +20,6 @@ namespace Standard
 
     using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
-    #region Enums and Static Property Classes
-
     /// <summary>ShellItem attribute flags.  SIATTRIBFLAGS_*</summary>
     internal enum SIATTRIBFLAGS
     {
@@ -358,10 +356,6 @@ namespace Standard
         public const string NO_OPLOCK = "GPS_NO_OPLOCK";
     }
 
-    #endregion Enums and Static Property Classes
-
-    #region Structs
-
     [StructLayout(LayoutKind.Sequential, Pack = 8, CharSet = CharSet.Unicode)]
     internal struct THUMBBUTTON
     {
@@ -414,10 +408,6 @@ namespace Standard
         /// <summary>PKEY_AppUserModel_RelaunchIconResource</summary>
         public static readonly PKEY AppUserModel_RelaunchIconResource = new PKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 3);
     }
-
-    #endregion Structs
-
-    #region Interfaces
 
     [
         ComImport,
@@ -484,14 +474,10 @@ namespace Standard
     ]
     internal interface IObjectCollection : IObjectArray
     {
-        #region IObjectArray redeclarations
-
         new uint GetCount();
 
         [return: MarshalAs(UnmanagedType.IUnknown)]
         new object GetAt([In] uint uiIndex, [In] ref Guid riid);
-
-        #endregion IObjectArray redeclarations
 
         void AddObject([MarshalAs(UnmanagedType.IUnknown)] object punk);
 
@@ -673,8 +659,6 @@ namespace Standard
     ]
     internal interface IShellItem2 : IShellItem
     {
-        #region IShellItem redeclarations
-
         [return: MarshalAs(UnmanagedType.Interface)]
         new object BindToHandler([In] IBindCtx pbc, [In] ref Guid bhid, [In] ref Guid riid);
 
@@ -686,8 +670,6 @@ namespace Standard
         new SFGAO GetAttributes(SFGAO sfgaoMask);
 
         new int Compare(IShellItem psi, SICHINT hint);
-
-        #endregion IShellItem redeclarations
 
         [return: MarshalAs(UnmanagedType.Interface)]
         object GetPropertyStore(
@@ -822,8 +804,6 @@ namespace Standard
     ]
     internal interface ITaskbarList2 : ITaskbarList
     {
-        #region ITaskbarList redeclaration
-
         new void HrInit();
 
         new void AddTab(IntPtr hwnd);
@@ -833,8 +813,6 @@ namespace Standard
         new void ActivateTab(IntPtr hwnd);
 
         new void SetActiveAlt(IntPtr hwnd);
-
-        #endregion ITaskbarList redeclaration
 
         /// <summary>
         /// Marks a window as full-screen.
@@ -972,10 +950,6 @@ namespace Standard
     ]
     internal interface ITaskbarList3 : ITaskbarList2
     {
-        #region ITaskbarList2 redeclaration
-
-        #region ITaskbarList redeclaration
-
         new void HrInit();
 
         new void AddTab(IntPtr hwnd);
@@ -986,11 +960,7 @@ namespace Standard
 
         new void SetActiveAlt(IntPtr hwnd);
 
-        #endregion ITaskbarList redeclaration
-
         new void MarkFullscreenWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
-
-        #endregion ITaskbarList2 redeclaration
 
         [PreserveSig]
         HRESULT SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
@@ -1037,11 +1007,6 @@ namespace Standard
     ]
     internal interface ITaskbarList4 : ITaskbarList3
     {
-        #region ITaskbarList3 redeclaration
-
-        #region ITaskbarList2 redeclaration
-
-        #region ITaskbarList redeclaration
 
         new void HrInit();
 
@@ -1053,11 +1018,7 @@ namespace Standard
 
         new void SetActiveAlt(IntPtr hwnd);
 
-        #endregion ITaskbarList redeclaration
-
         new void MarkFullscreenWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
-
-        #endregion ITaskbarList2 redeclaration
 
         [PreserveSig]
         new HRESULT SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
@@ -1096,10 +1057,6 @@ namespace Standard
         [PreserveSig]
         new HRESULT SetThumbnailClip(IntPtr hwnd, RefRECT prcClip);
 
-        #endregion ITaskbarList3 redeclaration
-
         void SetTabProperties(IntPtr hwndTab, STPF stpFlags);
     }
-
-    #endregion Interfaces
 }

@@ -35,8 +35,6 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutRoot : LayoutElement, ILayoutContainer, ILayoutRoot, IXmlSerializable
     {
-        #region fields
-
         private LayoutPanel _rootPanel;
         private LayoutAnchorSide _topSide = null;
         private LayoutAnchorSide _rightSide;
@@ -57,10 +55,6 @@ namespace AvalonDock.Layout
         [NonSerialized]
         private DockingManager _manager = null;
 
-        #endregion fields
-
-        #region Constructors
-
         /// <summary>Standard class constructor</summary>
         public LayoutRoot()
         {
@@ -70,10 +64,6 @@ namespace AvalonDock.Layout
             BottomSide = new LayoutAnchorSide();
             RootPanel = new LayoutPanel(new LayoutDocumentPane());
         }
-
-        #endregion Constructors
-
-        #region Events
 
         /// <summary>
         /// Raised when the layout is updated. This event is raised via <see cref="FireLayoutUpdated()"/> method
@@ -86,10 +76,6 @@ namespace AvalonDock.Layout
 
         /// <summary>Raised when an element is removed from the layout.</summary>
         public event EventHandler<LayoutElementEventArgs> ElementRemoved;
-
-        #endregion Events
-
-        #region Properties
 
         /// <summary>Gets/sets the root layout panel that contains the <see cref="LayoutDocumentPane"/>.</summary>
         public LayoutPanel RootPanel
@@ -242,8 +228,6 @@ namespace AvalonDock.Layout
             }
         }
 
-        #region Children
-
         /// <summary>Gets the child elements of the layout root.</summary>
         public IEnumerable<ILayoutElement> Children
         {
@@ -293,8 +277,6 @@ namespace AvalonDock.Layout
 
         /// <summary>Gets the number of child elements of the layout root.</summary>
         public int ChildrenCount => 5 + (_floatingWindows?.Count ?? 0) + (_hiddenAnchorables?.Count ?? 0);
-
-        #endregion Children
 
         /// <summary>Gets the active LayoutContent-derived element.</summary>
         [XmlIgnore]
@@ -359,10 +341,6 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Properties
-
-        #region Overrides
-
 #if TRACE
         public override void ConsoleDump(int tab)
         {
@@ -385,10 +363,6 @@ namespace AvalonDock.Layout
             }
         }
 #endif
-
-        #endregion Overrides
-
-        #region Public Methods
 
         public void RemoveChild(ILayoutElement element)
         {
@@ -463,8 +437,7 @@ namespace AvalonDock.Layout
         {
             var exitFlag = true;
 
-            #region collect empty panes
-
+            // collect empty panes
             do
             {
                 exitFlag = true;
@@ -581,10 +554,7 @@ namespace AvalonDock.Layout
             }
             while (!exitFlag);
 
-            #endregion collect empty panes
-
-            #region collapse single child anchorable pane groups
-
+            // collapse single child anchorable pane groups
             do
             {
                 exitFlag = true;
@@ -605,10 +575,7 @@ namespace AvalonDock.Layout
             }
             while (!exitFlag);
 
-            #endregion collapse single child anchorable pane groups
-
-            #region collapse single child document pane groups
-
+            // collapse single child document pane groups
             do
             {
                 exitFlag = true;
@@ -628,8 +595,6 @@ namespace AvalonDock.Layout
                 }
             }
             while (!exitFlag);
-
-            #endregion collapse single child document pane groups
 
             ////do
             ////{
@@ -657,16 +622,12 @@ namespace AvalonDock.Layout
             // Update ActiveContent and LastFocusedDocument properties
             UpdateActiveContentProperty();
 
-#if DEBUG
             Debug.Assert(!this.Descendents().OfType<LayoutAnchorablePane>().Any(a => a.ChildrenCount == 0 && a.IsVisible));
             //DumpTree(true);
 #if TRACE
             RootPanel.ConsoleDump(4);
 #endif
-#endif
         }
-
-        #region IXmlSerializable interface members
 
         /// <inheritdoc />
         XmlSchema IXmlSerializable.GetSchema() => null;
@@ -778,12 +739,6 @@ namespace AvalonDock.Layout
             writer.WriteEndElement();
         }
 
-        #endregion IXmlSerializable interface members
-
-        #endregion Public Methods
-
-        #region Internal Methods
-
         internal static Type FindType(string name)
         {
             var avalonAssembly = Assembly.GetAssembly(typeof(LayoutRoot));
@@ -826,10 +781,6 @@ namespace AvalonDock.Layout
 
             ElementRemoved?.Invoke(this, new LayoutElementEventArgs(element));
         }
-
-        #endregion Internal Methods
-
-        #region Private Methods
 
         private void _floatingWindows_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -1197,12 +1148,7 @@ namespace AvalonDock.Layout
             return serializer.Deserialize(reader);
         }
 
-        #endregion Private Methods
-
-        #region Diagnostic tools
-
-#if DEBUG
-
+        [Conditional("DEBUG")]
         public void DumpTree(bool shortPropertyNames = false)
         {
             void DumpElement(ILayoutElement element, StringBuilder indent, int childID, bool isLastChild)
@@ -1229,9 +1175,5 @@ namespace AvalonDock.Layout
 
             DumpElement(this, new StringBuilder(), 0, true);
         }
-
-#endif
-
-        #endregion Diagnostic tools
     }
 }

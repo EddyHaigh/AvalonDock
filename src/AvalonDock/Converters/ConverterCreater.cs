@@ -9,13 +9,7 @@ namespace AvalonDock.Converters
     /// </summary>
     internal class ConverterCreater
     {
-        #region Private fields
-
         private static readonly Dictionary<Type, object> ConverterMap = new Dictionary<Type, object>();
-
-        #endregion Private fields
-
-        #region Public methods
 
         /// <summary>
         /// Gets an available instance of the indicated type <see cref="{T}"/> or a brand new instance
@@ -33,7 +27,5 @@ namespace AvalonDock.Converters
             }
             return (T)ConverterMap[typeof(T)];
         }
-
-        #endregion Public methods
     }
 }

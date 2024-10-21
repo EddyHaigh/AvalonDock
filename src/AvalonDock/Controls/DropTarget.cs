@@ -25,15 +25,9 @@ namespace AvalonDock.Controls
     /// <typeparam name="T"></typeparam>
     internal abstract class DropTarget<T> : DropTargetBase, IDropTarget where T : FrameworkElement
     {
-        #region fields
-
         private Rect[] _detectionRect;
         private T _targetElement;
         private DropTargetType _type;
-
-        #endregion fields
-
-        #region Constructors
 
         protected DropTarget(T targetElement, Rect detectionRect, DropTargetType type)
         {
@@ -48,10 +42,6 @@ namespace AvalonDock.Controls
             _detectionRect = detectionRects.ToArray();
             _type = type;
         }
-
-        #endregion Constructors
-
-        #region Properties
 
         public Rect[] DetectionRects
         {
@@ -77,39 +67,14 @@ namespace AvalonDock.Controls
             }
         }
 
-        #endregion Properties
-
-        #region Overrides
-
-        /// <summary>
-        /// Method is invoked to complete a drag & drop operation with a (new) docking position
-        /// by docking of the LayoutAnchorable <paramref name="floatingWindow"/> into this drop target.
-        ///
-        /// Inheriting classes should override this method to implement their own custom logic.
-        /// </summary>
-        /// <param name="floatingWindow"></param>
-        protected virtual void Drop(LayoutAnchorableFloatingWindow floatingWindow)
+        public void DragEnter()
         {
+            SetIsDraggingOver(TargetElement, true);
         }
 
-        /// <summary>
-        /// Method is invoked to complete a drag & drop operation with a (new) docking position
-        /// by docking of the LayoutDocument <paramref name="floatingWindow"/> into this drop target.
-        ///
-        /// Inheriting classes should override this method to implement their own custom logic.
-        /// </summary>
-        /// <param name="floatingWindow"></param>
-        protected virtual void Drop(LayoutDocumentFloatingWindow floatingWindow)
+        public void DragLeave()
         {
-        }
-
-        #endregion Overrides
-
-        #region Public Methods
-
-        public bool HitTestScreen(Point dragPoint)
-        {
-            return HitTest(_targetElement.TransformToDeviceDPI(dragPoint));
+            SetIsDraggingOver(TargetElement, false);
         }
 
         public void Drop(LayoutFloatingWindow floatingWindow)
@@ -139,23 +104,38 @@ namespace AvalonDock.Controls
                 }), DispatcherPriority.Background);
         }
 
+        public abstract Geometry GetPreviewPath(OverlayWindow overlayWindow, LayoutFloatingWindow floatingWindow);
+
         public virtual bool HitTest(Point dragPoint)
         {
             return Array.Exists(_detectionRect, dr => dr.Contains(dragPoint));
         }
 
-        public abstract Geometry GetPreviewPath(OverlayWindow overlayWindow, LayoutFloatingWindow floatingWindow);
-
-        public void DragEnter()
+        public bool HitTestScreen(Point dragPoint)
         {
-            SetIsDraggingOver(TargetElement, true);
+            return HitTest(_targetElement.TransformToDeviceDPI(dragPoint));
         }
 
-        public void DragLeave()
+        /// <summary>
+        /// Method is invoked to complete a drag & drop operation with a (new) docking position
+        /// by docking of the LayoutAnchorable <paramref name="floatingWindow"/> into this drop target.
+        ///
+        /// Inheriting classes should override this method to implement their own custom logic.
+        /// </summary>
+        /// <param name="floatingWindow"></param>
+        protected virtual void Drop(LayoutAnchorableFloatingWindow floatingWindow)
         {
-            SetIsDraggingOver(TargetElement, false);
         }
 
-        #endregion Public Methods
+        /// <summary>
+        /// Method is invoked to complete a drag & drop operation with a (new) docking position
+        /// by docking of the LayoutDocument <paramref name="floatingWindow"/> into this drop target.
+        ///
+        /// Inheriting classes should override this method to implement their own custom logic.
+        /// </summary>
+        /// <param name="floatingWindow"></param>
+        protected virtual void Drop(LayoutDocumentFloatingWindow floatingWindow)
+        {
+        }
     }
 }

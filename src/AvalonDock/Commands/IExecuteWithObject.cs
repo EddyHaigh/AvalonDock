@@ -5,20 +5,11 @@
     /// </summary>
     internal interface IExecuteWithObject
     {
-        #region Public Properties
-
         /// <summary>
         /// The target of the WeakAction.
         /// </summary>
         /// <value>The target.</value>
-        object Target
-        {
-            get;
-        }
-
-        #endregion Public Properties
-
-        #region Public Methods
+        object Target { get; }
 
         /// <summary>
         /// Executes an action.
@@ -32,7 +23,5 @@
         /// that this entry must be deleted.
         /// </summary>
         void MarkForDeletion();
-
-        #endregion Public Methods
     }
 }

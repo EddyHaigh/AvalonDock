@@ -46,8 +46,6 @@ namespace Microsoft.Windows.Shell
 
         private readonly Dictionary<WM, List<_SystemMetricUpdate>> _UpdateTable;
 
-        #region Initialization and Update Methods
-
         // Most properties exposed here have a way of being queried directly
         // and a way of being notified of updates via a window message.
         // This region is a grouping of both, for each of the exposed properties.
@@ -280,8 +278,6 @@ namespace Microsoft.Windows.Shell
             // Neither the wParam or lParam are used in this case.
             _InitializeWindowCornerRadius();
         }
-
-        #endregion Initialization and Update Methods
 
         /// <summary>
         /// Private constructor.  The public way to access this class is through the static Current property.
@@ -540,8 +536,6 @@ namespace Microsoft.Windows.Shell
             }
         }
 
-        #region INotifyPropertyChanged Members
-
         private void _NotifyPropertyChanged(string propertyName)
         {
             Assert.IsNeitherNullNorEmpty(propertyName);
@@ -549,7 +543,5 @@ namespace Microsoft.Windows.Shell
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion INotifyPropertyChanged Members
     }
 }

@@ -27,13 +27,7 @@ namespace AvalonDock.Controls
     /// <seealso cref="ILayoutControl"/>
     public class LayoutAnchorablePaneControl : TabControlEx, ILayoutControl//, ILogicalChildrenContainer
     {
-        #region fields
-
         private readonly LayoutAnchorablePane _model;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>Static class constructor to register WPF style keys.</summary>
         static LayoutAnchorablePaneControl()
@@ -55,17 +49,11 @@ namespace AvalonDock.Controls
             SizeChanged += OnSizeChanged;
         }
 
-        #endregion Constructors
-
-        #region Properties
-
         /// <summary>Gets the layout model of this control.</summary>
-        [Bindable(false), Description("Gets the layout model of this control."), Category("Other")]
+        [Bindable(false)]
+        [Description("Gets the layout model of this control.")]
+        [Category("Other")]
         public ILayoutElement Model => _model;
-
-        #endregion Properties
-
-        #region Overrides
 
         /// <summary>
         /// Invoked when an unhandled <see cref="System.Windows.Input.Keyboard.GotKeyboardFocus"/> attached
@@ -115,17 +103,11 @@ namespace AvalonDock.Controls
             }
         }
 
-        #endregion Overrides
-
-        #region Private Methods
-
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             var modelWithActualSize = _model as ILayoutPositionableElementWithActualSize;
             modelWithActualSize.ActualWidth = ActualWidth;
             modelWithActualSize.ActualHeight = ActualHeight;
         }
-
-        #endregion Private Methods
     }
 }

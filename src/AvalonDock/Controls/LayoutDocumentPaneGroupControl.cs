@@ -22,13 +22,7 @@ namespace AvalonDock.Controls
     /// </summary>
     public class LayoutDocumentPaneGroupControl : LayoutGridControl<ILayoutDocumentPane>
     {
-        #region fields
-
         private readonly LayoutDocumentPaneGroup _model;
-
-        #endregion fields
-
-        #region Constructors
 
         internal LayoutDocumentPaneGroupControl(LayoutDocumentPaneGroup model)
             : base(model, model.Orientation)
@@ -36,14 +30,9 @@ namespace AvalonDock.Controls
             _model = model;
         }
 
-        #endregion Constructors
-
-        #region Overrides
-
         protected override void OnFixChildrenDockLengths()
         {
-            #region Setup DockWidth/Height for children
-
+            // Setup DockWidth/Height for children
             if (_model.Orientation == Orientation.Horizontal)
             {
                 for (int i = 0; i < _model.Children.Count; i++)
@@ -66,10 +55,6 @@ namespace AvalonDock.Controls
                     }
                 }
             }
-
-            #endregion Setup DockWidth/Height for children
         }
-
-        #endregion Overrides
     }
 }

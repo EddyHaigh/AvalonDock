@@ -20,14 +20,8 @@ namespace AvalonDock.Controls
     /// <typeparam name="V"></typeparam>
     internal class FullWeakDictionary<K, V> where K : class
     {
-        #region fields
-
         private List<WeakReference> _keys = new List<WeakReference>();
         private List<WeakReference> _values = new List<WeakReference>();
-
-        #endregion fields
-
-        #region Public Methods
 
         /// <summary>
         /// Get a value by its key index.
@@ -63,6 +57,28 @@ namespace AvalonDock.Controls
         }
 
         /// <summary>
+        /// Get whether a key value pair exists and return its <paramref name="value"/> if so.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns>True if key exists in the collection, otherwise false.</returns>
+        public bool GetValue(K key, out V value)
+        {
+            CollectGarbage();
+            int vIndex = _keys.FindIndex(k => k.GetValueOrDefault<K>() == key);
+
+            value = default(V);
+
+            if (vIndex == -1)
+            {
+                return false;
+            }
+
+            value = _values[vIndex].GetValueOrDefault<V>();
+            return true;
+        }
+
+        /// <summary>
         /// Set the <paramref name="value"/> for a given <paramref name="key"/>.
         /// Either
         /// - inserts both key and value pair if key was not present or
@@ -83,28 +99,6 @@ namespace AvalonDock.Controls
                 _values.Add(new WeakReference(value));
                 _keys.Add(new WeakReference(key));
             }
-        }
-
-        /// <summary>
-        /// Get whether a key value pair exists and return its <paramref name="value"/> if so.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns>True if key exists in the collection, otherwise false.</returns>
-        public bool GetValue(K key, out V value)
-        {
-            CollectGarbage();
-            int vIndex = _keys.FindIndex(k => k.GetValueOrDefault<K>() == key);
-
-            value = default(V);
-
-            if (vIndex == -1)
-            {
-                return false;
-            }
-
-            value = _values[vIndex].GetValueOrDefault<V>();
-            return true;
         }
 
         /// <summary>
@@ -138,7 +132,5 @@ namespace AvalonDock.Controls
             }
             while (vIndex >= 0);
         }
-
-        #endregion Public Methods
     }
 }

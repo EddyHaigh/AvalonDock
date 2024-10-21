@@ -293,8 +293,6 @@ namespace AvalonDock
                 return Left ^ ((Top << 13) | (Top >> 0x13)) ^ ((Width << 0x1a) | (Width >> 6)) ^ ((Height << 7) | (Height >> 0x19));
             }
 
-            #region Operator overloads
-
             public static implicit operator Rect(RECT rect)
             {
                 return rect.ToRectangle();
@@ -304,8 +302,6 @@ namespace AvalonDock
             {
                 return FromRectangle(rect);
             }
-
-            #endregion Operator overloads
         }
 
         internal static RECT GetClientRect(IntPtr hWnd)

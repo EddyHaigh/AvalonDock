@@ -18,15 +18,12 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutDocument : LayoutContent
     {
-        #region fields
-
         private bool _canMove = true;
-        private bool _isVisible = true;
         private string _description = null;
+        private bool _isVisible = true;
 
-        #endregion fields
-
-        #region Properties
+        /// <summary>Documents can't be just hidden so always return false.</summary>
+        public bool CanHide => false;
 
         /// <summary>Gets/sets whether a document can be dragged (to be dropped in a different location) or not.
         /// Use this property in conjunction with <see cref="CanMove"/> and <see cref="CanClose"/> and <see cref="LayoutPanel.CanDock"/>
@@ -44,16 +41,6 @@ namespace AvalonDock.Layout
                 _canMove = value;
                 RaisePropertyChanged(nameof(CanMove));
             }
-        }
-
-        /// <summary>Documents can't be just hidden so always return false.</summary>
-        public bool CanHide => false;
-
-        /// <summary>Gets whether a document is visible or not.</summary>
-        public bool IsVisible
-        {
-            get => _isVisible;
-            internal set => _isVisible = value;
         }
 
         /// <summary>Gets/sets the document's description.
@@ -74,54 +61,11 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Properties
-
-        #region Internal Methods
-
-        internal bool CloseDocument()
+        /// <summary>Gets whether a document is visible or not.</summary>
+        public bool IsVisible
         {
-            if (!TestCanClose())
-            {
-                return false;
-            }
-
-            CloseInternal();
-            return true;
-        }
-
-        #endregion Internal Methods
-
-        #region Overrides
-
-        /// <inheritdoc />
-        public override void WriteXml(System.Xml.XmlWriter writer)
-        {
-            base.WriteXml(writer);
-            if (!string.IsNullOrWhiteSpace(Description))
-            {
-                writer.WriteAttributeString(nameof(Description), Description);
-            }
-
-            if (!CanMove)
-            {
-                writer.WriteAttributeString(nameof(CanMove), CanMove.ToString());
-            }
-        }
-
-        /// <inheritdoc />
-        public override void ReadXml(System.Xml.XmlReader reader)
-        {
-            if (reader.MoveToAttribute(nameof(Description)))
-            {
-                Description = reader.Value;
-            }
-
-            if (reader.MoveToAttribute(nameof(CanMove)))
-            {
-                CanMove = bool.Parse(reader.Value);
-            }
-
-            base.ReadXml(reader);
+            get => _isVisible;
+            internal set => _isVisible = value;
         }
 
         /// <inheritdoc />
@@ -144,6 +88,48 @@ namespace AvalonDock.Layout
             System.Diagnostics.Trace.TraceInformation("{0}Document()", new string(' ', tab * 4));
         }
 #endif
+
+        /// <inheritdoc />
+        public override void ReadXml(System.Xml.XmlReader reader)
+        {
+            if (reader.MoveToAttribute(nameof(Description)))
+            {
+                Description = reader.Value;
+            }
+
+            if (reader.MoveToAttribute(nameof(CanMove)))
+            {
+                CanMove = bool.Parse(reader.Value);
+            }
+
+            base.ReadXml(reader);
+        }
+
+        /// <inheritdoc />
+        public override void WriteXml(System.Xml.XmlWriter writer)
+        {
+            base.WriteXml(writer);
+            if (!string.IsNullOrWhiteSpace(Description))
+            {
+                writer.WriteAttributeString(nameof(Description), Description);
+            }
+
+            if (!CanMove)
+            {
+                writer.WriteAttributeString(nameof(CanMove), CanMove.ToString());
+            }
+        }
+
+        internal bool CloseDocument()
+        {
+            if (!TestCanClose())
+            {
+                return false;
+            }
+
+            CloseInternal();
+            return true;
+        }
 
         protected override void InternalDock()
         {
@@ -177,7 +163,5 @@ namespace AvalonDock.Layout
             root?.Manager.LayoutUpdateStrategy?.AfterInsertDocument(root, this);
             base.InternalDock();
         }
-
-        #endregion Overrides
     }
 }

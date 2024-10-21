@@ -19,8 +19,6 @@ namespace AvalonDock.Layout
     [Serializable]
     public abstract class LayoutGroupBase : LayoutElement
     {
-        #region Events
-
         /// <summary>Raise an event to inform supscribers that the children collection down the tree of this object has changed.</summary>
         [field: NonSerialized]
         [field: XmlIgnore]
@@ -34,10 +32,6 @@ namespace AvalonDock.Layout
         [field: XmlIgnore]
         public event EventHandler<ChildrenTreeChangedEventArgs> ChildrenTreeChanged;
 
-        #endregion Events
-
-        #region Internal Methods
-
         /// <summary>
         /// Raises an event to make parents update their children up the tree.
         /// Otherwise, they will not be redrawn.
@@ -48,6 +42,15 @@ namespace AvalonDock.Layout
             if (Parent is LayoutGroupBase parentGroup)
             {
                 parentGroup.RaiseChildrenTreeChanged();
+            }
+        }
+
+        protected void NotifyChildrenTreeChanged(ChildrenTreeChange change)
+        {
+            OnChildrenTreeChanged(change);
+            if (Parent is LayoutGroupBase layoutGroupBase)
+            {
+                layoutGroupBase.NotifyChildrenTreeChanged(ChildrenTreeChange.TreeChanged);
             }
         }
 
@@ -69,16 +72,5 @@ namespace AvalonDock.Layout
                 ChildrenTreeChanged(this, new ChildrenTreeChangedEventArgs(change));
             }
         }
-
-        protected void NotifyChildrenTreeChanged(ChildrenTreeChange change)
-        {
-            OnChildrenTreeChanged(change);
-            if (Parent is LayoutGroupBase layoutGroupBase)
-            {
-                layoutGroupBase.NotifyChildrenTreeChanged(ChildrenTreeChange.TreeChanged);
-            }
-        }
-
-        #endregion Internal Methods
     }
 }

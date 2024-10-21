@@ -22,13 +22,7 @@ namespace AvalonDock.Controls
     /// </summary>
     public class LayoutAnchorablePaneGroupControl : LayoutGridControl<ILayoutAnchorablePane>
     {
-        #region fields
-
         private LayoutAnchorablePaneGroup _model;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>
         /// Class constructor from layout model.
@@ -39,10 +33,6 @@ namespace AvalonDock.Controls
         {
             _model = model;
         }
-
-        #endregion Constructors
-
-        #region Overrides
 
         protected override void OnFixChildrenDockLengths()
         {
@@ -71,7 +61,5 @@ namespace AvalonDock.Controls
                 }
             }
         }
-
-        #endregion Overrides
     }
 }

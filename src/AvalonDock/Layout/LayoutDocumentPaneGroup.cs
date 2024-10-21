@@ -8,6 +8,7 @@
  ************************************************************************/
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -22,13 +23,7 @@ namespace AvalonDock.Layout
     [Serializable]
     public class LayoutDocumentPaneGroup : LayoutPositionableGroup<ILayoutDocumentPane>, ILayoutDocumentPane, ILayoutOrientableGroup
     {
-        #region fields
-
         private Orientation _orientation;
-
-        #endregion fields
-
-        #region Constructors
 
         /// <summary>Class constructor</summary>
         public LayoutDocumentPaneGroup()
@@ -40,10 +35,6 @@ namespace AvalonDock.Layout
         {
             Children.Add(documentPane);
         }
-
-        #endregion Constructors
-
-        #region Properties
 
         /// <summary>Gets/sets the (Horizontal, Vertical) <see cref="System.Windows.Controls.Orientation"/> of this group.</summary>
         public Orientation Orientation
@@ -62,31 +53,6 @@ namespace AvalonDock.Layout
             }
         }
 
-        #endregion Properties
-
-        #region Overrides
-
-        /// <inheritdoc />
-        protected override bool GetVisibility() => true;
-
-        /// <inheritdoc />
-        public override void WriteXml(System.Xml.XmlWriter writer)
-        {
-            writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
-            base.WriteXml(writer);
-        }
-
-        /// <inheritdoc />
-        public override void ReadXml(System.Xml.XmlReader reader)
-        {
-            if (reader.MoveToAttribute(nameof(Orientation)))
-            {
-                Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
-            }
-
-            base.ReadXml(reader);
-        }
-
 #if TRACE
         /// <inheritdoc />
         public override void ConsoleDump(int tab)
@@ -100,6 +66,25 @@ namespace AvalonDock.Layout
         }
 #endif
 
-        #endregion Overrides
+        /// <inheritdoc />
+        public override void ReadXml(System.Xml.XmlReader reader)
+        {
+            if (reader.MoveToAttribute(nameof(Orientation)))
+            {
+                Orientation = (Orientation)Enum.Parse(typeof(Orientation), reader.Value, true);
+            }
+
+            base.ReadXml(reader);
+        }
+
+        /// <inheritdoc />
+        public override void WriteXml(System.Xml.XmlWriter writer)
+        {
+            writer.WriteAttributeString(nameof(Orientation), Orientation.ToString());
+            base.WriteXml(writer);
+        }
+
+        /// <inheritdoc />
+        protected override bool GetVisibility() => true;
     }
 }
