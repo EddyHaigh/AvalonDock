@@ -8,6 +8,7 @@
  ************************************************************************/
 
 using System;
+using System.Runtime.InteropServices;
 
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -15,24 +16,42 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace AvalonDock.Controls
 {
+    /// <summary>
+    /// The event arguments for the FocusChanged event.
+    /// </summary>
     internal class FocusChangeEventArgs : EventArgs
     {
+        /// <summary>
+        /// Creates a new instance of the <see cref="FocusChangeEventArgs"/> class.
+        /// </summary>
+        /// <param name="gotFocusWinHandle">The handle for the window that is gaining focus.</param>
+        /// <param name="lostFocusWinHandle">The handle for the window that is losing focus.</param>
         public FocusChangeEventArgs(IntPtr gotFocusWinHandle, IntPtr lostFocusWinHandle)
         {
             GotFocusWinHandle = gotFocusWinHandle;
             LostFocusWinHandle = lostFocusWinHandle;
         }
 
+        /// <summary>
+        /// Gets the handle for the window that is gaining focus.
+        /// </summary>
         public IntPtr GotFocusWinHandle { get; private set; }
 
+        /// <summary>
+        /// Gets the handle for the window that is losing focus.
+        /// </summary>
         public IntPtr LostFocusWinHandle { get; private set; }
     }
 
-    internal class WindowHookHandler
+    /// <summary>
+    /// The window hook handler.
+    /// </summary>
+    internal class WindowHookHandler : IDisposable
     {
-        private Win32Helper.HookProc _hookProc;
+        private HOOKPROC _hookProc;
         private ReentrantFlag _insideActivateEvent = new ReentrantFlag();
-        private IntPtr _windowHook;
+        private HHOOK _windowHook;
+        private bool _disposed;
 
         public WindowHookHandler()
         {
@@ -40,45 +59,58 @@ namespace AvalonDock.Controls
 
         public event EventHandler<FocusChangeEventArgs> FocusChanged;
 
-        //public event EventHandler<WindowActivateEventArgs> Activate;
-
         public void Attach()
         {
-            _hookProc = new Win32Helper.HookProc(this.HookProc);
-            _windowHook = Win32Helper.SetWindowsHookEx(
-                Win32Helper.HookType.WH_CBT,
+            _hookProc = new HOOKPROC(this.HookProc);
+            _windowHook = PInvoke.SetWindowsHookEx(
+                WINDOWS_HOOK_ID.WH_CBT,
                 _hookProc,
-                IntPtr.Zero,
-                (int)PInvoke.GetCurrentThreadId());
+                new HINSTANCE(IntPtr.Zero),
+                PInvoke.GetCurrentThreadId());
         }
 
         public void Detach()
         {
-            Win32Helper.UnhookWindowsHookEx(_windowHook);
+            PInvoke.UnhookWindowsHookEx(_windowHook);
         }
 
-        public int HookProc(int code, IntPtr wParam, IntPtr lParam)
+        public LRESULT HookProc(int code, WPARAM wParam, LPARAM lParam)
         {
             if (code == Win32Helper.HCBT_SETFOCUS)
             {
-                if (FocusChanged != null)
-                {
-                    FocusChanged(this, new FocusChangeEventArgs(wParam, lParam));
-                }
+                FocusChanged?.Invoke(this, new FocusChangeEventArgs(new IntPtr((int)wParam.Value), lParam.Value));
             }
-            else if (code == Win32Helper.HCBT_ACTIVATE)
+            else if (code == Win32Helper.HCBT_ACTIVATE
+                && _insideActivateEvent.CanEnter)
             {
-                if (_insideActivateEvent.CanEnter)
+                using (_insideActivateEvent.Enter())
                 {
-                    using (_insideActivateEvent.Enter())
-                    {
-                        //if (Activate != null)
-                        //    Activate(this, new WindowActivateEventArgs(wParam));
-                    }
+                    //if (Activate != null)
+                    //    Activate(this, new WindowActivateEventArgs(wParam));
                 }
             }
 
-            return Win32Helper.CallNextHookEx(_windowHook, code, wParam, lParam);
+            return PInvoke.CallNextHookEx(_windowHook, code, wParam, lParam);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    Detach();
+                    _hookProc = null;
+                }
+
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

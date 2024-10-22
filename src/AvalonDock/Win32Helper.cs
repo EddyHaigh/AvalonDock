@@ -12,128 +12,21 @@ using System.Runtime.InteropServices;
 using System.Windows;
 
 using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace AvalonDock
 {
     internal static class Win32Helper
     {
-        internal const int
-                  WS_CHILD = 0x40000000,
-                  WS_VISIBLE = 0x10000000,
-                  WS_VSCROLL = 0x00200000,
-                  WS_BORDER = 0x00800000,
-                  WS_CLIPSIBLINGS = 0x04000000,
-                  WS_CLIPCHILDREN = 0x02000000,
-                  WS_TABSTOP = 0x00010000,
-                  WS_GROUP = 0x00020000;
-
-        /// <summary>SetWindowPos Flags.</summary>
-        /// <seealso href="https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos"/>
-        [Flags]
-        internal enum SetWindowPosFlags : uint
-        {
-            /// <summary>If the calling thread and the thread that owns the window are attached to different input queues,
-            /// the system posts the request to the thread that owns the window. This prevents the calling thread from
-            /// blocking its execution while other threads process the request.</summary>
-            /// <remarks>SWP_ASYNCWINDOWPOS</remarks>
-            SynchronousWindowPosition = 0x4000,
-
-            /// <summary>Prevents generation of the WM_SYNCPAINT message.</summary>
-            /// <remarks>SWP_DEFERERASE</remarks>
-            DeferErase = 0x2000,
-
-            /// <summary>Draws a frame (defined in the window's class description) around the window.</summary>
-            /// <remarks>SWP_DRAWFRAME</remarks>
-            DrawFrame = 0x0020,
-
-            /// <summary>Applies new frame styles set using the SetWindowLong function. Sends a WM_NCCALCSIZE message to
-            /// the window, even if the window's size is not being changed. If this flag is not specified, WM_NCCALCSIZE
-            /// is sent only when the window's size is being changed.</summary>
-            /// <remarks>SWP_FRAMECHANGED</remarks>
-            FrameChanged = 0x0020,
-
-            /// <summary>Hides the window.</summary>
-            /// <remarks>SWP_HIDEWINDOW</remarks>
-            HideWindow = 0x0080,
-
-            /// <summary>Does not activate the window. If this flag is not set, the window is activated and moved to the
-            /// top of either the topmost or non-topmost group (depending on the setting of the hWndInsertAfter
-            /// parameter).</summary>
-            /// <remarks>SWP_NOACTIVATE</remarks>
-            DoNotActivate = 0x0010,
-
-            /// <summary>Discards the entire contents of the client area. If this flag is not specified, the valid
-            /// contents of the client area are saved and copied back into the client area after the window is sized or
-            /// repositioned.</summary>
-            /// <remarks>SWP_NOCOPYBITS</remarks>
-            DoNotCopyBits = 0x0100,
-
-            /// <summary>Retains the current position (ignores X and Y parameters).</summary>
-            /// <remarks>SWP_NOMOVE</remarks>
-            IgnoreMove = 0x0002,
-
-            /// <summary>Does not change the owner window's position in the Z order.</summary>
-            /// <remarks>SWP_NOOWNERZORDER</remarks>
-            DoNotChangeOwnerZOrder = 0x0200,
-
-            /// <summary>Does not redraw changes. If this flag is set, no repainting of any kind occurs. This applies to
-            /// the client area, the nonclient area (including the title bar and scroll bars), and any part of the parent
-            /// window uncovered as a result of the window being moved. When this flag is set, the application must
-            /// explicitly invalidate or redraw any parts of the window and parent window that need redrawing.</summary>
-            /// <remarks>SWP_NOREDRAW</remarks>
-            DoNotRedraw = 0x0008,
-
-            /// <summary>Same as the SWP_NOOWNERZORDER flag.</summary>
-            /// <remarks>SWP_NOREPOSITION</remarks>
-            DoNotReposition = 0x0200,
-
-            /// <summary>Prevents the window from receiving the WM_WINDOWPOSCHANGING message.</summary>
-            /// <remarks>SWP_NOSENDCHANGING</remarks>
-            DoNotSendChangingEvent = 0x0400,
-
-            /// <summary>Retains the current size (ignores the cx and cy parameters).</summary>
-            /// <remarks>SWP_NOSIZE</remarks>
-            IgnoreResize = 0x0001,
-
-            /// <summary>Retains the current Z order (ignores the hWndInsertAfter parameter).</summary>
-            /// <remarks>SWP_NOZORDER</remarks>
-            IgnoreZOrder = 0x0004,
-
-            /// <summary>Displays the window.</summary>
-            /// <remarks>SWP_SHOWWINDOW</remarks>
-            ShowWindow = 0x0040,
-        }
-
-        /// <summary>
-        ///     Special window handles
-        /// </summary>
-        internal static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-
-        internal static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
-        internal static readonly IntPtr HWND_TOP = new IntPtr(0);
-        internal static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal class WINDOWPOS
-        {
-            public IntPtr Hwnd;
-            public IntPtr HwndInsertAfter;
-            public int X;
-            public int Y;
-            public int Cx;
-            public int Cy;
-            public int Flags;
-        };
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-        internal static extern bool IsChild(IntPtr hWndParent, IntPtr hwnd);
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SetFocus(IntPtr hWnd);
+        internal const int WS_CHILD = 0x40000000;
+        internal const int WS_VISIBLE = 0x10000000;
+        internal const int WS_VSCROLL = 0x00200000;
+        internal const int WS_BORDER = 0x00800000;
+        internal const int WS_CLIPSIBLINGS = 0x04000000;
+        internal const int WS_CLIPCHILDREN = 0x02000000;
+        internal const int WS_TABSTOP = 0x00010000;
+        internal const int WS_GROUP = 0x00020000;
 
         internal const int WM_WINDOWPOSCHANGED = 0x0047;
         internal const int WM_WINDOWPOSCHANGING = 0x0046;
@@ -166,172 +59,23 @@ namespace AvalonDock
 
         internal const int SC_RESTORE = 0xF120;
 
-        internal const int
-            WM_CREATE = 0x0001;
-
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr SetActiveWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
-        internal static extern bool DestroyWindow(IntPtr hwnd);
+        internal const int WM_CREATE = 0x0001;
 
         internal const int HT_CAPTION = 0x2;
 
-        [DllImportAttribute("user32.dll")]
-        internal static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImportAttribute("user32.dll")]
-        internal static extern int PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
-
-        [DllImport("user32.dll")]
-        internal static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        // Hook Types
-        public enum HookType : int
-        {
-            WH_JOURNALRECORD = 0,
-            WH_JOURNALPLAYBACK = 1,
-            WH_KEYBOARD = 2,
-            WH_GETMESSAGE = 3,
-            WH_CALLWNDPROC = 4,
-            WH_CBT = 5,
-            WH_SYSMSGFILTER = 6,
-            WH_MOUSE = 7,
-            WH_HARDWARE = 8,
-            WH_DEBUG = 9,
-            WH_SHELL = 10,
-            WH_FOREGROUNDIDLE = 11,
-            WH_CALLWNDPROCRET = 12,
-            WH_KEYBOARD_LL = 13,
-            WH_MOUSE_LL = 14
-        }
-
+        /// <summary>
+        /// The system is about to activate a window <seealso href="https://learn.microsoft.com/en-us/windows/win32/winmsg/cbtproc"/>.
+        /// </summary>
         public const int HCBT_SETFOCUS = 9;
+
+        /// <summary>
+        /// A window is about to receive the keyboard focus <seealso href="https://learn.microsoft.com/en-us/windows/win32/winmsg/cbtproc"/>.
+        /// </summary>
         public const int HCBT_ACTIVATE = 5;
-
-        public delegate int HookProc(int code, IntPtr wParam,
-            IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(HookType code,
-            HookProc func,
-            IntPtr hInstance,
-            int threadID);
-
-        [DllImport("user32.dll")]
-        public static extern int UnhookWindowsHookEx(IntPtr hhook);
-
-        [DllImport("user32.dll")]
-        public static extern int CallNextHookEx(IntPtr hhook,
-            int code, IntPtr wParam, IntPtr lParam);
-
-        [Serializable, StructLayout(LayoutKind.Sequential)]
-        internal struct RECT
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-
-            public RECT(int left_, int top_, int right_, int bottom_)
-            {
-                Left = left_;
-                Top = top_;
-                Right = right_;
-                Bottom = bottom_;
-            }
-
-            public int Height
-            {
-                get
-                {
-                    return Bottom - Top;
-                }
-            }
-
-            public int Width
-            {
-                get
-                {
-                    return Right - Left;
-                }
-            }
-
-            public Size Size
-            {
-                get
-                {
-                    return new Size(Width, Height);
-                }
-            }
-
-            public Point Location
-            {
-                get
-                {
-                    return new Point(Left, Top);
-                }
-            }
-
-            // Handy method for converting to a System.Drawing.Rectangle
-            public Rect ToRectangle()
-            {
-                return new Rect(Left, Top, Right, Bottom);
-            }
-
-            public static RECT FromRectangle(Rect rectangle)
-            {
-                return new Rect(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
-            }
-
-            public override int GetHashCode()
-            {
-                return Left ^ ((Top << 13) | (Top >> 0x13)) ^ ((Width << 0x1a) | (Width >> 6)) ^ ((Height << 7) | (Height >> 0x19));
-            }
-
-            public static implicit operator Rect(RECT rect)
-            {
-                return rect.ToRectangle();
-            }
-
-            public static implicit operator RECT(Rect rect)
-            {
-                return FromRectangle(rect);
-            }
-        }
-
-        internal static RECT GetClientRect(IntPtr hWnd)
-        {
-            GetClientRect(hWnd, out RECT result);
-            return result;
-        }
-
-        internal static RECT GetWindowRect(IntPtr hWnd)
-        {
-            GetWindowRect(hWnd, out RECT result);
-            return result;
-        }
-
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
-
-        internal enum GetWindow_Cmd : uint
-        {
-            GW_HWNDFIRST = 0,
-            GW_HWNDLAST = 1,
-            GW_HWNDNEXT = 2,
-            GW_HWNDPREV = 3,
-            GW_OWNER = 4,
-            GW_CHILD = 5,
-            GW_ENABLEDPOPUP = 6
-        }
 
         public static bool GetWindowZOrder(IntPtr hwnd, out int zOrder)
         {
-            var lowestHwnd = GetWindow(hwnd, (uint)GetWindow_Cmd.GW_HWNDLAST);
+            var lowestHwnd = PInvoke.GetWindow(new HWND(hwnd), GET_WINDOW_CMD.GW_HWNDLAST);
 
             var z = 0;
             var hwndTmp = lowestHwnd;
@@ -343,17 +87,12 @@ namespace AvalonDock
                     return true;
                 }
 
-                hwndTmp = GetWindow(hwndTmp, (uint)GetWindow_Cmd.GW_HWNDPREV);
+                hwndTmp = PInvoke.GetWindow(hwndTmp, GET_WINDOW_CMD.GW_HWNDPREV);
                 z++;
             }
 
             zOrder = int.MinValue;
             return false;
-        }
-
-        internal static int MakeLParam(int LoWord, int HiWord)
-        {
-            return (int)((HiWord << 16) | (LoWord & 0xffff));
         }
 
         internal const int WM_MOUSEMOVE = 0x200;
@@ -375,22 +114,16 @@ namespace AvalonDock
             return new Point(point.X, point.Y);
         }
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool BringWindowToTop(IntPtr hWnd);
-
-        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
-        internal static extern IntPtr GetParent(IntPtr hWnd);
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
-        private static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
-        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+        // CS Win32 cannot source gen the 64 and 32 bit versions of the GetWindowLongPtr and SetWindowLongPtr functions
 
         internal static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
         {
             return IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : new IntPtr(GetWindowLong32(hWnd, nIndex));
+        }
+
+        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            return IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
         }
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
@@ -399,10 +132,11 @@ namespace AvalonDock
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
-        {
-            return IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
-        }
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+        private static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
+        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
         public static void SetOwner(IntPtr childHandle, IntPtr ownerHandle)
         {

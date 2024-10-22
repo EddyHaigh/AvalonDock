@@ -12,3 +12,14 @@ SetFocus
 GetCursorPos
 GetCurrentThreadId
 SetWindowsHookExW
+GetParent
+BringWindowToTop
+SetWindowPos
+IsChild
+SetFocus
+GetWindow
+SendMessage
+SetWindowsHookExW
+UnhookWindowsHookEx
+CallNextHookEx
+SendMessage

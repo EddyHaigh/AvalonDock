@@ -12,6 +12,9 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 
+using Windows.Win32;
+using Windows.Win32.Foundation;
+
 namespace AvalonDock
 {
     internal static class WindowHelper
@@ -58,7 +61,7 @@ namespace AvalonDock
                 return false;
             }
 
-            hwnd = Win32Helper.GetParent(wpfHandle.Handle);
+            hwnd = PInvoke.GetParent(new HWND(wpfHandle.Handle));
             if (hwnd == IntPtr.Zero)
             {
                 hwnd = wpfHandle.Handle;
