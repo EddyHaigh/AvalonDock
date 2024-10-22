@@ -26,6 +26,10 @@ using AvalonDock.Controls;
 using AvalonDock.Layout;
 using AvalonDock.Themes;
 
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+
 namespace AvalonDock
 {
     /// <inheritdoc cref="Control"/>
@@ -2049,7 +2053,7 @@ namespace AvalonDock
         {
             var parentWindow = Window.GetWindow(this);
             var windowParentHandle = parentWindow != null ? new WindowInteropHelper(parentWindow).Handle : Process.GetCurrentProcess().MainWindowHandle;
-            var currentHandle = Win32Helper.GetWindow(windowParentHandle, (uint)Win32Helper.GetWindow_Cmd.GW_HWNDFIRST);
+            var currentHandle = PInvoke.GetWindow(new HWND(windowParentHandle), GET_WINDOW_CMD.GW_HWNDFIRST);
             while (currentHandle != IntPtr.Zero)
             {
                 var ctrl = _fwList.Find(fw => new WindowInteropHelper(fw).Handle == currentHandle);
@@ -2058,7 +2062,7 @@ namespace AvalonDock
                     yield return ctrl;
                 }
 
-                currentHandle = Win32Helper.GetWindow(currentHandle, (uint)Win32Helper.GetWindow_Cmd.GW_HWNDNEXT);
+                currentHandle = PInvoke.GetWindow(currentHandle, GET_WINDOW_CMD.GW_HWNDNEXT);
             }
         }
 
@@ -2072,7 +2076,7 @@ namespace AvalonDock
             var parentWindow = Window.GetWindow(this);
             var windowParentHandle = parentWindow != null ? new WindowInteropHelper(parentWindow).Handle : Process.GetCurrentProcess().MainWindowHandle;
             var b = Win32Helper.GetWindowZOrder(windowParentHandle, out var mainWindow_z);
-            var currentHandle = Win32Helper.GetWindow(windowParentHandle, (uint)Win32Helper.GetWindow_Cmd.GW_HWNDFIRST);
+            var currentHandle = PInvoke.GetWindow(new HWND(windowParentHandle), GET_WINDOW_CMD.GW_HWNDFIRST);
             while (currentHandle != IntPtr.Zero)
             {
                 for (int i = 0; i < _fwList.Count; i++)
@@ -2097,7 +2101,7 @@ namespace AvalonDock
                     }
                 }
 
-                currentHandle = Win32Helper.GetWindow(currentHandle, (uint)Win32Helper.GetWindow_Cmd.GW_HWNDNEXT);
+                currentHandle = PInvoke.GetWindow(currentHandle, GET_WINDOW_CMD.GW_HWNDNEXT);
             }
 
             overlayWindowHosts.AddRange(topFloatingWindows);

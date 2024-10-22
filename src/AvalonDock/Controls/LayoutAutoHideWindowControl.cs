@@ -23,6 +23,7 @@ using System.Windows.Media;
 using AvalonDock.Layout;
 
 using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace AvalonDock.Controls
 {
@@ -192,7 +193,7 @@ namespace AvalonDock.Controls
             Visibility = Visibility.Visible;
             InvalidateMeasure();
             UpdateWindowPos();
-            Win32Helper.BringWindowToTop(_internalHwndSource.Handle);
+            PInvoke.BringWindowToTop(new HWND(_internalHwndSource.Handle));
         }
 
         /// <inheritdoc />
@@ -221,7 +222,7 @@ namespace AvalonDock.Controls
             { RootVisual = _internalHostPresenter };
             AutomationProperties.SetName(_internalHostPresenter, "InternalWindowHost");
             AddLogicalChild(_internalHostPresenter);
-            Win32Helper.BringWindowToTop(_internalHwndSource.Handle);
+            PInvoke.BringWindowToTop(new HWND(_internalHwndSource.Handle));
             return new HandleRef(this, _internalHwndSource.Handle);
         }
 

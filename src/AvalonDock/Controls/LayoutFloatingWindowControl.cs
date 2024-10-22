@@ -10,6 +10,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Automation;
@@ -22,6 +23,9 @@ using System.Windows.Media;
 
 using AvalonDock.Layout;
 using AvalonDock.Themes;
+
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace AvalonDock.Controls
 {
@@ -261,7 +265,7 @@ namespace AvalonDock.Controls
                 CaptureMouse();
                 var windowHandle = new WindowInteropHelper(this).Handle;
                 var lParam = new IntPtr(((int)Left & 0xFFFF) | ((int)Top << 16));
-                Win32Helper.SendMessage(windowHandle, Win32Helper.WM_NCLBUTTONDOWN, new IntPtr(Win32Helper.HT_CAPTION), lParam);
+                PInvoke.SendMessage(new HWND(windowHandle), Win32Helper.WM_NCLBUTTONDOWN, new WPARAM(Win32Helper.HT_CAPTION), lParam);
             }
         }
 
@@ -549,7 +553,7 @@ namespace AvalonDock.Controls
             _attachDrag = false;
             Show();
             var lParam = new IntPtr(((int)mousePosition.X & 0xFFFF) | ((int)mousePosition.Y << 16));
-            Win32Helper.SendMessage(windowHandle, Win32Helper.WM_NCLBUTTONDOWN, new IntPtr(Win32Helper.HT_CAPTION), lParam);
+            PInvoke.SendMessage(new HWND(windowHandle), Win32Helper.WM_NCLBUTTONDOWN, new WPARAM(Win32Helper.HT_CAPTION), lParam);
         }
 
         private void OnClosing(object sender, CancelEventArgs e)

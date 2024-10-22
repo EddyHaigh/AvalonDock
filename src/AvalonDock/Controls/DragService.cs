@@ -15,6 +15,10 @@ using System.Windows.Interop;
 
 using AvalonDock.Layout;
 
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+
 namespace AvalonDock.Controls
 {
     /// <summary>
@@ -283,6 +287,7 @@ namespace AvalonDock.Controls
                 });
             }
         }
+
         private void BringWindowToTop2(Window window)
         {
             if (window == null)
@@ -290,8 +295,14 @@ namespace AvalonDock.Controls
                 return;
             }
 
-            Win32Helper.SetWindowPos(new WindowInteropHelper(window).Handle,
-                IntPtr.Zero, 0, 0, 0, 0, Win32Helper.SetWindowPosFlags.IgnoreResize | Win32Helper.SetWindowPosFlags.IgnoreMove | Win32Helper.SetWindowPosFlags.DoNotActivate);
+            PInvoke.SetWindowPos(
+                new HWND(new WindowInteropHelper(window).Handle),
+                new HWND(IntPtr.Zero),
+                0,
+                0,
+                0,
+                0,
+                SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
         }
 
         /// <summary>

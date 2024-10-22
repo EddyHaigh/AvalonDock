@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -19,6 +20,9 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 using AvalonDock.Layout;
+
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace AvalonDock.Controls
 {
@@ -98,7 +102,7 @@ namespace AvalonDock.Controls
             IntPtr handleToFocus;
             if (_modelFocusedWindowHandle.GetValue(model, out handleToFocus))
             {
-                focused = IntPtr.Zero != Win32Helper.SetFocus(handleToFocus);
+                focused = IntPtr.Zero != PInvoke.SetFocus(new HWND(handleToFocus));
             }
 
             if (focused)
@@ -262,7 +266,9 @@ namespace AvalonDock.Controls
         {
             foreach (var manager in _managers)
             {
-                var hostContainingFocusedHandle = manager.FindLogicalChildren<HwndHost>().FirstOrDefault(hw => Win32Helper.IsChild(hw.Handle, e.GotFocusWinHandle));
+                var hostContainingFocusedHandle = manager
+                    .FindLogicalChildren<HwndHost>()
+                    .FirstOrDefault(hw => PInvoke.IsChild(new HWND(hw.Handle), new HWND(e.GotFocusWinHandle)));
 
                 if (hostContainingFocusedHandle != null)
                 {
