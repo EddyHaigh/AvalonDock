@@ -1025,21 +1025,25 @@ namespace AvalonDock.Controls
                      parentDocumentPane.ChildrenCount > 1;
         }
 
-        private void ExecuteActivateCommand(object parameter) => LayoutElement.Root.Manager.ExecuteContentActivateCommand(LayoutElement);
+        private void ExecuteActivateCommand(object parameter)
+            => DockingManager.ExecuteContentActivateCommand(LayoutElement);
 
         private void ExecuteCloseAllButThisCommand(object parameter)
             => LayoutElement.Root.Manager.ExecuteCloseAllButThisCommand(LayoutElement);
 
-        private void ExecuteCloseAllCommand(object parameter) => LayoutElement.Root.Manager.ExecuteCloseAllCommand(LayoutElement);
+        private void ExecuteCloseAllCommand(object parameter)
+            => LayoutElement.Root.Manager.ExecuteCloseAllCommand(LayoutElement);
 
-        private void ExecuteCloseCommand(object parameter) => Close();
+        private void ExecuteCloseCommand(object parameter)
+            => Close();
 
         private void ExecuteDockAsDocumentCommand(object parameter)
-                    => LayoutElement.Root.Manager.ExecuteDockAsDocumentCommand(LayoutElement);
+            => DockingManager.ExecuteDockAsDocumentCommand(LayoutElement);
 
         /// <summary>Executes to float the content of this LayoutItem in a separate <see cref="LayoutFloatingWindowControl"/>.</summary>
         /// <param name="parameter"></param>
-        private void ExecuteFloatCommand(object parameter) => LayoutElement.Root.Manager.ExecuteFloatCommand(LayoutElement);
+        private void ExecuteFloatCommand(object parameter)
+            => DockingManager.ExecuteFloatCommand(LayoutElement);
         private void ExecuteMoveToNextTabGroupCommand(object parameter)
         {
             var layoutElement = LayoutElement;
