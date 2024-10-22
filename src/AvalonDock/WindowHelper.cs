@@ -56,7 +56,7 @@ namespace AvalonDock
         {
             hwnd = IntPtr.Zero;
 
-            if (!(PresentationSource.FromVisual(element) is HwndSource wpfHandle))
+            if (PresentationSource.FromVisual(element) is not HwndSource wpfHandle)
             {
                 return false;
             }

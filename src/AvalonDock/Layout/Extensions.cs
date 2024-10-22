@@ -18,7 +18,7 @@ namespace AvalonDock.Layout
     {
         public static IEnumerable<ILayoutElement> Descendents(this ILayoutElement element)
         {
-            if (!(element is ILayoutContainer container))
+            if (element is not ILayoutContainer container)
             {
                 yield break;
             }
@@ -36,7 +36,7 @@ namespace AvalonDock.Layout
         public static T FindParent<T>(this ILayoutElement element) //where T : ILayoutContainer
         {
             var parent = element.Parent;
-            while (parent != null && !(parent is T))
+            while (parent != null && parent is not T)
             {
                 parent = parent.Parent;
             }
@@ -52,7 +52,7 @@ namespace AvalonDock.Layout
             }
 
             var parent = element.Parent;
-            while (parent != null && !(parent is ILayoutRoot))
+            while (parent != null && parent is not ILayoutRoot)
             {
                 parent = parent.Parent;
             }
