@@ -1737,7 +1737,7 @@ namespace AvalonDock
         /// </summary>
         /// <param name="draggingWindow"></param>
         /// <returns></returns>
-        private IEnumerable<LayoutAnchorable> GetAnchorableInFloatingWindow(LayoutFloatingWindowControl draggingWindow)
+        private static IEnumerable<LayoutAnchorable> GetAnchorableInFloatingWindow(LayoutFloatingWindowControl draggingWindow)
         {
             if (draggingWindow.Model is not LayoutAnchorableFloatingWindow layoutAnchorableFloatingWindow)
             {
@@ -1767,7 +1767,7 @@ namespace AvalonDock
         /// <returns>All the anchorable items found.</returns>
         /// <seealso cref="LayoutAnchorable"/>
         /// <seealso cref="LayoutAnchorablePaneGroup"/>
-        internal IEnumerable<LayoutAnchorable> GetLayoutAnchorable(LayoutAnchorablePaneGroup layoutAnchPaneGroup)
+        internal static IEnumerable<LayoutAnchorable> GetLayoutAnchorable(LayoutAnchorablePaneGroup layoutAnchPaneGroup)
         {
             if (layoutAnchPaneGroup == null)
             {
@@ -2245,7 +2245,7 @@ namespace AvalonDock
             }
         }
 
-        internal void ExecuteAutoHideCommand(LayoutAnchorable _anchorable) => _anchorable.ToggleAutoHide();
+        internal static void ExecuteAutoHideCommand(LayoutAnchorable _anchorable) => _anchorable.ToggleAutoHide();
 
         /// <summary>
         /// Method executes when the user clicks the Float button in the context menu of an <see cref="LayoutAnchorable"/>.
@@ -2254,13 +2254,13 @@ namespace AvalonDock
         /// draggable <see cref="LayoutFloatingWindowControl"/>.
         /// </summary>
         /// <param name="contentToFloat"></param>
-        internal void ExecuteFloatCommand(LayoutContent contentToFloat) => contentToFloat.Float();
+        internal static void ExecuteFloatCommand(LayoutContent contentToFloat) => contentToFloat.Float();
 
-        internal void ExecuteDockCommand(LayoutAnchorable anchorable) => anchorable.Dock();
+        internal static void ExecuteDockCommand(LayoutAnchorable anchorable) => anchorable.Dock();
 
-        internal void ExecuteDockAsDocumentCommand(LayoutContent content) => content.DockAsDocument();
+        internal static void ExecuteDockAsDocumentCommand(LayoutContent content) => content.DockAsDocument();
 
-        internal void ExecuteContentActivateCommand(LayoutContent content) => content.IsActive = true;
+        internal static void ExecuteContentActivateCommand(LayoutContent content) => content.IsActive = true;
 
         public override void OnApplyTemplate()
         {
