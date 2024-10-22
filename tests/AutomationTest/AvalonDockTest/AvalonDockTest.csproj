@@ -5,7 +5,6 @@
     <ProjectGuid>{FE4E16A2-876A-4356-9974-8A89C50B2A5A}</ProjectGuid>
     <RootNamespace>AvalonDockTest</RootNamespace>
     <AssemblyName>AvalonDockTest</AssemblyName>
-    <FileVersion>1.0.0.0</FileVersion>
     <UseWPF>true</UseWPF>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
