@@ -17,7 +17,10 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <!-- Make sure the CAS Attributes dont throw warnings since we still target net framework -->
+    <NoWarn>$(NoWarn);SYSLIB0004;SYSLIB0003;SYSLIB1054</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <Resource Include="**\*.png" />
   </ItemGroup>
