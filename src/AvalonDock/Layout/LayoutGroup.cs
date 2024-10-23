@@ -149,9 +149,9 @@ namespace AvalonDock.Layout
         }
 
         /// <inheritdoc cref="ILayoutGroup" />
-        public void RemoveChildAt(int childIndex)
+        public void RemoveChildAt(int index)
         {
-            _children.RemoveAt(childIndex);
+            _children.RemoveAt(index);
         }
         /// <inheritdoc cref="ILayoutContainer" />
         public void ReplaceChild(ILayoutElement oldElement, ILayoutElement newElement)
