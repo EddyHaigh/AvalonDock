@@ -10,13 +10,11 @@ internal class NativeStructs
     // Native Values
 
     /// <summary>Delegate declaration that matches managed WndProc signatures.</summary>
-    internal delegate IntPtr MessageHandler(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled);
+    internal delegate LRESULT MessageHandler(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled);
+
 
     /// <summary>Delegate declaration that matches native WndProc signatures.</summary>
-    internal delegate IntPtr WndProc(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam);
-
-    /// <summary>Delegate declaration that matches native WndProc signatures.</summary>
-    internal delegate IntPtr WndProcHook(IntPtr hwnd, WM uMsg, IntPtr wParam, IntPtr lParam, ref bool handled);
+    internal delegate LRESULT WndProcHook(HWND hwnd, uint uMsg, WPARAM wParam, LPARAM lParam, ref bool handled);
 
     /// <summary>
     /// GetWindowLongPtr values, GWL_*
@@ -341,27 +339,5 @@ internal class NativeStructs
     {
         public uint uiNumerator;
         public uint uiDenominator;
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct WNDCLASSEX
-    {
-        public int cbSize;
-        public WNDCLASS_STYLES style;
-        public WndProc lpfnWndProc;
-        public int cbClsExtra;
-        public int cbWndExtra;
-        public IntPtr hInstance;
-        public IntPtr hIcon;
-        public IntPtr hCursor;
-        public IntPtr hbrBackground;
-
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string lpszMenuName;
-
-        [MarshalAs(UnmanagedType.LPWStr)]
-        public string lpszClassName;
-
-        public IntPtr hIconSm;
     }
 }

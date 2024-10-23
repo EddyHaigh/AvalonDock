@@ -456,31 +456,31 @@ namespace Microsoft.Windows.Shell
             }
         }
 
-        private IntPtr _WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        private nint _WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
         {
             // Only expecting messages for our cached HWND.
-            Assert.AreEqual(hwnd, _hwnd);
+            Assert.AreEqual<nint>(hwnd, _hwnd);
 
             var message = (WM)msg;
             foreach (var handlePair in _messageTable)
             {
                 if (handlePair.Key == message)
                 {
-                    return handlePair.Value(message, wParam, lParam, out handled);
+                    return handlePair.Value((uint)message, new WPARAM((nuint)wParam), new LPARAM(lParam), out handled);
                 }
             }
 
-            return IntPtr.Zero;
+            return 0;
         }
 
-        private IntPtr _HandleSetTextOrIcon(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleSetTextOrIcon(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             var modified = _ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
 
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
             // style applied bypasses the redraw.
-            var lRet = NativeMethods.DefWindowProc(_hwnd, uMsg, wParam, lParam);
+            var lRet = Win32.PInvoke.DefWindowProc(new HWND(_hwnd), uMsg, wParam, lParam);
 
             // Put back the style we removed.
             if (modified)
@@ -492,19 +492,23 @@ namespace Microsoft.Windows.Shell
             return lRet;
         }
 
-        private IntPtr _HandleNCActivate(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleNCActivate(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // Despite MSDN's documentation of lParam not being used,
             // calling DefWindowProc with lParam set to -1 causes Windows not to draw over the caption.
 
             // Directly call DefWindowProc with a custom parameter
             // which bypasses any other handling of the message.
-            var lRet = NativeMethods.DefWindowProc(_hwnd, WM.NCACTIVATE, wParam, new IntPtr(-1));
+            var lRet = Win32.PInvoke.DefWindowProc(
+                new HWND(_hwnd),
+                (uint)WM.NCACTIVATE,
+                wParam,
+                new LPARAM(-1));
             handled = true;
             return lRet;
         }
 
-        private IntPtr _HandleNCCalcSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleNCCalcSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // lParam is an [in, out] that can be either a RECT* (wParam == FALSE) or an NCCALCSIZE_PARAMS*.
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
@@ -513,19 +517,19 @@ namespace Microsoft.Windows.Shell
             // Since we always want the client size to equal the window size, we can unconditionally handle it
             // without having to modify the parameters.
             handled = true;
-            return new IntPtr((int)WVR.REDRAW);
+            return new LRESULT((int)WVR.REDRAW);
         }
 
-        private IntPtr _HandleNCHitTest(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleNCHitTest(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
-            var lRet = IntPtr.Zero;
+            LRESULT lRet = new LRESULT(IntPtr.Zero);
             handled = false;
 
             // Give DWM a chance at this first.
             if (Utility.IsOSVistaOrNewer && _chromeInfo.GlassFrameThickness != default && _isGlassEnabled)
             {
                 // If we're on Vista, give the DWM a chance to handle the message first.
-                handled = NativeMethods.DwmDefWindowProc(_hwnd, uMsg, wParam, lParam, out lRet);
+                handled = Win32.PInvoke.DwmDefWindowProc(new HWND(_hwnd), uMsg, wParam, lParam, out lRet);
             }
 
             // Handle letting the system know if we consider the mouse to be in our effective non-client area.
@@ -552,15 +556,15 @@ namespace Microsoft.Windows.Shell
                 }
             }
             handled = true;
-            lRet = new IntPtr((int)ht);
+            lRet = new LRESULT((int)ht);
             return lRet;
         }
 
-        private IntPtr _HandleNCRButtonUp(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleNCRButtonUp(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // Emulate the system behavior of clicking the right mouse button over the caption area
             // to bring up the system menu.
-            if (HT.CAPTION == (HT)wParam.ToInt32())
+            if (HT.CAPTION == (HT)(int)wParam.Value)
             {
                 if (_window.ContextMenu != null)
                 {
@@ -573,10 +577,10 @@ namespace Microsoft.Windows.Shell
                 }
             }
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
-        private IntPtr _HandleSize(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             const int SIZE_MAXIMIZED = 2;
 
@@ -585,7 +589,7 @@ namespace Microsoft.Windows.Shell
             // maximized.  Not forcing this update will eventually cause the
             // default caption to be drawn.
             WindowState? state = null;
-            if (wParam.ToInt32() == SIZE_MAXIMIZED)
+            if ((int)wParam.Value == SIZE_MAXIMIZED)
             {
                 state = WindowState.Maximized;
             }
@@ -594,10 +598,10 @@ namespace Microsoft.Windows.Shell
 
             // Still let the default WndProc handle this.
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
-        private IntPtr _HandleWindowPosChanged(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleWindowPosChanged(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // http://blogs.msdn.com/oldnewthing/archive/2008/01/15/7113860.aspx
             // The WM_WINDOWPOSCHANGED message is sent at the end of the window
@@ -617,27 +621,27 @@ namespace Microsoft.Windows.Shell
 
             // Still want to pass this to DefWndProc
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
-        private IntPtr _HandleDwmCompositionChanged(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleDwmCompositionChanged(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             _UpdateFrameState(false);
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
-        private IntPtr _HandleSettingChange(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleSettingChange(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // There are several settings that can cause fixups for the template to become invalid when changed.
             // These shouldn't be required on the v4 framework.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
             _FixupFrameworkIssues();
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
-        private IntPtr _HandleEnterSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleEnterSizeMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -661,10 +665,10 @@ namespace Microsoft.Windows.Shell
             }
 
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
-        private IntPtr _HandleExitSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleExitSizeMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -678,10 +682,10 @@ namespace Microsoft.Windows.Shell
                 _window.Left = _windowPosAtStartOfUserMove.X;
             }
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
-        private IntPtr _HandleMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private LRESULT _HandleMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -691,7 +695,7 @@ namespace Microsoft.Windows.Shell
             }
 
             handled = false;
-            return IntPtr.Zero;
+            return new LRESULT(0);
         }
 
         /// <summary>Add and remove a native WindowStyle from the HWND.</summary>
