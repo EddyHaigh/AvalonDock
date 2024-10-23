@@ -172,7 +172,7 @@ namespace Microsoft.Windows.Shell
                 return;
             }
 
-            var tbix = new TITLEBARINFOEX { cbSize = Marshal.SizeOf(typeof(TITLEBARINFOEX)) };
+            var tbix = new TITLEBARINFOEX { cbSize = Marshal.SizeOf<TITLEBARINFOEX>() };
             var lParam = Marshal.AllocHGlobal(tbix.cbSize);
             try
             {
@@ -181,7 +181,7 @@ namespace Microsoft.Windows.Shell
                 // WM_GETTITLEBARINFOEX doesn't work correctly unless the window is visible while processing.
                 Win32.PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOW);
                 NativeMethods.SendMessage(_messageHwnd.Handle, WM.GETTITLEBARINFOEX, IntPtr.Zero, lParam);
-                tbix = (TITLEBARINFOEX)Marshal.PtrToStructure(lParam, typeof(TITLEBARINFOEX));
+                tbix = Marshal.PtrToStructure<TITLEBARINFOEX>(lParam);
             }
             finally
             {
