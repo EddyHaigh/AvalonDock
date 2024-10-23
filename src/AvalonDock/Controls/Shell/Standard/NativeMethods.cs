@@ -25,6 +25,7 @@ namespace Standard
     using Windows.Win32.Graphics.Gdi;
     using Windows.Win32.UI.Accessibility;
     using Windows.Win32.UI.WindowsAndMessaging;
+    using Windows.Win32.Graphics.GdiPlus;
 
     using static AvalonDock.Controls.Shell.Standard.NativeStructs;
     using static AvalonDock.Win32Helper;
@@ -35,9 +36,6 @@ namespace Standard
     // Some native methods are shimmed through public versions that handle converting failures into thrown exceptions.
     internal static class NativeMethods
     {
-        [DllImport("gdi32.dll")]
-        public static extern GDI_REGION_TYPE CombineRgn(IntPtr hrgnDest, IntPtr hrgnSrc1, IntPtr hrgnSrc2, RGN_COMBINE_MODE fnCombineMode);
-
         public static IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect)
         {
             var ret = _CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect);
@@ -121,13 +119,13 @@ namespace Standard
         }
 
         [DllImport("gdiplus.dll")]
-        public static extern Windows.Win32.Graphics.GdiPlus.Status GdipCreateBitmapFromStream(IStream stream, out IntPtr bitmap);
+        public static extern Status GdipCreateBitmapFromStream(IStream stream, out IntPtr bitmap);
 
         [DllImport("gdiplus.dll")]
-        public static extern Windows.Win32.Graphics.GdiPlus.Status GdipCreateHICONFromBitmap(IntPtr bitmap, out IntPtr hbmReturn);
+        public static extern Status GdipCreateHICONFromBitmap(IntPtr bitmap, out IntPtr hbmReturn);
 
         [DllImport("gdiplus.dll")]
-        public static extern Windows.Win32.Graphics.GdiPlus.Status GdipDisposeImage(IntPtr image);
+        public static extern Status GdipDisposeImage(IntPtr image);
 
         public static void GetCurrentThemeName(out string themeFileName, out string color, out string size)
         {
@@ -195,10 +193,6 @@ namespace Standard
 
             return (short)ret;
         }
-
-        // Depending on the message, callers may want to call GetLastError based on the return value.
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
 
         // This is aliased as a macro in 32bit Windows.
         public static IntPtr SetWindowLongPtr(IntPtr hwnd, GWL nIndex, IntPtr dwNewLong)
