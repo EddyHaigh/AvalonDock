@@ -22,9 +22,16 @@ namespace Microsoft.Windows.Shell
     using System.Windows.Media;
     using System.Windows.Threading;
 
+    using AvalonDock;
+
+    using global::Windows.Win32.Foundation;
+
     using Standard;
 
+    using Win32 = global::Windows.Win32;
+
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
+    using System.ComponentModel;
 
     internal class WindowChromeWorker : DependencyObject
     {
@@ -273,11 +280,11 @@ namespace Microsoft.Windows.Shell
             }
             var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
 
-            var rcWindow = NativeMethods.GetWindowRect(_hwnd);
+            Win32.PInvoke.GetWindowRect(new HWND(_hwnd), out RECT rcWindow);
             var rcAdjustedClient = _GetAdjustedWindowRect(rcWindow);
 
-            var rcLogicalWindow = DpiHelper.DeviceRectToLogical(new Rect(rcWindow.Left, rcWindow.Top, rcWindow.Width, rcWindow.Height));
-            var rcLogicalClient = DpiHelper.DeviceRectToLogical(new Rect(rcAdjustedClient.Left, rcAdjustedClient.Top, rcAdjustedClient.Width, rcAdjustedClient.Height));
+            var rcLogicalWindow = DpiHelper.DeviceRectToLogical(new Rect(rcWindow.left, rcWindow.top, rcWindow.Width, rcWindow.Height));
+            var rcLogicalClient = DpiHelper.DeviceRectToLogical(new Rect(rcAdjustedClient.left, rcAdjustedClient.top, rcAdjustedClient.Width, rcAdjustedClient.Height));
 
             var nonClientThickness = new Thickness(
                rcLogicalWindow.Left - rcLogicalClient.Left,
@@ -386,9 +393,16 @@ namespace Microsoft.Windows.Shell
             }
 
             _hasUserMovedWindow = false;
-            var wp = NativeMethods.GetWindowPlacement(_hwnd);
-            var adjustedDeviceRc = _GetAdjustedWindowRect(new RECT { Bottom = 100, Right = 100 });
-            var adjustedTopLeft = DpiHelper.DevicePixelsToLogical(new Point(wp.rcNormalPosition.Left - adjustedDeviceRc.Left, wp.rcNormalPosition.Top - adjustedDeviceRc.Top));
+            var windowPlacement = new Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT()
+            {
+                length = (uint)Marshal.SizeOf<Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT>(),
+            };
+
+            Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
+            var adjustedDeviceRc = _GetAdjustedWindowRect(new RECT { bottom = 100, right = 100 });
+            var adjustedTopLeft = DpiHelper.DevicePixelsToLogical(new Point(
+                windowPlacement.rcNormalPosition.left - adjustedDeviceRc.left,
+                windowPlacement.rcNormalPosition.top - adjustedDeviceRc.top));
             _window.Top = adjustedTopLeft.Y;
             _window.Left = adjustedTopLeft.X;
         }
@@ -397,9 +411,11 @@ namespace Microsoft.Windows.Shell
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
-            var style = (WS)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
-            var exstyle = (WS_EX)NativeMethods.GetWindowLongPtr(_hwnd, GWL.EXSTYLE);
-            return NativeMethods.AdjustWindowRectEx(rcWindow, style, false, exstyle);
+            var style = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
+            var exstyle = (Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.EXSTYLE);
+
+            Win32.PInvoke.AdjustWindowRectEx(ref rcWindow, style, false, exstyle);
+            return rcWindow;
         }
 
         // Windows tries hard to hide this state from applications.
@@ -419,9 +435,9 @@ namespace Microsoft.Windows.Shell
                     return false;
                 }
 
-                var adjustedOffset = _GetAdjustedWindowRect(new RECT { Bottom = 100, Right = 100 });
+                var adjustedOffset = _GetAdjustedWindowRect(new RECT { bottom = 100, right = 100 });
                 var windowTopLeft = new Point(_window.Left, _window.Top);
-                windowTopLeft -= (Vector)DpiHelper.DevicePixelsToLogical(new Point(adjustedOffset.Left, adjustedOffset.Top));
+                windowTopLeft -= (Vector)DpiHelper.DevicePixelsToLogical(new Point(adjustedOffset.left, adjustedOffset.top));
                 return _window.RestoreBounds.Location != windowTopLeft;
             }
         }
@@ -687,13 +703,18 @@ namespace Microsoft.Windows.Shell
         /// </summary>
         private WindowState _GetHwndState()
         {
-            var wpl = NativeMethods.GetWindowPlacement(_hwnd);
-            switch (wpl.showCmd)
+            var windowPlacement = new Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT()
             {
-                case SW.SHOWMINIMIZED:
+                length = (uint)Marshal.SizeOf<Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT>()
+            };
+
+            Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
+            switch (windowPlacement.showCmd)
+            {
+                case Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOWMINIMIZED:
                     return WindowState.Minimized;
 
-                case SW.SHOWMAXIMIZED:
+                case Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED:
                     return WindowState.Maximized;
             }
             return WindowState.Normal;
@@ -706,8 +727,8 @@ namespace Microsoft.Windows.Shell
         private Rect _GetWindowRect()
         {
             // Get the window rectangle.
-            var windowPosition = NativeMethods.GetWindowRect(_hwnd);
-            return new Rect(windowPosition.Left, windowPosition.Top, windowPosition.Width, windowPosition.Height);
+            Win32.PInvoke.GetWindowRect(new HWND(_hwnd), out RECT windowPosition);
+            return new Rect(windowPosition.left, windowPosition.top, windowPosition.Width, windowPosition.Height);
         }
 
         /// <summary>
@@ -817,9 +838,14 @@ namespace Microsoft.Windows.Shell
 
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
-            var wpl = NativeMethods.GetWindowPlacement(_hwnd);
+            var windowPlacement = new Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT()
+            {
+                length = (uint)Marshal.SizeOf<Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT>(),
+            };
 
-            if (wpl.showCmd == SW.SHOWMAXIMIZED)
+            Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
+
+            if (windowPlacement.showCmd == Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED)
             {
                 int left;
                 int top;
@@ -836,25 +862,21 @@ namespace Microsoft.Windows.Shell
                     top = (int)r.Top;
                 }
 
-                var hMon = NativeMethods.MonitorFromWindow(_hwnd, MONITOR_DEFAULTTONEAREST);
+                var hMonitor = Win32.PInvoke.MonitorFromWindow(new HWND(_hwnd),
+                    Win32.Graphics.Gdi.MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
 
-                var mi = NativeMethods.GetMonitorInfo(hMon);
-                var rcMax = mi.rcWork;
+                var monitorInfo = new Win32.Graphics.Gdi.MONITORINFO()
+                {
+                    cbSize = (uint)Marshal.SizeOf<Win32.Graphics.Gdi.MONITORINFO>(),
+                };
+
+                Win32.PInvoke.GetMonitorInfo(hMonitor, ref monitorInfo);
+
                 // The location of maximized window takes into account the border that Windows was
                 // going to remove, so we also need to consider it.
-                rcMax.Offset(-left, -top);
-
-                var hrgn = IntPtr.Zero;
-                try
-                {
-                    hrgn = NativeMethods.CreateRectRgnIndirect(rcMax);
-                    NativeMethods.SetWindowRgn(_hwnd, hrgn, NativeMethods.IsWindowVisible(_hwnd));
-                    hrgn = IntPtr.Zero;
-                }
-                finally
-                {
-                    Utility.SafeDeleteObject(ref hrgn);
-                }
+                var rcMax = monitorInfo.rcWork.Offset(-left, -top);
+                using var handle = Win32.PInvoke.CreateRectRgnIndirect(in rcMax);
+                Win32.PInvoke.SetWindowRgn(new HWND(_hwnd), handle, true);
             }
             else
             {

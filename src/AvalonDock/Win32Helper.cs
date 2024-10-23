@@ -10,6 +10,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Media.Media3D;
 
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -72,6 +73,27 @@ namespace AvalonDock
         /// A window is about to receive the keyboard focus <seealso href="https://learn.microsoft.com/en-us/windows/win32/winmsg/cbtproc"/>.
         /// </summary>
         public const int HCBT_ACTIVATE = 5;
+
+        public static RECT Offset(this RECT rect, int dx, int dy)
+        {
+            rect.left += dx;
+            rect.top += dy;
+            rect.right += dx;
+            rect.bottom += dy;
+
+            return rect;
+        }
+
+        public static RECT Union(this RECT rect1, RECT rect2)
+        {
+            return new RECT
+            {
+                left = Math.Min(rect1.left, rect2.left),
+                top = Math.Min(rect1.top, rect2.top),
+                right = Math.Max(rect1.right, rect2.right),
+                bottom = Math.Max(rect1.bottom, rect2.bottom),
+            };
+        }
 
         public static bool GetWindowZOrder(IntPtr hwnd, out int zOrder)
         {

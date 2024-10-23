@@ -1849,15 +1849,6 @@ namespace Standard
     };
 
     [StructLayout(LayoutKind.Sequential)]
-    internal class MONITORINFO
-    {
-        public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
-        public RECT rcMonitor;
-        public RECT rcWork;
-        public int dwFlags;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     internal struct POINT
     {
         public int x;
@@ -1869,72 +1860,6 @@ namespace Standard
     {
         public int x;
         public int y;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct RECT
-    {
-        private int _left;
-        private int _top;
-        private int _right;
-        private int _bottom;
-
-        public void Offset(int dx, int dy)
-        {
-            _left += dx;
-            _top += dy;
-            _right += dx;
-            _bottom += dy;
-        }
-
-        public int Left { get => _left; set => _left = value; }
-
-        public int Right { get => _right; set => _right = value; }
-
-        public int Top { get => _top; set => _top = value; }
-
-        public int Bottom { get => _bottom; set => _bottom = value; }
-
-        public int Width => _right - _left;
-
-        public int Height => _bottom - _top;
-
-        public POINT Position => new POINT { x = _left, y = _top };
-
-        public SIZE Size => new SIZE { cx = Width, cy = Height };
-
-        public static RECT Union(RECT rect1, RECT rect2)
-        {
-            return new RECT
-            {
-                Left = Math.Min(rect1.Left, rect2.Left),
-                Top = Math.Min(rect1.Top, rect2.Top),
-                Right = Math.Max(rect1.Right, rect2.Right),
-                Bottom = Math.Max(rect1.Bottom, rect2.Bottom),
-            };
-        }
-
-        public override bool Equals(object obj)
-        {
-            try
-            {
-                var rc = (RECT)obj;
-                return rc._bottom == _bottom
-                    && rc._left == _left
-                    && rc._right == _right
-                    && rc._top == _top;
-            }
-            catch (InvalidCastException)
-            {
-                return false;
-            }
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return (_left << 16 | Utility.LOWORD(_right)) ^ (_top << 16 | Utility.LOWORD(_bottom));
-        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2291,20 +2216,6 @@ namespace Standard
             return ret;
         }
 
-        [DllImport("gdi32.dll", EntryPoint = "CreateRectRgnIndirect", SetLastError = true)]
-        private static extern IntPtr _CreateRectRgnIndirect([In] ref RECT lprc);
-
-        public static IntPtr CreateRectRgnIndirect(RECT lprc)
-        {
-            var ret = _CreateRectRgnIndirect(ref lprc);
-            if (ret == IntPtr.Zero)
-            {
-                throw new Win32Exception();
-            }
-
-            return ret;
-        }
-
         [DllImport("gdi32.dll")]
         public static extern IntPtr CreateSolidBrush(int crColor);
 
@@ -2475,20 +2386,6 @@ namespace Standard
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool FindNextFileW(SafeFindHandle hndFindFile, [In, Out, MarshalAs(UnmanagedType.LPStruct)] WIN32_FIND_DATAW lpFindFileData);
 
-        [DllImport("user32.dll", EntryPoint = "GetClientRect", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetClientRect(IntPtr hwnd, [Out] out RECT lpRect);
-
-        public static RECT GetClientRect(IntPtr hwnd)
-        {
-            if (!_GetClientRect(hwnd, out var rc))
-            {
-                HRESULT.ThrowLastError();
-            }
-
-            return rc;
-        }
-
         [DllImport("uxtheme.dll", EntryPoint = "GetCurrentThemeName", CharSet = CharSet.Unicode)]
         private static extern HRESULT _GetCurrentThemeName(
             StringBuilder pszThemeFileName,
@@ -2566,21 +2463,6 @@ namespace Standard
             return retPtr;
         }
 
-        [DllImport("user32.dll", EntryPoint = "GetMonitorInfo", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetMonitorInfo(IntPtr hMonitor, [In, Out] MONITORINFO lpmi);
-
-        public static MONITORINFO GetMonitorInfo(IntPtr hMonitor)
-        {
-            var mi = new MONITORINFO();
-            if (!_GetMonitorInfo(hMonitor, mi))
-            {
-                throw new Win32Exception();
-            }
-
-            return mi;
-        }
-
         [DllImport("gdi32.dll", EntryPoint = "GetStockObject", SetLastError = true)]
         private static extern IntPtr _GetStockObject(StockObject fnObject);
 
@@ -2614,62 +2496,11 @@ namespace Standard
             return ret;
         }
 
-        /// <summary>
-        /// Sets attributes to control how visual styles are applied to a specified window.
-        /// </summary>
-        /// <param name="hwnd">
-        /// Handle to a window to apply changes to.
-        /// </param>
-        /// <param name="eAttribute">
-        /// Value of type WINDOWTHEMEATTRIBUTETYPE that specifies the type of attribute to set.
-        /// The value of this parameter determines the type of data that should be passed in the pvAttribute parameter.
-        /// Can be the following value:
-        /// <list>WTA_NONCLIENT (Specifies non-client related attributes).</list>
-        /// pvAttribute must be a pointer of type WTA_OPTIONS.
-        /// </param>
-        /// <param name="pvAttribute">
-        /// A pointer that specifies attributes to set. Type is determined by the value of the eAttribute value.
-        /// </param>
-        /// <param name="cbAttribute">
-        /// Specifies the size, in bytes, of the data pointed to by pvAttribute.
-        /// </param>
-        [DllImport("uxtheme.dll", PreserveSig = false)]
-        public static extern void SetWindowThemeAttribute([In] IntPtr hwnd, [In] WINDOWTHEMEATTRIBUTETYPE eAttribute, [In] ref WTA_OPTIONS pvAttribute, [In] uint cbAttribute);
-
         [DllImport("user32.dll", EntryPoint = "GetWindowLong", SetLastError = true)]
         private static extern int GetWindowLongPtr32(IntPtr hWnd, GWL nIndex);
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", SetLastError = true)]
         private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, GWL nIndex);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowPlacement(IntPtr hwnd, WINDOWPLACEMENT lpwndpl);
-
-        public static WINDOWPLACEMENT GetWindowPlacement(IntPtr hwnd)
-        {
-            var wndpl = new WINDOWPLACEMENT();
-            if (GetWindowPlacement(hwnd, wndpl))
-            {
-                return wndpl;
-            }
-
-            throw new Win32Exception();
-        }
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowRect", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-        public static RECT GetWindowRect(IntPtr hwnd)
-        {
-            if (!_GetWindowRect(hwnd, out var rc))
-            {
-                HRESULT.ThrowLastError();
-            }
-
-            return rc;
-        }
 
         [DllImport("gdiplus.dll")]
         public static extern Status GdipCreateBitmapFromStream(IStream stream, out IntPtr bitmap);
