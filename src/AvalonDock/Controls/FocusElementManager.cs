@@ -37,7 +37,7 @@ namespace AvalonDock.Controls
         private static WindowHookHandler _windowHandler = null;
         internal static void FinalizeFocusManagement(DockingManager manager)
         {
-            manager.PreviewGotKeyboardFocus -= new KeyboardFocusChangedEventHandler(manager_PreviewGotKeyboardFocus);
+            manager.PreviewGotKeyboardFocus -= new KeyboardFocusChangedEventHandler(ManagerPreviewGotKeyboardFocus);
             _managers.Remove(manager);
 
             if (_managers.Count == 0)
@@ -149,7 +149,7 @@ namespace AvalonDock.Controls
                 }
             }
 
-            manager.PreviewGotKeyboardFocus += new KeyboardFocusChangedEventHandler(manager_PreviewGotKeyboardFocus);
+            manager.PreviewGotKeyboardFocus += new KeyboardFocusChangedEventHandler(ManagerPreviewGotKeyboardFocus);
             _managers.Add(manager);
         }
 
@@ -202,7 +202,7 @@ namespace AvalonDock.Controls
             }
         }
 
-        private static void manager_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private static void ManagerPreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             if (e.NewFocus is Visual focusedElement &&
                 !(focusedElement is LayoutAnchorableTabItem || focusedElement is LayoutDocumentTabItem))

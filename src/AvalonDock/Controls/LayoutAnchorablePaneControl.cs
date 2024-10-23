@@ -37,9 +37,9 @@ namespace AvalonDock.Controls
 
         /// <summary>Class constructor from model and virtualization parameter.</summary>
         /// <param name="model"></param>
-        /// <param name="IsVirtualizing">Whether tabbed items are virtualized or not.</param>
-        internal LayoutAnchorablePaneControl(LayoutAnchorablePane model, bool IsVirtualizing)
-            : base(IsVirtualizing)
+        /// <param name="isVirtualizing">Whether tabbed items are virtualized or not.</param>
+        internal LayoutAnchorablePaneControl(LayoutAnchorablePane model, bool isVirtualizing)
+            : base(isVirtualizing)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             SetBinding(ItemsSourceProperty, new Binding("Model.Children") { Source = this });

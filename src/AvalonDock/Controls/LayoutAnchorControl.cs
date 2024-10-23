@@ -48,8 +48,8 @@ namespace AvalonDock.Controls
         internal LayoutAnchorControl(LayoutAnchorable model)
         {
             _model = model;
-            _model.IsActiveChanged += new EventHandler(_model_IsActiveChanged);
-            _model.IsSelectedChanged += new EventHandler(_model_IsSelectedChanged);
+            _model.IsActiveChanged += new EventHandler(ModelIsActiveChanged);
+            _model.IsSelectedChanged += new EventHandler(ModelIsSelectedChanged);
 
             SetSide(_model.FindParent<LayoutAnchorSide>().Side);
         }
@@ -94,7 +94,7 @@ namespace AvalonDock.Controls
             {
                 _openUpTimer = new DispatcherTimer(DispatcherPriority.ApplicationIdle);
                 _openUpTimer.Interval = TimeSpan.FromMilliseconds(400);
-                _openUpTimer.Tick += new EventHandler(_openUpTimer_Tick);
+                _openUpTimer.Tick += new EventHandler(OpenUpTimerTick);
                 _openUpTimer.Start();
             }
         }
@@ -132,7 +132,7 @@ namespace AvalonDock.Controls
         {
             if (_openUpTimer != null)
             {
-                _openUpTimer.Tick -= new EventHandler(_openUpTimer_Tick);
+                _openUpTimer.Tick -= new EventHandler(OpenUpTimerTick);
                 _openUpTimer.Stop();
                 _openUpTimer = null;
             }
@@ -150,11 +150,11 @@ namespace AvalonDock.Controls
         }
 
 
-        private void _model_IsActiveChanged(object sender, EventArgs e)
+        private void ModelIsActiveChanged(object sender, EventArgs e)
         {
             if (!_model.IsAutoHidden)
             {
-                _model.IsActiveChanged -= new EventHandler(_model_IsActiveChanged);
+                _model.IsActiveChanged -= new EventHandler(ModelIsActiveChanged);
             }
             else if (_model.IsActive)
             {
@@ -162,11 +162,11 @@ namespace AvalonDock.Controls
             }
         }
 
-        private void _model_IsSelectedChanged(object sender, EventArgs e)
+        private void ModelIsSelectedChanged(object sender, EventArgs e)
         {
             if (!_model.IsAutoHidden)
             {
-                _model.IsSelectedChanged -= new EventHandler(_model_IsSelectedChanged);
+                _model.IsSelectedChanged -= new EventHandler(ModelIsSelectedChanged);
             }
             else if (_model.IsSelected)
             {
@@ -174,9 +174,9 @@ namespace AvalonDock.Controls
                 _model.IsSelected = false;
             }
         }
-        private void _openUpTimer_Tick(object sender, EventArgs e)
+        private void OpenUpTimerTick(object sender, EventArgs e)
         {
-            _openUpTimer.Tick -= new EventHandler(_openUpTimer_Tick);
+            _openUpTimer.Tick -= new EventHandler(OpenUpTimerTick);
             _openUpTimer.Stop();
             _openUpTimer = null;
             _model.Root.Manager.ShowAutoHideWindow(this);

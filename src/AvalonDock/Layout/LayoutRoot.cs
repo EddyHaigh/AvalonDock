@@ -206,7 +206,7 @@ namespace AvalonDock.Layout
                 if (_floatingWindows == null)
                 {
                     _floatingWindows = new ObservableCollection<LayoutFloatingWindow>();
-                    _floatingWindows.CollectionChanged += _floatingWindows_CollectionChanged;
+                    _floatingWindows.CollectionChanged += FloatingWindowsCollectionChanged;
                 }
 
                 return _floatingWindows;
@@ -221,7 +221,7 @@ namespace AvalonDock.Layout
                 if (_hiddenAnchorables == null)
                 {
                     _hiddenAnchorables = new ObservableCollection<LayoutAnchorable>();
-                    _hiddenAnchorables.CollectionChanged += _hiddenAnchorables_CollectionChanged;
+                    _hiddenAnchorables.CollectionChanged += HiddenAnchorablesCollectionChanged;
                 }
 
                 return _hiddenAnchorables;
@@ -782,7 +782,7 @@ namespace AvalonDock.Layout
             ElementRemoved?.Invoke(this, new LayoutElementEventArgs(element));
         }
 
-        private void _floatingWindows_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void FloatingWindowsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             var bNotifyChildren = false;
 
@@ -831,7 +831,7 @@ namespace AvalonDock.Layout
             }
         }
 
-        private void _hiddenAnchorables_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void HiddenAnchorablesCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             var bNotifyChildren = false;
 

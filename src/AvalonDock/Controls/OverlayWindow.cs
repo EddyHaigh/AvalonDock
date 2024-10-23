@@ -40,7 +40,7 @@ namespace AvalonDock.Controls
 
         private Canvas _mainCanvasPanel;
         private Path _previewBox;
-        private ResourceDictionary currentThemeResourceDictionary; // = null
+        private ResourceDictionary _currentThemeResourceDictionary; // = null
                                                                    // Showing and activating 9 inner drop target buttons over document pane
 
         private FrameworkElement _dockingManagerDropTargetBottom; // 4 outer drop taget buttons over DockingManager
@@ -668,10 +668,10 @@ namespace AvalonDock.Controls
             {
                 if (oldTheme is DictionaryTheme)
                 {
-                    if (currentThemeResourceDictionary != null)
+                    if (_currentThemeResourceDictionary != null)
                     {
-                        Resources.MergedDictionaries.Remove(currentThemeResourceDictionary);
-                        currentThemeResourceDictionary = null;
+                        Resources.MergedDictionaries.Remove(_currentThemeResourceDictionary);
+                        _currentThemeResourceDictionary = null;
                     }
                 }
                 else
@@ -690,8 +690,8 @@ namespace AvalonDock.Controls
             {
                 if (_host.Manager.Theme is DictionaryTheme theme)
                 {
-                    currentThemeResourceDictionary = theme.ThemeResourceDictionary;
-                    Resources.MergedDictionaries.Add(currentThemeResourceDictionary);
+                    _currentThemeResourceDictionary = theme.ThemeResourceDictionary;
+                    Resources.MergedDictionaries.Add(_currentThemeResourceDictionary);
                 }
                 else
                 {

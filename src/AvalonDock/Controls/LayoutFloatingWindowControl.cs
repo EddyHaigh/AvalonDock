@@ -125,7 +125,8 @@ namespace AvalonDock.Controls
         /// <see cref="TotalMargin"/>
         private bool _isTotalMarginSet = false;
 
-        private ResourceDictionary currentThemeResourceDictionary; // = null
+        private ResourceDictionary _currentThemeResourceDictionary; // = null
+
         static LayoutFloatingWindowControl()
         {
             AllowsTransparencyProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(false));
@@ -304,10 +305,10 @@ namespace AvalonDock.Controls
             {
                 if (oldTheme is DictionaryTheme)
                 {
-                    if (currentThemeResourceDictionary != null)
+                    if (_currentThemeResourceDictionary != null)
                     {
-                        Resources.MergedDictionaries.Remove(currentThemeResourceDictionary);
-                        currentThemeResourceDictionary = null;
+                        Resources.MergedDictionaries.Remove(_currentThemeResourceDictionary);
+                        _currentThemeResourceDictionary = null;
                     }
                 }
                 else
@@ -331,8 +332,8 @@ namespace AvalonDock.Controls
 
             if (manager.Theme is DictionaryTheme dictionaryTheme)
             {
-                currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
-                Resources.MergedDictionaries.Add(currentThemeResourceDictionary);
+                _currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
+                Resources.MergedDictionaries.Add(_currentThemeResourceDictionary);
             }
             else
             {

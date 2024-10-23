@@ -457,9 +457,6 @@ namespace AvalonDock.Controls
                 return _view;
             }
         }
-        internal void _ClearDefaultBindings() => ClearDefaultBindings();
-
-        internal void _SetDefaultBindings() => SetDefaultBindings();
 
         internal virtual void Attach(LayoutContent model)
         {
@@ -484,7 +481,7 @@ namespace AvalonDock.Controls
         protected virtual bool CanExecuteDockAsDocumentCommand()
                     => LayoutElement != null && LayoutElement.FindParent<LayoutDocumentPane>() == null;
 
-        protected virtual void ClearDefaultBindings()
+        internal protected virtual void ClearDefaultBindings()
         {
             if (CloseCommand == _defaultCloseCommand)
             {
@@ -724,7 +721,7 @@ namespace AvalonDock.Controls
             }
         }
 
-        protected virtual void SetDefaultBindings()
+        protected internal virtual void SetDefaultBindings()
         {
             if (CloseCommand == null)
             {

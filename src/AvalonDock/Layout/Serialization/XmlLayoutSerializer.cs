@@ -84,26 +84,24 @@ namespace AvalonDock.Layout.Serialization
         /// <param name="stream"></param>
         public void Deserialize(System.IO.Stream stream)
         {
-            LayoutRoot function() => _serializer.Deserialize(stream) as LayoutRoot;
-            DeserializeCommon(function);
+            LayoutRoot Serialize() => _serializer.Deserialize(stream) as LayoutRoot;
+            DeserializeCommon(Serialize);
         }
 
         /// <summary>Deserialize the layout a file from a <see cref="TextReader"/>.</summary>
         /// <param name="reader"></param>
         public void Deserialize(TextReader reader)
         {
-
-            LayoutRoot function() => _serializer.Deserialize(reader) as LayoutRoot;
-            DeserializeCommon(function);
+            LayoutRoot Deserialize() => _serializer.Deserialize(reader) as LayoutRoot;
+            DeserializeCommon(Deserialize);
         }
 
         /// <summary>Deserialize the layout a file from a <see cref="XmlReader"/>.</summary>
         /// <param name="reader"></param>
         public void Deserialize(XmlReader reader)
         {
-
-            LayoutRoot function() => _serializer.Deserialize(reader) as LayoutRoot;
-            DeserializeCommon(function);
+            LayoutRoot Deserialize() => _serializer.Deserialize(reader) as LayoutRoot;
+            DeserializeCommon(Deserialize);
         }
 
         /// <summary>Deserialize the layout from a file using a <see cref="StreamReader"/>.</summary>

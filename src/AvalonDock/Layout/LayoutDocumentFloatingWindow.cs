@@ -78,7 +78,7 @@ namespace AvalonDock.Layout
 
                 if (_rootPanel != null)
                 {
-                    _rootPanel.ChildrenTreeChanged -= _rootPanel_ChildrenTreeChanged;
+                    _rootPanel.ChildrenTreeChanged -= RootPanelChildrenTreeChanged;
                 }
 
                 _rootPanel = value;
@@ -89,7 +89,7 @@ namespace AvalonDock.Layout
 
                 if (_rootPanel != null)
                 {
-                    _rootPanel.ChildrenTreeChanged += _rootPanel_ChildrenTreeChanged;
+                    _rootPanel.ChildrenTreeChanged += RootPanelChildrenTreeChanged;
                 }
 
                 RaisePropertyChanged(nameof(RootPanel));
@@ -187,7 +187,7 @@ namespace AvalonDock.Layout
             RootPanel = newElement as LayoutDocumentPaneGroup;
         }
 
-        private void _rootPanel_ChildrenTreeChanged(object sender, ChildrenTreeChangedEventArgs e)
+        private void RootPanelChildrenTreeChanged(object sender, ChildrenTreeChangedEventArgs e)
         {
             RaisePropertyChanged(nameof(IsSinglePane));
             RaisePropertyChanged(nameof(SinglePane));
