@@ -20,7 +20,9 @@ namespace Microsoft.Windows.Shell
     using System.Windows;
     using System.Windows.Media;
 
+    using global::Windows.Win32;
     using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.UI.Accessibility;
     using global::Windows.Win32.UI.WindowsAndMessaging;
 
     using Standard;
@@ -28,7 +30,6 @@ namespace Microsoft.Windows.Shell
     using static AvalonDock.Controls.Shell.Standard.NativeStructs;
     using static AvalonDock.Win32Helper;
 
-    using Win32 = global::Windows.Win32;
 
     public class SystemParameters2 : INotifyPropertyChanged
     {
@@ -94,7 +95,7 @@ namespace Microsoft.Windows.Shell
         {
             var ptCaption = new Point(
                 0,
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSMCAPTION));
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSMCAPTION));
 
             WindowCaptionHeight = DpiHelper.DevicePixelsToLogical(ptCaption).Y;
         }
@@ -107,8 +108,8 @@ namespace Microsoft.Windows.Shell
         private void _InitializeWindowResizeBorderThickness()
         {
             var frameSize = new Size(
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
             var frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
             WindowResizeBorderThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height, frameSizeInDips.Width, frameSizeInDips.Height);
         }
@@ -121,11 +122,11 @@ namespace Microsoft.Windows.Shell
         private void _InitializeWindowNonClientFrameThickness()
         {
             var frameSize = new Size(
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
 
             var frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
-            var captionHeight = Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYCAPTION);
+            var captionHeight = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYCAPTION);
             var captionHeightInDips = DpiHelper.DevicePixelsToLogical(new Point(0, captionHeight)).Y;
             WindowNonClientFrameThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height + captionHeightInDips, frameSizeInDips.Width, frameSizeInDips.Height);
         }
@@ -138,8 +139,8 @@ namespace Microsoft.Windows.Shell
         private void _InitializeSmallIconSize()
         {
             SmallIconSize = new Size(
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSMICON),
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSMICON));
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSMICON),
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSMICON));
         }
 
         private void _UpdateSmallIconSize(WPARAM wParam, LPARAM lParam)
@@ -151,16 +152,16 @@ namespace Microsoft.Windows.Shell
         {
             // This calculation isn't quite right, but it's pretty close.
             // I expect this is good enough for the scenarios where this is expected to be used.
-            var captionX = Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZE);
-            var captionY = Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZE);
+            var captionX = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZE);
+            var captionY = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZE);
 
             var frameX =
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME)
-                + Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXEDGE);
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME)
+                + PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXEDGE);
 
             var frameY =
-                Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME)
-                + Win32.PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYEDGE);
+                PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME)
+                + PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYEDGE);
 
             var captionRect = new Rect(0, 0, captionX * 3, captionY);
             captionRect.Offset(-frameX - captionRect.Width, frameY);
@@ -171,7 +172,7 @@ namespace Microsoft.Windows.Shell
         private void _InitializeCaptionButtonLocation()
         {
             // There is a completely different way to do this on XP.
-            if (!Utility.IsOSVistaOrNewer || !Win32.PInvoke.IsThemeActive())
+            if (!Utility.IsOSVistaOrNewer || !PInvoke.IsThemeActive())
             {
                 _LegacyInitializeCaptionButtonLocation();
                 return;
@@ -184,13 +185,17 @@ namespace Microsoft.Windows.Shell
                 Marshal.StructureToPtr(tbix, lParam, false);
                 // This might flash a window in the taskbar while being calculated.
                 // WM_GETTITLEBARINFOEX doesn't work correctly unless the window is visible while processing.
-                Win32.PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), SHOW_WINDOW_CMD.SW_SHOW);
-                NativeMethods.SendMessage(_messageHwnd.Handle, WM.GETTITLEBARINFOEX, IntPtr.Zero, lParam);
+                PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), SHOW_WINDOW_CMD.SW_SHOW);
+                PInvoke.SendMessage(
+                    new HWND(_messageHwnd.Handle),
+                    (uint)WM.GETTITLEBARINFOEX,
+                    new WPARAM(0),
+                    new LPARAM(lParam));
                 tbix = Marshal.PtrToStructure<TITLEBARINFOEX>(lParam);
             }
             finally
             {
-                Win32.PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), SHOW_WINDOW_CMD.SW_HIDE);
+                PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), SHOW_WINDOW_CMD.SW_HIDE);
                 Utility.SafeFreeHGlobal(ref lParam);
             }
 
@@ -200,7 +205,7 @@ namespace Microsoft.Windows.Shell
             // For all known themes, the RECT for the maximize box shouldn't add anything to the union of the minimize and close boxes.
             Assert.AreEqual(rcAllCaptionButtons, rcAllCaptionButtons.Union(tbix.rgrect._3));
 
-            Win32.PInvoke.GetWindowRect(new HWND(_messageHwnd.Handle), out RECT rcWindow);
+            PInvoke.GetWindowRect(new HWND(_messageHwnd.Handle), out RECT rcWindow);
 
             // Reorient the Top/Right to be relative to the top right edge of the Window.
             var deviceCaptionLocation = new Rect(
@@ -220,7 +225,7 @@ namespace Microsoft.Windows.Shell
         private void _InitializeHighContrast()
         {
             var hc = NativeMethods.SystemParameterInfoGetHighContrast();
-            HighContrast = (hc.dwFlags & Win32.UI.Accessibility.HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON) != 0;
+            HighContrast = (hc.dwFlags & HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON) != 0;
         }
 
         private void _UpdateHighContrast(WPARAM wParam, LPARAM lParam)
@@ -230,7 +235,7 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeThemeInfo()
         {
-            if (!Win32.PInvoke.IsThemeActive())
+            if (!PInvoke.IsThemeActive())
             {
                 UxThemeName = "Classic";
                 UxThemeColor = "";
@@ -363,12 +368,12 @@ namespace Microsoft.Windows.Shell
             // Don't do this if called within the SystemParameters2 constructor
             if (_UpdateTable == null)
             {
-                return Win32.PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
+                return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
             }
 
             if (!_UpdateTable.TryGetValue((WM)msg, out var handlers))
             {
-                return Win32.PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
+                return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
             }
 
             Assert.IsNotNull(handlers);
@@ -377,7 +382,7 @@ namespace Microsoft.Windows.Shell
                 handler(wParam, lParam);
             }
 
-            return Win32.PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
+            return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
         }
 
         public bool IsGlassEnabled
