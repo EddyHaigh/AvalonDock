@@ -24,15 +24,18 @@ namespace Microsoft.Windows.Shell
 
     using AvalonDock;
 
-    using global::Windows.Win32.Foundation;
-    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     using Standard;
+
+    using global::Windows.Win32;
+    using global::Windows.Win32.Graphics.Gdi;
+    using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
+    using global::Windows.Win32.UI.Controls;
 
     using static AvalonDock.Controls.Shell.Standard.NativeStructs;
 
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<AvalonDock.Controls.Shell.Standard.NativeStructs.WM, AvalonDock.Controls.Shell.Standard.NativeStructs.MessageHandler>;
-    using Win32 = global::Windows.Win32;
 
     internal class WindowChromeWorker : DependencyObject
     {
@@ -258,7 +261,7 @@ namespace Microsoft.Windows.Shell
             _UpdateSystemMenu(_window.WindowState);
             _UpdateFrameState(true);
 
-            Win32.PInvoke.SetWindowPos(
+            PInvoke.SetWindowPos(
                 new HWND(_hwnd),
                 new HWND(IntPtr.Zero),
                 0,
@@ -294,7 +297,7 @@ namespace Microsoft.Windows.Shell
             }
             var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
 
-            Win32.PInvoke.GetWindowRect(new HWND(_hwnd), out RECT rcWindow);
+            PInvoke.GetWindowRect(new HWND(_hwnd), out RECT rcWindow);
             var rcAdjustedClient = _GetAdjustedWindowRect(rcWindow);
 
             var rcLogicalWindow = DpiHelper.DeviceRectToLogical(new Rect(rcWindow.left, rcWindow.top, rcWindow.Width, rcWindow.Height));
@@ -412,7 +415,7 @@ namespace Microsoft.Windows.Shell
                 length = (uint)Marshal.SizeOf<WINDOWPLACEMENT>(),
             };
 
-            Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
+            PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
             var adjustedDeviceRc = _GetAdjustedWindowRect(new RECT { bottom = 100, right = 100 });
             var adjustedTopLeft = DpiHelper.DevicePixelsToLogical(new Point(
                 windowPlacement.rcNormalPosition.left - adjustedDeviceRc.left,
@@ -428,7 +431,7 @@ namespace Microsoft.Windows.Shell
             var style = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE);
             var exstyle = (WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_EXSTYLE);
 
-            Win32.PInvoke.AdjustWindowRectEx(ref rcWindow, style, false, exstyle);
+            PInvoke.AdjustWindowRectEx(ref rcWindow, style, false, exstyle);
             return rcWindow;
         }
 
@@ -480,7 +483,7 @@ namespace Microsoft.Windows.Shell
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
             // style applied bypasses the redraw.
-            var lRet = Win32.PInvoke.DefWindowProc(new HWND(_hwnd), uMsg, wParam, lParam);
+            var lRet = PInvoke.DefWindowProc(new HWND(_hwnd), uMsg, wParam, lParam);
 
             // Put back the style we removed.
             if (modified)
@@ -499,7 +502,7 @@ namespace Microsoft.Windows.Shell
 
             // Directly call DefWindowProc with a custom parameter
             // which bypasses any other handling of the message.
-            var lRet = Win32.PInvoke.DefWindowProc(
+            var lRet = PInvoke.DefWindowProc(
                 new HWND(_hwnd),
                 (uint)WM.NCACTIVATE,
                 wParam,
@@ -529,7 +532,7 @@ namespace Microsoft.Windows.Shell
             if (Utility.IsOSVistaOrNewer && _chromeInfo.GlassFrameThickness != default && _isGlassEnabled)
             {
                 // If we're on Vista, give the DWM a chance to handle the message first.
-                handled = Win32.PInvoke.DwmDefWindowProc(new HWND(_hwnd), uMsg, wParam, lParam, out lRet);
+                handled = PInvoke.DwmDefWindowProc(new HWND(_hwnd), uMsg, wParam, lParam, out lRet);
             }
 
             // Handle letting the system know if we consider the mouse to be in our effective non-client area.
@@ -726,7 +729,7 @@ namespace Microsoft.Windows.Shell
                 length = (uint)Marshal.SizeOf<WINDOWPLACEMENT>()
             };
 
-            Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
+            PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
             switch (windowPlacement.showCmd)
             {
                 case SHOW_WINDOW_CMD.SW_SHOWMINIMIZED:
@@ -745,7 +748,7 @@ namespace Microsoft.Windows.Shell
         private Rect _GetWindowRect()
         {
             // Get the window rectangle.
-            Win32.PInvoke.GetWindowRect(new HWND(_hwnd), out RECT windowPosition);
+            PInvoke.GetWindowRect(new HWND(_hwnd), out RECT windowPosition);
             return new Rect(windowPosition.left, windowPosition.top, windowPosition.Width, windowPosition.Height);
         }
 
@@ -778,7 +781,7 @@ namespace Microsoft.Windows.Shell
             _lastMenuState = state;
 
             var modified = _ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
-            SafeHandle menuSafeHandle  = Win32.PInvoke.GetSystemMenu_SafeHandle(new HWND(_hwnd), false);
+            SafeHandle menuSafeHandle = PInvoke.GetSystemMenu_SafeHandle(new HWND(_hwnd), false);
             if (menuSafeHandle.IsInvalid is false)
             {
                 var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
@@ -847,7 +850,7 @@ namespace Microsoft.Windows.Shell
                 _SetRoundingRegion(null);
             }
 
-            Win32.PInvoke.SetWindowPos(
+            PInvoke.SetWindowPos(
                 new HWND(_hwnd),
                 new HWND(IntPtr.Zero),
                 0,
@@ -860,7 +863,7 @@ namespace Microsoft.Windows.Shell
         private void _ClearRoundingRegion()
         {
             var hwnd = new HWND(_hwnd);
-            Win32.PInvoke.SetWindowRgn(hwnd, Win32.Graphics.Gdi.HRGN.Null, Win32.PInvoke.IsWindowVisible(hwnd));
+            PInvoke.SetWindowRgn(hwnd, HRGN.Null, PInvoke.IsWindowVisible(hwnd));
         }
 
         private void _SetRoundingRegion(WINDOWPOS? wp)
@@ -874,7 +877,7 @@ namespace Microsoft.Windows.Shell
                 length = (uint)Marshal.SizeOf<WINDOWPLACEMENT>(),
             };
 
-            Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
+            PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
 
             if (windowPlacement.showCmd == SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED)
             {
@@ -893,21 +896,20 @@ namespace Microsoft.Windows.Shell
                     top = (int)r.Top;
                 }
 
-                var hMonitor = Win32.PInvoke.MonitorFromWindow(new HWND(_hwnd),
-                    Win32.Graphics.Gdi.MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+                var hMonitor = PInvoke.MonitorFromWindow(new HWND(_hwnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
 
-                var monitorInfo = new Win32.Graphics.Gdi.MONITORINFO()
+                var monitorInfo = new MONITORINFO()
                 {
-                    cbSize = (uint)Marshal.SizeOf<Win32.Graphics.Gdi.MONITORINFO>(),
+                    cbSize = (uint)Marshal.SizeOf<MONITORINFO>(),
                 };
 
-                Win32.PInvoke.GetMonitorInfo(hMonitor, ref monitorInfo);
+                PInvoke.GetMonitorInfo(hMonitor, ref monitorInfo);
 
                 // The location of maximized window takes into account the border that Windows was
                 // going to remove, so we also need to consider it.
                 var rcMax = monitorInfo.rcWork.Offset(-left, -top);
-                using var handle = Win32.PInvoke.CreateRectRgnIndirect(in rcMax);
-                Win32.PInvoke.SetWindowRgn(new HWND(_hwnd), handle, true);
+                using var handle = PInvoke.CreateRectRgnIndirect(in rcMax);
+                PInvoke.SetWindowRgn(new HWND(_hwnd), handle, true);
             }
             else
             {
@@ -929,75 +931,59 @@ namespace Microsoft.Windows.Shell
 
                 _lastRoundingState = _window.WindowState;
 
-                var hRegion = IntPtr.Zero;
-                try
-                {
-                    var shortestDimension = Math.Min(windowSize.Width, windowSize.Height);
-                    var topLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopLeft, 0)).X;
-                    topLeftRadius = Math.Min(topLeftRadius, shortestDimension / 2);
+                var shortestDimension = Math.Min(windowSize.Width, windowSize.Height);
+                var topLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopLeft, 0)).X;
+                topLeftRadius = Math.Min(topLeftRadius, shortestDimension / 2);
+                var rect = _IsUniform(_chromeInfo.CornerRadius) ?
+                    new Rect(windowSize)
+                    : new Rect(0, 0, windowSize.Width / 2 + topLeftRadius, windowSize.Height / 2 + topLeftRadius);
 
-                    if (_IsUniform(_chromeInfo.CornerRadius))
-                    {
-                        // RoundedRect HRGNs require an additional pixel of padding.
-                        hRegion = _CreateRoundRectRgn(new Rect(windowSize), topLeftRadius);
-                    }
-                    else
-                    {
-                        // We need to combine HRGNs for each of the corners.
-                        // Create one for each quadrant, but let it overlap into the two adjacent ones
-                        // by the radius amount to ensure that there aren't corners etched into the middle
-                        // of the window.
-                        hRegion = _CreateRoundRectRgn(new Rect(0, 0, windowSize.Width / 2 + topLeftRadius, windowSize.Height / 2 + topLeftRadius), topLeftRadius);
+                using var hRegion = _CreateRoundRectRgn(rect, topLeftRadius);
 
-                        var topRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopRight, 0)).X;
-                        topRightRadius = Math.Min(topRightRadius, shortestDimension / 2);
-                        var topRightRegionRect = new Rect(0, 0, windowSize.Width / 2 + topRightRadius, windowSize.Height / 2 + topRightRadius);
-                        topRightRegionRect.Offset(windowSize.Width / 2 - topRightRadius, 0);
-                        Assert.AreEqual(topRightRegionRect.Right, windowSize.Width);
+                var topRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopRight, 0)).X;
+                topRightRadius = Math.Min(topRightRadius, shortestDimension / 2);
+                var topRightRegionRect = new Rect(0, 0, windowSize.Width / 2 + topRightRadius, windowSize.Height / 2 + topRightRadius);
+                topRightRegionRect.Offset(windowSize.Width / 2 - topRightRadius, 0);
+                Assert.AreEqual(topRightRegionRect.Right, windowSize.Width);
 
-                        _CreateAndCombineRoundRectRgn(hRegion, topRightRegionRect, topRightRadius);
+                _CreateAndCombineRoundRectRgn(hRegion, topRightRegionRect, topRightRadius);
 
-                        var bottomLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomLeft, 0)).X;
-                        bottomLeftRadius = Math.Min(bottomLeftRadius, shortestDimension / 2);
-                        var bottomLeftRegionRect = new Rect(0, 0, windowSize.Width / 2 + bottomLeftRadius, windowSize.Height / 2 + bottomLeftRadius);
-                        bottomLeftRegionRect.Offset(0, windowSize.Height / 2 - bottomLeftRadius);
-                        Assert.AreEqual(bottomLeftRegionRect.Bottom, windowSize.Height);
+                var bottomLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomLeft, 0)).X;
+                bottomLeftRadius = Math.Min(bottomLeftRadius, shortestDimension / 2);
+                var bottomLeftRegionRect = new Rect(0, 0, windowSize.Width / 2 + bottomLeftRadius, windowSize.Height / 2 + bottomLeftRadius);
+                bottomLeftRegionRect.Offset(0, windowSize.Height / 2 - bottomLeftRadius);
+                Assert.AreEqual(bottomLeftRegionRect.Bottom, windowSize.Height);
 
-                        _CreateAndCombineRoundRectRgn(hRegion, bottomLeftRegionRect, bottomLeftRadius);
+                _CreateAndCombineRoundRectRgn(hRegion, bottomLeftRegionRect, bottomLeftRadius);
 
-                        var bottomRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomRight, 0)).X;
-                        bottomRightRadius = Math.Min(bottomRightRadius, shortestDimension / 2);
-                        var bottomRightRegionRect = new Rect(0, 0, windowSize.Width / 2 + bottomRightRadius, windowSize.Height / 2 + bottomRightRadius);
-                        bottomRightRegionRect.Offset(windowSize.Width / 2 - bottomRightRadius, windowSize.Height / 2 - bottomRightRadius);
-                        Assert.AreEqual(bottomRightRegionRect.Right, windowSize.Width);
-                        Assert.AreEqual(bottomRightRegionRect.Bottom, windowSize.Height);
+                var bottomRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomRight, 0)).X;
+                bottomRightRadius = Math.Min(bottomRightRadius, shortestDimension / 2);
+                var bottomRightRegionRect = new Rect(0, 0, windowSize.Width / 2 + bottomRightRadius, windowSize.Height / 2 + bottomRightRadius);
+                bottomRightRegionRect.Offset(windowSize.Width / 2 - bottomRightRadius, windowSize.Height / 2 - bottomRightRadius);
+                Assert.AreEqual(bottomRightRegionRect.Right, windowSize.Width);
+                Assert.AreEqual(bottomRightRegionRect.Bottom, windowSize.Height);
 
-                        _CreateAndCombineRoundRectRgn(hRegion, bottomRightRegionRect, bottomRightRadius);
-                    }
+                _CreateAndCombineRoundRectRgn(hRegion, bottomRightRegionRect, bottomRightRadius);
 
-                    var hwnd = new HWND(_hwnd);
-                    NativeMethods.SetWindowRgn(hwnd, hRegion, Win32.PInvoke.IsWindowVisible(hwnd));
-                    hRegion = IntPtr.Zero;
-                }
-                finally
-                {
-                    // Free the memory associated with the HRGN if it wasn't assigned to the HWND.
-                    Utility.SafeDeleteObject(ref hRegion);
-                }
+                var hwnd = new HWND(_hwnd);
+                PInvoke.SetWindowRgn(hwnd, hRegion, PInvoke.IsWindowVisible(hwnd));
             }
         }
 
-        private static IntPtr _CreateRoundRectRgn(Rect region, double radius)
+        private static SafeHandle _CreateRoundRectRgn(Rect region, double radius)
         {
             // Round outwards.
             if (DoubleUtilities.AreClose(0, radius))
             {
-                return NativeMethods.CreateRectRgn((int)Math.Floor(region.Left), (int)Math.Floor(region.Top),
-                                                    (int)Math.Ceiling(region.Right), (int)Math.Ceiling(region.Bottom));
+                return PInvoke.CreateRectRgn_SafeHandle(
+                    (int)Math.Floor(region.Left),
+                    (int)Math.Floor(region.Top),
+                    (int)Math.Ceiling(region.Right),
+                    (int)Math.Ceiling(region.Bottom));
             }
 
             // RoundedRect HRGNs require an additional pixel of padding on the bottom right to look correct.
-            return NativeMethods.CreateRoundRectRgn(
+            return PInvoke.CreateRoundRectRgn_SafeHandle(
                 (int)Math.Floor(region.Left),
                 (int)Math.Floor(region.Top),
                 (int)Math.Ceiling(region.Right) + 1,
@@ -1006,22 +992,13 @@ namespace Microsoft.Windows.Shell
                 (int)Math.Ceiling(radius));
         }
 
-        private static void _CreateAndCombineRoundRectRgn(IntPtr hrgnSource, Rect region, double radius)
+        private static void _CreateAndCombineRoundRectRgn(SafeHandle hrgnSource, Rect region, double radius)
         {
-            var hRegion = IntPtr.Zero;
-            try
+            using SafeHandle hRegion = _CreateRoundRectRgn(region, radius);
+            var result = PInvoke.CombineRgn(hrgnSource, hrgnSource, hRegion, RGN_COMBINE_MODE.RGN_OR);
+            if (result == GDI_REGION_TYPE.NULLREGION)
             {
-                hRegion = _CreateRoundRectRgn(region, radius);
-                var result = NativeMethods.CombineRgn(hrgnSource, hrgnSource, hRegion, Win32.Graphics.Gdi.RGN_COMBINE_MODE.RGN_OR);
-                if (result == Win32.Graphics.Gdi.GDI_REGION_TYPE.NULLREGION)
-                {
-                    throw new InvalidOperationException("Unable to combine two HRGNs.");
-                }
-            }
-            catch
-            {
-                Utility.SafeDeleteObject(ref hRegion);
-                throw;
+                throw new InvalidOperationException("Unable to combine two HRGNs.");
             }
         }
 
@@ -1077,7 +1054,7 @@ namespace Microsoft.Windows.Shell
                 var deviceTopLeft = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.GlassFrameThickness.Left, _chromeInfo.GlassFrameThickness.Top));
                 var deviceBottomRight = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.GlassFrameThickness.Right, _chromeInfo.GlassFrameThickness.Bottom));
 
-                var dwmMargin = new Win32.UI.Controls.MARGINS
+                var dwmMargin = new MARGINS
                 {
                     // err on the side of pushing in glass an extra pixel.
                     cxLeftWidth = (int)Math.Ceiling(deviceTopLeft.X),
@@ -1086,7 +1063,7 @@ namespace Microsoft.Windows.Shell
                     cyBottomHeight = (int)Math.Ceiling(deviceBottomRight.Y),
                 };
 
-                Win32.PInvoke.DwmExtendFrameIntoClientArea(new HWND(_hwnd), in dwmMargin);
+                PInvoke.DwmExtendFrameIntoClientArea(new HWND(_hwnd), in dwmMargin);
             }
         }
 
@@ -1211,14 +1188,14 @@ namespace Microsoft.Windows.Shell
                 return;
             }
             // If glass is enabled, push it back to the normal bounds.
-            var dwmMargin = new Win32.UI.Controls.MARGINS();
-            Win32.PInvoke.DwmExtendFrameIntoClientArea(new HWND(_hwnd), in dwmMargin);
+            var dwmMargin = new MARGINS();
+            PInvoke.DwmExtendFrameIntoClientArea(new HWND(_hwnd), in dwmMargin);
         }
 
         private void _RestoreHrgn()
         {
             _ClearRoundingRegion();
-            Win32.PInvoke.SetWindowPos(
+            PInvoke.SetWindowPos(
                 new HWND(_hwnd),
                 new HWND(IntPtr.Zero),
                 0,
