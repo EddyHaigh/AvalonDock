@@ -28,17 +28,21 @@ namespace Microsoft.Windows.Shell
 
     using Standard;
 
-    using Win32 = global::Windows.Win32;
-
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
-    using System.ComponentModel;
+    using Win32 = global::Windows.Win32;
 
     internal class WindowChromeWorker : DependencyObject
     {
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
-        private const SWP _SwpFlags = SWP.FRAMECHANGED | SWP.NOSIZE | SWP.NOMOVE | SWP.NOZORDER | SWP.NOOWNERZORDER | SWP.NOACTIVATE;
+        private const Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS _SwpFlags =
+            Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED
+            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOSIZE
+            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOMOVE
+            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOZORDER
+            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER
+            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
 
         private readonly List<HANDLE_MESSAGE> _messageTable;
 
@@ -251,7 +255,14 @@ namespace Microsoft.Windows.Shell
             _UpdateSystemMenu(_window.WindowState);
             _UpdateFrameState(true);
 
-            NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
+            Win32.PInvoke.SetWindowPos(
+                new HWND(_hwnd),
+                new HWND(IntPtr.Zero),
+                0,
+                0,
+                0,
+                0,
+                _SwpFlags);
         }
 
         private void _FixupFrameworkIssues()
@@ -411,8 +422,8 @@ namespace Microsoft.Windows.Shell
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
-            var style = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
-            var exstyle = (Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.EXSTYLE);
+            var style = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE);
+            var exstyle = (Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_EXSTYLE);
 
             Win32.PInvoke.AdjustWindowRectEx(ref rcWindow, style, false, exstyle);
             return rcWindow;
@@ -461,7 +472,7 @@ namespace Microsoft.Windows.Shell
 
         private IntPtr _HandleSetTextOrIcon(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            var modified = _ModifyStyle(WS.VISIBLE, 0);
+            var modified = _ModifyStyle(Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE, 0);
 
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
@@ -471,7 +482,7 @@ namespace Microsoft.Windows.Shell
             // Put back the style we removed.
             if (modified)
             {
-                _ModifyStyle(0, WS.VISIBLE);
+                _ModifyStyle(0, Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE);
             }
 
             handled = true;
@@ -684,17 +695,17 @@ namespace Microsoft.Windows.Shell
         /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
         /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
         /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        private bool _ModifyStyle(WS removeStyle, WS addStyle)
+        private bool _ModifyStyle(Win32.UI.WindowsAndMessaging.WINDOW_STYLE removeStyle, Win32.UI.WindowsAndMessaging.WINDOW_STYLE addStyle)
         {
             Assert.IsNotDefault(_hwnd);
-            var dwStyle = (WS)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE).ToInt32();
+            var dwStyle = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
             var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
             if (dwStyle == dwNewStyle)
             {
                 return false;
             }
 
-            NativeMethods.SetWindowLongPtr(_hwnd, GWL.STYLE, new IntPtr((int)dwNewStyle));
+            NativeMethods.SetWindowLongPtr(_hwnd, GWL.GWL_STYLE, new IntPtr((int)dwNewStyle));
             return true;
         }
 
@@ -742,8 +753,13 @@ namespace Microsoft.Windows.Shell
         /// </remarks>
         private void _UpdateSystemMenu(WindowState? assumeState)
         {
-            const MF mfEnabled = MF.ENABLED | MF.BYCOMMAND;
-            const MF mfDisabled = MF.GRAYED | MF.DISABLED | MF.BYCOMMAND;
+            const Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS mfEnabled
+                = Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_ENABLED | Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_BYCOMMAND;
+
+            const Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS mfDisabled
+                = Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_GRAYED
+                | Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_DISABLED
+                | Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_BYCOMMAND;
 
             var state = assumeState ?? _GetHwndState();
 
@@ -754,46 +770,46 @@ namespace Microsoft.Windows.Shell
 
             _lastMenuState = state;
 
-            var modified = _ModifyStyle(WS.VISIBLE, 0);
-            var hMenu = NativeMethods.GetSystemMenu(_hwnd, false);
-            if (hMenu != IntPtr.Zero)
+            var modified = _ModifyStyle(Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE, 0);
+            SafeHandle menuSafeHandle  = Win32.PInvoke.GetSystemMenu_SafeHandle(new HWND(_hwnd), false);
+            if (menuSafeHandle.IsInvalid is false)
             {
-                var dwStyle = (WS)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE).ToInt32();
+                var dwStyle = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
 
-                var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)WS.MINIMIZEBOX);
-                var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)WS.MAXIMIZEBOX);
-                var canSize = Utility.IsFlagSet((int)dwStyle, (int)WS.THICKFRAME);
+                var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_MINIMIZEBOX);
+                var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_MAXIMIZEBOX);
+                var canSize = Utility.IsFlagSet((int)dwStyle, (int)Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_THICKFRAME);
 
                 switch (state)
                 {
                     case WindowState.Maximized:
-                        NativeMethods.EnableMenuItem(hMenu, SC.RESTORE, mfEnabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MOVE, mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.SIZE, mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MAXIMIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.RESTORE, mfEnabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MOVE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.SIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MAXIMIZE, mfDisabled);
                         break;
 
                     case WindowState.Minimized:
-                        NativeMethods.EnableMenuItem(hMenu, SC.RESTORE, mfEnabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MOVE, mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.SIZE, mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MINIMIZE, mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.RESTORE, mfEnabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MOVE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.SIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MINIMIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
                         break;
 
                     default:
-                        NativeMethods.EnableMenuItem(hMenu, SC.RESTORE, mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MOVE, mfEnabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.SIZE, canSize ? mfEnabled : mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
-                        NativeMethods.EnableMenuItem(hMenu, SC.MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.RESTORE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MOVE, mfEnabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.SIZE, canSize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
                         break;
                 }
             }
             if (modified)
             {
-                _ModifyStyle(0, WS.VISIBLE);
+                _ModifyStyle(0, Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE);
             }
         }
 
@@ -824,7 +840,14 @@ namespace Microsoft.Windows.Shell
                 _SetRoundingRegion(null);
             }
 
-            NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
+            Win32.PInvoke.SetWindowPos(
+                new HWND(_hwnd),
+                new HWND(IntPtr.Zero),
+                0,
+                0,
+                0,
+                0,
+                _SwpFlags);
         }
 
         private void _ClearRoundingRegion()
@@ -883,7 +906,7 @@ namespace Microsoft.Windows.Shell
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (null != wp && !Utility.IsFlagSet(wp.Value.flags, (int)SWP.NOSIZE))
+                if (null != wp && !Utility.IsFlagSet(wp.Value.flags, (int)Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOSIZE))
                 {
                     windowSize = new Size((double)wp.Value.cx, (double)wp.Value.cy);
                 }
@@ -980,8 +1003,8 @@ namespace Microsoft.Windows.Shell
             try
             {
                 hRegion = _CreateRoundRectRgn(region, radius);
-                var result = NativeMethods.CombineRgn(hrgnSource, hrgnSource, hRegion, RGN.OR);
-                if (result == CombineRgnResult.ERROR)
+                var result = NativeMethods.CombineRgn(hrgnSource, hrgnSource, hRegion, Win32.Graphics.Gdi.RGN_COMBINE_MODE.RGN_OR);
+                if (result == Win32.Graphics.Gdi.GDI_REGION_TYPE.NULLREGION)
                 {
                     throw new InvalidOperationException("Unable to combine two HRGNs.");
                 }
@@ -1045,7 +1068,7 @@ namespace Microsoft.Windows.Shell
                 var deviceTopLeft = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.GlassFrameThickness.Left, _chromeInfo.GlassFrameThickness.Top));
                 var deviceBottomRight = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.GlassFrameThickness.Right, _chromeInfo.GlassFrameThickness.Bottom));
 
-                var dwmMargin = new MARGINS
+                var dwmMargin = new Win32.UI.Controls.MARGINS
                 {
                     // err on the side of pushing in glass an extra pixel.
                     cxLeftWidth = (int)Math.Ceiling(deviceTopLeft.X),
@@ -1054,7 +1077,7 @@ namespace Microsoft.Windows.Shell
                     cyBottomHeight = (int)Math.Ceiling(deviceBottomRight.Y),
                 };
 
-                NativeMethods.DwmExtendFrameIntoClientArea(_hwnd, ref dwmMargin);
+                Win32.PInvoke.DwmExtendFrameIntoClientArea(new HWND(_hwnd), in dwmMargin);
             }
         }
 
@@ -1179,14 +1202,21 @@ namespace Microsoft.Windows.Shell
                 return;
             }
             // If glass is enabled, push it back to the normal bounds.
-            var dwmMargin = new MARGINS();
-            NativeMethods.DwmExtendFrameIntoClientArea(_hwnd, ref dwmMargin);
+            var dwmMargin = new Win32.UI.Controls.MARGINS();
+            Win32.PInvoke.DwmExtendFrameIntoClientArea(new HWND(_hwnd), in dwmMargin);
         }
 
         private void _RestoreHrgn()
         {
             _ClearRoundingRegion();
-            NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
+            Win32.PInvoke.SetWindowPos(
+                new HWND(_hwnd),
+                new HWND(IntPtr.Zero),
+                0,
+                0,
+                0,
+                0,
+                _SwpFlags);
         }
     }
 }

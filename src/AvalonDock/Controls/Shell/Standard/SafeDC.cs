@@ -53,7 +53,7 @@ internal sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
         if (safeDC.IsInvalid is true)
         {
             Trace.TraceError("Invalid SafeDC object detected.");
-            HRESULT.E_FAIL.ThrowIfFailed();
+            global::Standard.HRESULT.E_FAIL.ThrowIfFailed();
         }
 
         return safeDC;
