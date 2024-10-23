@@ -271,7 +271,7 @@ namespace Standard
 
         public static HIGHCONTRAST SystemParameterInfo_GetHIGHCONTRAST()
         {
-            var hc = new HIGHCONTRAST { cbSize = Marshal.SizeOf(typeof(HIGHCONTRAST)) };
+            var hc = new HIGHCONTRAST { cbSize = Marshal.SizeOf<HIGHCONTRAST>() };
             if (!_SystemParametersInfo_HIGHCONTRAST(SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETHIGHCONTRAST, hc.cbSize, ref hc, 0))
             {
                 HRESULT.ThrowLastError();

@@ -50,7 +50,7 @@ namespace Standard
             _className = "MessageWindowClass+" + Guid.NewGuid().ToString();
             var wc = new WNDCLASSEX
             {
-                cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
+                cbSize = Marshal.SizeOf<WNDCLASSEX>(),
                 style = classStyle,
                 lpfnWndProc = s_WndProc,
                 hInstance = NativeMethods.GetModuleHandle(null),
@@ -139,7 +139,7 @@ namespace Standard
 
             if (msg == WM.CREATE)
             {
-                var createStruct = (CREATESTRUCT)Marshal.PtrToStructure(lParam, typeof(CREATESTRUCT));
+                var createStruct = Marshal.PtrToStructure<CREATESTRUCT>(lParam);
                 var gcHandle = GCHandle.FromIntPtr(createStruct.lpCreateParams);
                 hwndWrapper = (MessageWindow)gcHandle.Target;
                 s_windowLookup.Add(hwnd, hwndWrapper);

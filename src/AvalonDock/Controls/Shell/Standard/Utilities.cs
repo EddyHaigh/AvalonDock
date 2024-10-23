@@ -35,6 +35,7 @@ namespace Standard
 
     using Windows.Win32;
     using Windows.Win32.Graphics.Gdi;
+    using Windows.Win32.Foundation;
 
     internal static partial class Utility
     {
