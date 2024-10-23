@@ -19,6 +19,8 @@ namespace Standard
     using System.Windows;
     using System.Windows.Threading;
 
+    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
+
     internal sealed class MessageWindow : DispatcherObject, IDisposable
     {
         // Alias this to a static so the wrapper doesn't get GC'd

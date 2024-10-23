@@ -18,6 +18,8 @@ namespace Standard
     using System.Runtime.InteropServices.ComTypes;
     using System.Text;
 
+    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
+
     using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
     /// <summary>ShellItem attribute flags.  SIATTRIBFLAGS_*</summary>
