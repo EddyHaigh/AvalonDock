@@ -19,67 +19,70 @@ namespace Standard
     using System.Windows;
     using System.Windows.Threading;
 
+    using AvalonDock;
+
+    using Windows.Win32;
+    using Windows.Win32.Foundation;
+    using Windows.Win32.Graphics.Gdi;
+    using Windows.Win32.UI.WindowsAndMessaging;
+
     using static AvalonDock.Controls.Shell.Standard.NativeStructs;
 
     internal sealed class MessageWindow : DispatcherObject, IDisposable
     {
         // Alias this to a static so the wrapper doesn't get GC'd
-        private static readonly WndProc s_WndProc = new WndProc(_WndProc);
+        private static readonly WNDPROC s_WndProc = new WNDPROC(_WndProc);
 
         private static readonly Dictionary<IntPtr, MessageWindow> s_windowLookup = new Dictionary<IntPtr, MessageWindow>();
 
-        private WndProc _wndProcCallback;
+        private WNDPROC _wndProcCallback;
         private string _className;
         private bool _isDisposed;
 
-        public IntPtr Handle
-        {
-            get; private set;
-        }
+        public IntPtr Handle { get; private set; }
 
-        public MessageWindow(
-            Windows.Win32.UI.WindowsAndMessaging.WNDCLASS_STYLES classStyle,
-            Windows.Win32.UI.WindowsAndMessaging.WINDOW_STYLE style,
-            Windows.Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE exStyle,
+        public unsafe MessageWindow(
+            WNDCLASS_STYLES classStyle,
+            WINDOW_STYLE style,
+            WINDOW_EX_STYLE exStyle,
             Rect location,
             string name,
-            WndProc callback)
+            WNDPROC callback)
         {
             // A null callback means just use DefWindowProc.
             _wndProcCallback = callback;
-            _className = "MessageWindowClass+" + Guid.NewGuid().ToString();
-            var wc = new WNDCLASSEX
+            _className = $"MessageWindowClass+{Guid.NewGuid()}";
+            var wc = new WNDCLASSEXW
             {
-                cbSize = Marshal.SizeOf<WNDCLASSEX>(),
+                cbSize = (uint)Marshal.SizeOf<WNDCLASSEXW>(),
                 style = classStyle,
                 lpfnWndProc = s_WndProc,
-                hInstance = NativeMethods.GetModuleHandle(null),
-                hbrBackground = NativeMethods.GetStockObject(global::Windows.Win32.Graphics.Gdi.GET_STOCK_OBJECT_FLAGS.NULL_BRUSH),
-                lpszMenuName = "",
-                lpszClassName = _className,
+                hInstance = PInvoke.GetModuleHandle(new PCWSTR()),
+                hbrBackground = new HBRUSH(PInvoke.GetStockObject(GET_STOCK_OBJECT_FLAGS.NULL_BRUSH)),
+                lpszMenuName = string.Empty.ToPCWStr(),
+                lpszClassName = _className.ToPCWStr(),
             };
 
-            NativeMethods.RegisterClassEx(ref wc);
+            var atom = PInvoke.RegisterClassEx(in wc);
 
-            var gcHandle = default(GCHandle);
+            var gcHandle = GCHandle.Alloc(this);
             try
             {
-                gcHandle = GCHandle.Alloc(this);
                 var pinnedThisPtr = (IntPtr)gcHandle;
 
-                Handle = NativeMethods.CreateWindowEx(
+                Handle = PInvoke.CreateWindowEx(
                     exStyle,
-                    _className,
+                    atom.ToString(),
                     name,
                     style,
                     (int)location.X,
                     (int)location.Y,
                     (int)location.Width,
                     (int)location.Height,
-                    IntPtr.Zero,
-                    IntPtr.Zero,
-                    IntPtr.Zero,
-                    pinnedThisPtr);
+                    new HWND(IntPtr.Zero),
+                    PInvoke.GetSystemMenu_SafeHandle(new HWND(IntPtr.Zero), false),
+                    PInvoke.GetModuleHandle(string.Empty),
+                    &pinnedThisPtr);
             }
             finally
             {
@@ -132,38 +135,27 @@ namespace Standard
             Handle = IntPtr.Zero;
         }
 
-        private static IntPtr _WndProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
+        private static LRESULT _WndProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
         {
-            var ret = IntPtr.Zero;
-            MessageWindow hwndWrapper = null;
-
-            if (msg == WM.CREATE)
+            if (!s_windowLookup.TryGetValue(hwnd, out var hwndWrapper))
             {
-                var createStruct = Marshal.PtrToStructure<CREATESTRUCT>(lParam);
-                var gcHandle = GCHandle.FromIntPtr(createStruct.lpCreateParams);
-                hwndWrapper = (MessageWindow)gcHandle.Target;
-                s_windowLookup.Add(hwnd, hwndWrapper);
-            }
-            else
-            {
-                if (!s_windowLookup.TryGetValue(hwnd, out hwndWrapper))
+                if (msg == (uint)WM.CREATE)
                 {
-                    return NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
+                    var createStruct = Marshal.PtrToStructure<CREATESTRUCT>(lParam);
+                    var gcHandle = GCHandle.FromIntPtr(createStruct.lpCreateParams);
+                    hwndWrapper = (MessageWindow)gcHandle.Target;
+                    s_windowLookup.Add(hwnd, hwndWrapper);
+                }
+                else
+                {
+                    return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
                 }
             }
-            Assert.IsNotNull(hwndWrapper);
 
             var callback = hwndWrapper._wndProcCallback;
-            if (callback != null)
-            {
-                ret = callback(hwnd, msg, wParam, lParam);
-            }
-            else
-            {
-                ret = NativeMethods.DefWindowProc(hwnd, msg, wParam, lParam);
-            }
+            var ret = callback != null ? callback(hwnd, msg, wParam, lParam) : PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
 
-            if (msg == WM.NCDESTROY)
+            if (msg == (uint)WM.NCDESTROY)
             {
                 hwndWrapper._Dispose(true, true);
                 GC.SuppressFinalize(hwndWrapper);
@@ -175,7 +167,7 @@ namespace Standard
         private static object _DestroyWindow(IntPtr hwnd, string className)
         {
             Utility.SafeDestroyWindow(ref hwnd);
-            NativeMethods.UnregisterClass(className, NativeMethods.GetModuleHandle(null));
+            PInvoke.UnregisterClass(className, PInvoke.GetModuleHandle(string.Empty));
             return null;
         }
     }

@@ -83,9 +83,6 @@ namespace Standard
             return ret;
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "DefWindowProcW")]
-        public static extern IntPtr DefWindowProc(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
-
         [DllImport("dwmapi.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DwmDefWindowProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam, out IntPtr plResult);
@@ -177,10 +174,10 @@ namespace Standard
             size = sizeBuilder.ToString();
         }
 
-        public static IntPtr GetModuleHandle(string lpModuleName)
+        public static FreeLibrarySafeHandle GetModuleHandle(string lpModuleName)
         {
-            var retPtr = _GetModuleHandle(lpModuleName);
-            if (retPtr == IntPtr.Zero)
+            var retPtr = PInvoke.GetModuleHandle(lpModuleName);
+            if (retPtr.IsInvalid is true)
             {
                 HRESULT.ThrowLastError();
             }
@@ -188,10 +185,10 @@ namespace Standard
             return retPtr;
         }
 
-        public static IntPtr GetStockObject(GET_STOCK_OBJECT_FLAGS fnObject)
+        public static DeleteObjectSafeHandle GetStockObject(GET_STOCK_OBJECT_FLAGS fnObject)
         {
-            var retPtr = _GetStockObject(fnObject);
-            if (retPtr == IntPtr.Zero)
+            var retPtr = PInvoke.GetStockObject_SafeHandle(fnObject);
+            if (retPtr.IsInvalid is true)
             {
                 HRESULT.ThrowLastError();
             }
@@ -215,15 +212,15 @@ namespace Standard
         // Note that this will throw HRESULT_FROM_WIN32(ERROR_CLASS_ALREADY_EXISTS) on duplicate registration.
         // If needed, consider adding a Try* version of this function that returns the error code since that
         // may be ignorable.
-        public static short RegisterClassEx(ref WNDCLASSEX lpwcx)
+        public static short RegisterClassEx(ref WNDCLASSEXW lpwcx)
         {
-            var ret = _RegisterClassEx(ref lpwcx);
+            var ret = PInvoke.RegisterClassEx(in lpwcx);
             if (ret == 0)
             {
                 HRESULT.ThrowLastError();
             }
 
-            return ret;
+            return (short)ret;
         }
 
         // Depending on the message, callers may want to call GetLastError based on the return value.
@@ -296,14 +293,6 @@ namespace Standard
             int cchMaxColorChars,
             StringBuilder pszSizeBuff,
             int cchMaxSizeChars);
-        [DllImport("kernel32.dll", EntryPoint = "GetModuleHandleW", CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr _GetModuleHandle([MarshalAs(UnmanagedType.LPWStr)] string lpModuleName);
-
-        [DllImport("gdi32.dll", EntryPoint = "GetStockObject", SetLastError = true)]
-        private static extern IntPtr _GetStockObject(GET_STOCK_OBJECT_FLAGS fnObject);
-
-        [DllImport("user32.dll", SetLastError = true, EntryPoint = "RegisterClassExW")]
-        private static extern short _RegisterClassEx([In] ref WNDCLASSEX lpwcx);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowRgn", SetLastError = true)]
         private static extern int _SetWindowRgn(IntPtr hWnd, IntPtr hRgn, [MarshalAs(UnmanagedType.Bool)] bool bRedraw);

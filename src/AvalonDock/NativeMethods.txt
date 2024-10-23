@@ -59,3 +59,5 @@ DwmGetColorizationColor
 GetModuleHandle
 TITLEBARINFOEX
 WINDOWPOS
+UnregisterClass
+DwmDefWindowProc
