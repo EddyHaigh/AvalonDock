@@ -28,7 +28,9 @@ namespace Microsoft.Windows.Shell
 
     using Standard;
 
-    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
+    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
+
+    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<AvalonDock.Controls.Shell.Standard.NativeStructs.WM, AvalonDock.Controls.Shell.Standard.NativeStructs.MessageHandler>;
     using Win32 = global::Windows.Win32;
 
     internal class WindowChromeWorker : DependencyObject

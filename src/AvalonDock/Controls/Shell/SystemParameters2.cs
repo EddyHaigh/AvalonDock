@@ -24,6 +24,7 @@ namespace Microsoft.Windows.Shell
 
     using Standard;
 
+    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
     using static AvalonDock.Win32Helper;
 
     using Win32 = global::Windows.Win32;

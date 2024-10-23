@@ -20,6 +20,8 @@ namespace Microsoft.Windows.Shell
 
     using Standard;
 
+    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
+
     public static class SystemCommands
     {
         public static RoutedCommand CloseWindowCommand { get; }
