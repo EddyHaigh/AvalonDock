@@ -24,9 +24,9 @@ namespace Microsoft.Windows.Shell
 
     using Standard;
 
-    using Win32 = global::Windows.Win32;
-
     using static AvalonDock.Win32Helper;
+
+    using Win32 = global::Windows.Win32;
 
     public class SystemParameters2 : INotifyPropertyChanged
     {
@@ -90,7 +90,7 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeCaptionHeight()
         {
-            var ptCaption = new Point(0, NativeMethods.GetSystemMetrics(SM.CYCAPTION));
+            var ptCaption = new Point(0, NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSMCAPTION));
             WindowCaptionHeight = DpiHelper.DevicePixelsToLogical(ptCaption).Y;
         }
 
@@ -101,7 +101,9 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeWindowResizeBorderThickness()
         {
-            var frameSize = new Size(NativeMethods.GetSystemMetrics(SM.CXSIZEFRAME), NativeMethods.GetSystemMetrics(SM.CYSIZEFRAME));
+            var frameSize = new Size(
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
             var frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
             WindowResizeBorderThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height, frameSizeInDips.Width, frameSizeInDips.Height);
         }
@@ -113,9 +115,11 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeWindowNonClientFrameThickness()
         {
-            var frameSize = new Size(NativeMethods.GetSystemMetrics(SM.CXSIZEFRAME), NativeMethods.GetSystemMetrics(SM.CYSIZEFRAME));
+            var frameSize = new Size(
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
             var frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
-            var captionHeight = NativeMethods.GetSystemMetrics(SM.CYCAPTION);
+            var captionHeight = NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYCAPTION);
             var captionHeightInDips = DpiHelper.DevicePixelsToLogical(new Point(0, captionHeight)).Y;
             WindowNonClientFrameThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height + captionHeightInDips, frameSizeInDips.Width, frameSizeInDips.Height);
         }
@@ -127,7 +131,9 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeSmallIconSize()
         {
-            SmallIconSize = new Size(NativeMethods.GetSystemMetrics(SM.CXSMICON), NativeMethods.GetSystemMetrics(SM.CYSMICON));
+            SmallIconSize = new Size(
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSMICON),
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSMICON));
         }
 
         private void _UpdateSmallIconSize(IntPtr wParam, IntPtr lParam)
@@ -139,11 +145,16 @@ namespace Microsoft.Windows.Shell
         {
             // This calculation isn't quite right, but it's pretty close.
             // I expect this is good enough for the scenarios where this is expected to be used.
-            var captionX = NativeMethods.GetSystemMetrics(SM.CXSIZE);
-            var captionY = NativeMethods.GetSystemMetrics(SM.CYSIZE);
+            var captionX = NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZE);
+            var captionY = NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZE);
 
-            var frameX = NativeMethods.GetSystemMetrics(SM.CXSIZEFRAME) + NativeMethods.GetSystemMetrics(SM.CXEDGE);
-            var frameY = NativeMethods.GetSystemMetrics(SM.CYSIZEFRAME) + NativeMethods.GetSystemMetrics(SM.CYEDGE);
+            var frameX =
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME)
+                + NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXEDGE);
+
+            var frameY =
+                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME)
+                + NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYEDGE);
 
             var captionRect = new Rect(0, 0, captionX * 3, captionY);
             captionRect.Offset(-frameX - captionRect.Width, frameY);
@@ -167,13 +178,13 @@ namespace Microsoft.Windows.Shell
                 Marshal.StructureToPtr(tbix, lParam, false);
                 // This might flash a window in the taskbar while being calculated.
                 // WM_GETTITLEBARINFOEX doesn't work correctly unless the window is visible while processing.
-                NativeMethods.ShowWindow(_messageHwnd.Handle, SW.SHOW);
+                Win32.PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOW);
                 NativeMethods.SendMessage(_messageHwnd.Handle, WM.GETTITLEBARINFOEX, IntPtr.Zero, lParam);
                 tbix = (TITLEBARINFOEX)Marshal.PtrToStructure(lParam, typeof(TITLEBARINFOEX));
             }
             finally
             {
-                NativeMethods.ShowWindow(_messageHwnd.Handle, SW.HIDE);
+                Win32.PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_HIDE);
                 Utility.SafeFreeHGlobal(ref lParam);
             }
 
@@ -293,7 +304,13 @@ namespace Microsoft.Windows.Shell
             // This window gets used for calculations about standard caption button locations
             // so it has WS_OVERLAPPEDWINDOW as a style to give it normal caption buttons.
             // This window may be shown during calculations of caption bar information, so create it at a location that's likely offscreen.
-            _messageHwnd = new MessageWindow((CS)0, WS.OVERLAPPEDWINDOW | WS.DISABLED, (WS_EX)0, new Rect(-16000, -16000, 100, 100), "", _WndProc);
+            _messageHwnd = new MessageWindow(
+                0,
+                Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_OVERLAPPEDWINDOW | Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_DISABLED,
+                0,
+                new Rect(-16000, -16000, 100, 100),
+                "",
+                _WndProc);
             _messageHwnd.Dispatcher.ShutdownStarted += (sender, e) => Utility.SafeDispose(ref _messageHwnd);
 
             // Fixup the default values of the DPs.

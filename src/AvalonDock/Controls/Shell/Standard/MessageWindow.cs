@@ -35,19 +35,24 @@ namespace Standard
             get; private set;
         }
 
-        public MessageWindow(CS classStyle, WS style, WS_EX exStyle, Rect location, string name, WndProc callback)
+        public MessageWindow(
+            Windows.Win32.UI.WindowsAndMessaging.WNDCLASS_STYLES classStyle,
+            Windows.Win32.UI.WindowsAndMessaging.WINDOW_STYLE style,
+            Windows.Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE exStyle,
+            Rect location,
+            string name,
+            WndProc callback)
         {
             // A null callback means just use DefWindowProc.
             _wndProcCallback = callback;
             _className = "MessageWindowClass+" + Guid.NewGuid().ToString();
-
             var wc = new WNDCLASSEX
             {
                 cbSize = Marshal.SizeOf(typeof(WNDCLASSEX)),
                 style = classStyle,
                 lpfnWndProc = s_WndProc,
                 hInstance = NativeMethods.GetModuleHandle(null),
-                hbrBackground = NativeMethods.GetStockObject(StockObject.NULL_BRUSH),
+                hbrBackground = NativeMethods.GetStockObject(global::Windows.Win32.Graphics.Gdi.GET_STOCK_OBJECT_FLAGS.NULL_BRUSH),
                 lpszMenuName = "",
                 lpszClassName = _className,
             };

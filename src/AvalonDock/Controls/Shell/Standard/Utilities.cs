@@ -271,13 +271,13 @@ namespace Standard
                     try
                     {
                         var gpStatus = NativeMethods.GdipCreateBitmapFromStream(istm, out bitmap);
-                        if (Status.Ok != gpStatus)
+                        if (Windows.Win32.Graphics.GdiPlus.Status.Ok != gpStatus)
                         {
                             return IntPtr.Zero;
                         }
 
                         gpStatus = NativeMethods.GdipCreateHICONFromBitmap(bitmap, out var hicon);
-                        return Status.Ok != gpStatus ? IntPtr.Zero : hicon;
+                        return Windows.Win32.Graphics.GdiPlus.Status.Ok != gpStatus ? IntPtr.Zero : hicon;
                         // Caller is responsible for freeing this.
                     }
                     finally
