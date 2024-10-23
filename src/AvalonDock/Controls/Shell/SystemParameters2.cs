@@ -20,7 +20,13 @@ namespace Microsoft.Windows.Shell
     using System.Windows;
     using System.Windows.Media;
 
+    using global::Windows.Win32.Foundation;
+
     using Standard;
+
+    using Win32 = global::Windows.Win32;
+
+    using static AvalonDock.Win32Helper;
 
     public class SystemParameters2 : INotifyPropertyChanged
     {
@@ -173,16 +179,16 @@ namespace Microsoft.Windows.Shell
 
             // TITLEBARINFOEX has information relative to the screen.  We need to convert the containing rect
             // to instead be relative to the top-right corner of the window.
-            var rcAllCaptionButtons = RECT.Union(tbix.rgrect_CloseButton, tbix.rgrect_MinimizeButton);
+            var rcAllCaptionButtons = tbix.rgrect_CloseButton.Union(tbix.rgrect_MinimizeButton);
             // For all known themes, the RECT for the maximize box shouldn't add anything to the union of the minimize and close boxes.
-            Assert.AreEqual(rcAllCaptionButtons, RECT.Union(rcAllCaptionButtons, tbix.rgrect_MaximizeButton));
+            Assert.AreEqual(rcAllCaptionButtons, rcAllCaptionButtons.Union(tbix.rgrect_MaximizeButton));
 
-            var rcWindow = NativeMethods.GetWindowRect(_messageHwnd.Handle);
+            Win32.PInvoke.GetWindowRect(new HWND(_messageHwnd.Handle), out RECT rcWindow);
 
             // Reorient the Top/Right to be relative to the top right edge of the Window.
             var deviceCaptionLocation = new Rect(
-                rcAllCaptionButtons.Left - rcWindow.Width - rcWindow.Left,
-                rcAllCaptionButtons.Top - rcWindow.Top,
+                rcAllCaptionButtons.left - rcWindow.Width - rcWindow.left,
+                rcAllCaptionButtons.top - rcWindow.top,
                 rcAllCaptionButtons.Width,
                 rcAllCaptionButtons.Height);
             var logicalCaptionLocation = DpiHelper.DeviceRectToLogical(deviceCaptionLocation);
