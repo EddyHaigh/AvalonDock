@@ -48,7 +48,7 @@ namespace AvalonDock
     {
         // ShortCut to current AvalonDock theme if OnThemeChanged() is invoked with DictionaryTheme instance
         // in e.OldValue and e.NewValue of the passed event
-        private ResourceDictionary currentThemeResourceDictionary;
+        private ResourceDictionary _currentThemeResourceDictionary;
 
         private AutoHideWindowManager _autoHideWindowManager;
         private FrameworkElement _autohideArea;
@@ -1206,10 +1206,10 @@ namespace AvalonDock
             {
                 if (oldTheme is DictionaryTheme)  // We are using AvalonDock's own DictionaryTheme class
                 {
-                    if (currentThemeResourceDictionary != null)
+                    if (_currentThemeResourceDictionary != null)
                     {
-                        resources.MergedDictionaries.Remove(currentThemeResourceDictionary);
-                        currentThemeResourceDictionary = null;
+                        resources.MergedDictionaries.Remove(_currentThemeResourceDictionary);
+                        _currentThemeResourceDictionary = null;
                     }
                 }
                 else                              // We are using standard ResourceDictionaries
@@ -1228,8 +1228,8 @@ namespace AvalonDock
             {
                 if (Theme is DictionaryTheme dictionaryTheme)
                 {
-                    currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
-                    resources.MergedDictionaries.Add(currentThemeResourceDictionary);
+                    _currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
+                    resources.MergedDictionaries.Add(_currentThemeResourceDictionary);
                 }
                 else
                 {
@@ -2245,7 +2245,7 @@ namespace AvalonDock
             }
         }
 
-        internal static void ExecuteAutoHideCommand(LayoutAnchorable _anchorable) => _anchorable.ToggleAutoHide();
+        internal static void ExecuteAutoHideCommand(LayoutAnchorable anchorable) => anchorable.ToggleAutoHide();
 
         /// <summary>
         /// Method executes when the user clicks the Float button in the context menu of an <see cref="LayoutAnchorable"/>.
@@ -3093,7 +3093,7 @@ namespace AvalonDock
         /// <param name="layoutItem"></param>
         private void ApplyStyleToLayoutItem(LayoutItem layoutItem)
         {
-            layoutItem._ClearDefaultBindings();
+            layoutItem.ClearDefaultBindings();
             if (LayoutItemContainerStyle != null)
             {
                 layoutItem.Style = LayoutItemContainerStyle;
@@ -3103,7 +3103,7 @@ namespace AvalonDock
                 layoutItem.Style = LayoutItemContainerStyleSelector.SelectStyle(layoutItem.Model, layoutItem);
             }
 
-            layoutItem._SetDefaultBindings();
+            layoutItem.SetDefaultBindings();
         }
 
         /// <summary>

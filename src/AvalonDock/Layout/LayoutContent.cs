@@ -45,7 +45,8 @@ namespace AvalonDock.Layout
         // BD: 14.08.2020 added _canCloseDefault to properly implement inverting _canClose default value in inheritors (e.g. LayoutAnchorable)
         //     Thus CanClose property will be serialized only when not equal to its default for given class
         //     With previous code it was not possible to serialize CanClose if set to true for LayoutAnchorable instance
-        internal bool _canClose = true, _canCloseDefault = true;
+        private bool _canClose = true;
+        internal bool CanCloseDefault = true;
 
         private bool _canFloat = true;
 
@@ -124,7 +125,7 @@ namespace AvalonDock.Layout
                 }
 
                 _canClose = value;
-                RaisePropertyChanged(nameof(CanClose));
+                RaisePropertyChanged(nameof(_canClose));
             }
         }
 
@@ -758,7 +759,7 @@ namespace AvalonDock.Layout
             // BD: 14.08.2020 changed to check CanClose value against the default in _canCloseDefault
             //     thus CanClose property will be serialized only when not equal to its default for given class
             //     With previous code it was not possible to serialize CanClose if set to true for LayoutAnchorable instance
-            if (CanClose != _canCloseDefault)
+            if (CanClose != CanCloseDefault)
             {
                 writer.WriteAttributeString(nameof(CanClose), CanClose.ToString());
             }

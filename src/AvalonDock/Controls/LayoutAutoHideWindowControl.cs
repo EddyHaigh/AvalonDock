@@ -49,23 +49,21 @@ namespace AvalonDock.Controls
                 typeof(LayoutAutoHideWindowControl),
                 new FrameworkPropertyMetadata(null));
 
-        internal LayoutAnchorableControl _internalHost = null;
-
         private readonly ContentPresenter _internalHostPresenter = new ContentPresenter();
+
         private LayoutAnchorControl _anchor;
         private Vector _initialStartPoint;
         private Grid _internalGrid = null;
         private HwndSource _internalHwndSource = null;
         private DockingManager _manager;
         private LayoutAnchorable _model;
+        private IntPtr _parentWindowHandle;
         private LayoutGridResizerControl _resizer = null;
         private Border _resizerGhost = null;
         private Window _resizerWindowHost = null;
         private AnchorSide _side;
         private SizeChangedEventHandler _sizeChangedHandler;
         private List<FrameworkElement> _sizeChangedListeningControls;
-        private IntPtr parentWindowHandle;
-
         static LayoutAutoHideWindowControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(LayoutAutoHideWindowControl), new FrameworkPropertyMetadata(typeof(LayoutAutoHideWindowControl)));
@@ -100,6 +98,8 @@ namespace AvalonDock.Controls
         }
 
         public ILayoutElement Model => _model;
+
+        internal LayoutAnchorableControl InternalHost { get; set; } = null;
 
         /// <summary>Resizer</summary>
         internal bool IsResizing { get; private set; }
@@ -167,7 +167,7 @@ namespace AvalonDock.Controls
                 return;
             }
 
-            _model.PropertyChanged -= _model_PropertyChanged;
+            _model.PropertyChanged -= ModelPropertyChanged;
             RemoveInternalGrid();
             _anchor = null;
             _model = null;
@@ -187,7 +187,7 @@ namespace AvalonDock.Controls
             _side = (anchor.Model.Parent.Parent as LayoutAnchorSide).Side;
             _manager = _model.Root.Manager;
             CreateInternalGrid();
-            _model.PropertyChanged += _model_PropertyChanged;
+            _model.PropertyChanged += ModelPropertyChanged;
             SetLayoutTransform();
             StartListeningToViewboxZoomChange();
             Visibility = Visibility.Visible;
@@ -211,7 +211,7 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            parentWindowHandle = hwndParent.Handle;
+            _parentWindowHandle = hwndParent.Handle;
             _internalHwndSource = new HwndSource(new HwndSourceParameters
             {
                 ParentWindow = hwndParent.Handle,
@@ -254,7 +254,7 @@ namespace AvalonDock.Controls
             return _internalHostPresenter.DesiredSize;
         }
 
-        private void _model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void ModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(LayoutAnchorable.IsAutoHidden))
             {
@@ -272,8 +272,8 @@ namespace AvalonDock.Controls
             _internalGrid = new Grid { FlowDirection = FlowDirection.LeftToRight };
             _internalGrid.SetBinding(Panel.BackgroundProperty, new Binding(nameof(Grid.Background)) { Source = this });
 
-            _internalHost = new LayoutAnchorableControl { Model = _model, Style = AnchorableStyle };
-            _internalHost.SetBinding(FlowDirectionProperty, new Binding("Model.Root.Manager.FlowDirection") { Source = this });
+            InternalHost = new LayoutAnchorableControl { Model = _model, Style = AnchorableStyle };
+            InternalHost.SetBinding(FlowDirectionProperty, new Binding("Model.Root.Manager.FlowDirection") { Source = this });
 
             KeyboardNavigation.SetTabNavigation(_internalGrid, KeyboardNavigationMode.Cycle);
             _resizer = new LayoutGridResizerControl();
@@ -288,7 +288,7 @@ namespace AvalonDock.Controls
                     _internalGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_manager.GridSplitterWidth) });
                     _internalGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = _model.AutoHideWidth == 0.0 ? new GridLength(_model.AutoHideMinWidth) : new GridLength(_model.AutoHideWidth, GridUnitType.Pixel) });
                     Grid.SetColumn(_resizer, 0);
-                    Grid.SetColumn(_internalHost, 1);
+                    Grid.SetColumn(InternalHost, 1);
                     _resizer.Cursor = Cursors.SizeWE;
                     HorizontalAlignment = HorizontalAlignment.Right;
                     VerticalAlignment = VerticalAlignment.Stretch;
@@ -297,7 +297,7 @@ namespace AvalonDock.Controls
                 case AnchorSide.Left:
                     _internalGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = _model.AutoHideWidth == 0.0 ? new GridLength(_model.AutoHideMinWidth) : new GridLength(_model.AutoHideWidth, GridUnitType.Pixel) });
                     _internalGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(_manager.GridSplitterWidth) });
-                    Grid.SetColumn(_internalHost, 0);
+                    Grid.SetColumn(InternalHost, 0);
                     Grid.SetColumn(_resizer, 1);
                     _resizer.Cursor = Cursors.SizeWE;
                     HorizontalAlignment = HorizontalAlignment.Left;
@@ -307,7 +307,7 @@ namespace AvalonDock.Controls
                 case AnchorSide.Top:
                     _internalGrid.RowDefinitions.Add(new RowDefinition { Height = _model.AutoHideHeight == 0.0 ? new GridLength(_model.AutoHideMinHeight) : new GridLength(_model.AutoHideHeight, GridUnitType.Pixel), });
                     _internalGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(_manager.GridSplitterHeight) });
-                    Grid.SetRow(_internalHost, 0);
+                    Grid.SetRow(InternalHost, 0);
                     Grid.SetRow(_resizer, 1);
                     _resizer.Cursor = Cursors.SizeNS;
                     VerticalAlignment = VerticalAlignment.Top;
@@ -318,14 +318,14 @@ namespace AvalonDock.Controls
                     _internalGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(_manager.GridSplitterHeight) });
                     _internalGrid.RowDefinitions.Add(new RowDefinition { Height = _model.AutoHideHeight == 0.0 ? new GridLength(_model.AutoHideMinHeight) : new GridLength(_model.AutoHideHeight, GridUnitType.Pixel), });
                     Grid.SetRow(_resizer, 0);
-                    Grid.SetRow(_internalHost, 1);
+                    Grid.SetRow(InternalHost, 1);
                     _resizer.Cursor = Cursors.SizeNS;
                     VerticalAlignment = VerticalAlignment.Bottom;
                     HorizontalAlignment = HorizontalAlignment.Stretch;
                     break;
             }
             _internalGrid.Children.Add(_resizer);
-            _internalGrid.Children.Add(_internalHost);
+            _internalGrid.Children.Add(InternalHost);
             _internalHostPresenter.Content = _internalGrid;
         }
 
@@ -366,7 +366,7 @@ namespace AvalonDock.Controls
                     {
                         if (_model.AutoHideWidth == 0.0)
                         {
-                            _model.AutoHideWidth = _internalHost.ActualWidth - delta;
+                            _model.AutoHideWidth = InternalHost.ActualWidth - delta;
                         }
                         else
                         {
@@ -380,7 +380,7 @@ namespace AvalonDock.Controls
                     {
                         if (_model.AutoHideWidth == 0.0)
                         {
-                            _model.AutoHideWidth = _internalHost.ActualWidth + delta;
+                            _model.AutoHideWidth = InternalHost.ActualWidth + delta;
                         }
                         else
                         {
@@ -394,7 +394,7 @@ namespace AvalonDock.Controls
                     {
                         if (_model.AutoHideHeight == 0.0)
                         {
-                            _model.AutoHideHeight = _internalHost.ActualHeight + delta;
+                            _model.AutoHideHeight = InternalHost.ActualHeight + delta;
                         }
                         else
                         {
@@ -408,7 +408,7 @@ namespace AvalonDock.Controls
                     {
                         if (_model.AutoHideHeight == 0.0)
                         {
-                            _model.AutoHideHeight = _internalHost.ActualHeight - delta;
+                            _model.AutoHideHeight = InternalHost.ActualHeight - delta;
                         }
                         else
                         {
@@ -438,7 +438,7 @@ namespace AvalonDock.Controls
 
             if (_side == AnchorSide.Right || _side == AnchorSide.Left)
             {
-                if (GetFlowDirection(_internalHost) == FlowDirection.RightToLeft)
+                if (GetFlowDirection(InternalHost) == FlowDirection.RightToLeft)
                 {
                     transformedDelta.X = -transformedDelta.X;
                 }

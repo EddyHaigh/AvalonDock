@@ -18,8 +18,9 @@ namespace AvalonDock.Controls
     [TemplatePart(Name = "PART_ItemsHolder", Type = typeof(Panel))]
     public class TabControlEx : TabControl
     {
-        private Panel ItemsHolderPanel = null;
-        private readonly bool _IsVirtualizing;
+        private readonly bool _isVirtualizing;
+
+        private Panel _itemsHolderPanel = null;
 
         /// <summary>
         /// Class constructor from virtualization parameter.
@@ -28,7 +29,7 @@ namespace AvalonDock.Controls
         public TabControlEx(bool isVirtualizing)
             : this()
         {
-            _IsVirtualizing = isVirtualizing;
+            _isVirtualizing = isVirtualizing;
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace AvalonDock.Controls
         protected TabControlEx()
             : base()
         {
-            _IsVirtualizing = true;
+            _isVirtualizing = true;
 
             // This is necessary so that we get the initial databound selected item
             ItemContainerGenerator.StatusChanged += ItemContainerGenerator_StatusChanged;
@@ -47,7 +48,7 @@ namespace AvalonDock.Controls
         [Bindable(false)]
         [Description("Gets whether the control and its inheriting classes are virtualizing their items or not.")]
         [Category("Other")]
-        public bool IsVirtualiting => _IsVirtualizing;
+        public bool IsVirtualiting => _isVirtualizing;
 
         /// <summary>
         /// Get the ItemsHolder and generate any children
@@ -57,12 +58,12 @@ namespace AvalonDock.Controls
             base.OnApplyTemplate();
 
             // Code below is required only if virtualization is turned ON
-            if (_IsVirtualizing)
+            if (_isVirtualizing)
             {
                 return;
             }
 
-            ItemsHolderPanel = CreateGrid();
+            _itemsHolderPanel = CreateGrid();
             // exchange ContentPresenter for Grid
             var topGrid = (Grid)GetVisualChild(0);
 
@@ -74,13 +75,40 @@ namespace AvalonDock.Controls
                 {
                     if (topGrid.Children[i] is Border border)
                     {
-                        border.Child = ItemsHolderPanel;
+                        border.Child = _itemsHolderPanel;
                         break;
                     }
                 }
             }
 
             UpdateSelectedItem();
+        }
+
+        /// <summary>
+        /// Gets the currently selected item (including its generation if Virtualization is currently switched on).
+        /// </summary>
+        /// <returns></returns>
+        protected TabItem GetSelectedTabItem()
+        {
+            object selectedItem = base.SelectedItem;
+
+            // Code below is required only if virtualization is turned ON
+            if (_isVirtualizing)
+            {
+                return selectedItem as TabItem;
+            }
+
+            if (selectedItem == null)
+            {
+                return null;
+            }
+
+            if (selectedItem is not TabItem item)
+            {
+                item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
+            }
+
+            return item;
         }
 
         /// <summary>
@@ -92,12 +120,12 @@ namespace AvalonDock.Controls
             base.OnItemsChanged(e);
 
             // Code below is required only if virtualization is turned ON
-            if (_IsVirtualizing)
+            if (_isVirtualizing)
             {
                 return;
             }
 
-            if (ItemsHolderPanel == null)
+            if (_itemsHolderPanel == null)
             {
                 return;
             }
@@ -105,7 +133,7 @@ namespace AvalonDock.Controls
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Reset:
-                    ItemsHolderPanel.Children.Clear();
+                    _itemsHolderPanel.Children.Clear();
                     break;
 
                 case NotifyCollectionChangedAction.Add:
@@ -117,7 +145,7 @@ namespace AvalonDock.Controls
                             ContentPresenter cp = FindChildContentPresenter(item);
                             if (cp != null)
                             {
-                                ItemsHolderPanel.Children.Remove(cp);
+                                _itemsHolderPanel.Children.Remove(cp);
                             }
                         }
                     }
@@ -142,90 +170,13 @@ namespace AvalonDock.Controls
             base.OnSelectionChanged(e);
 
             // Code below is required only if virtualization is turned ON
-            if (_IsVirtualizing)
+            if (_isVirtualizing)
             {
                 return;
             }
 
             UpdateSelectedItem();
         }
-
-        /// <summary>
-        /// Gets the currently selected item (including its generation if Virtualization is currently switched on).
-        /// </summary>
-        /// <returns></returns>
-        protected TabItem GetSelectedTabItem()
-        {
-            object selectedItem = base.SelectedItem;
-
-            // Code below is required only if virtualization is turned ON
-            if (_IsVirtualizing)
-            {
-                return selectedItem as TabItem;
-            }
-
-            if (selectedItem == null)
-            {
-                return null;
-            }
-
-            if (selectedItem is not TabItem item)
-            {
-                item = base.ItemContainerGenerator.ContainerFromIndex(base.SelectedIndex) as TabItem;
-            }
-
-            return item;
-        }
-
-        /// <summary>
-        /// If containers are done, generate the selected item
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
-        {
-            if (this.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
-            {
-                this.ItemContainerGenerator.StatusChanged -= ItemContainerGenerator_StatusChanged;
-                UpdateSelectedItem();
-            }
-        }
-
-        private Grid CreateGrid()
-        {
-            var grid = new Grid();
-            Binding binding = new Binding(PaddingProperty.Name);
-            binding.Source = this;  // view model?
-            grid.SetBinding(Grid.MarginProperty, binding);
-
-            binding = new Binding(SnapsToDevicePixelsProperty.Name);
-            binding.Source = this;  // view model?
-            grid.SetBinding(Grid.SnapsToDevicePixelsProperty, binding);
-
-            return grid;
-        }
-
-        private void UpdateSelectedItem()
-        {
-            if (ItemsHolderPanel == null)
-            {
-                return;
-            }
-
-            // Generate a ContentPresenter if necessary
-            TabItem item = GetSelectedTabItem();
-            if (item != null)
-            {
-                CreateChildContentPresenter(item);
-            }
-
-            // show the right child
-            foreach (ContentPresenter child in ItemsHolderPanel.Children)
-            {
-                child.Visibility = ((child.Tag as TabItem).IsSelected) ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
-
         private ContentPresenter CreateChildContentPresenter(object item)
         {
             if (item == null)
@@ -248,8 +199,22 @@ namespace AvalonDock.Controls
             cp.ContentStringFormat = this.SelectedContentStringFormat;
             cp.Visibility = Visibility.Collapsed;
             cp.Tag = (item is TabItem) ? item : (this.ItemContainerGenerator.ContainerFromItem(item));
-            ItemsHolderPanel.Children.Add(cp);
+            _itemsHolderPanel.Children.Add(cp);
             return cp;
+        }
+
+        private Grid CreateGrid()
+        {
+            var grid = new Grid();
+            Binding binding = new Binding(PaddingProperty.Name);
+            binding.Source = this;  // view model?
+            grid.SetBinding(Grid.MarginProperty, binding);
+
+            binding = new Binding(SnapsToDevicePixelsProperty.Name);
+            binding.Source = this;  // view model?
+            grid.SetBinding(Grid.SnapsToDevicePixelsProperty, binding);
+
+            return grid;
         }
 
         private ContentPresenter FindChildContentPresenter(object data)
@@ -264,12 +229,12 @@ namespace AvalonDock.Controls
                 return null;
             }
 
-            if (ItemsHolderPanel == null)
+            if (_itemsHolderPanel == null)
             {
                 return null;
             }
 
-            foreach (ContentPresenter cp in ItemsHolderPanel.Children)
+            foreach (ContentPresenter cp in _itemsHolderPanel.Children)
             {
                 if (cp.Content == data)
                 {
@@ -278,6 +243,40 @@ namespace AvalonDock.Controls
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// If containers are done, generate the selected item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+        {
+            if (this.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+            {
+                this.ItemContainerGenerator.StatusChanged -= ItemContainerGenerator_StatusChanged;
+                UpdateSelectedItem();
+            }
+        }
+        private void UpdateSelectedItem()
+        {
+            if (_itemsHolderPanel == null)
+            {
+                return;
+            }
+
+            // Generate a ContentPresenter if necessary
+            TabItem item = GetSelectedTabItem();
+            if (item != null)
+            {
+                CreateChildContentPresenter(item);
+            }
+
+            // show the right child
+            foreach (ContentPresenter child in _itemsHolderPanel.Children)
+            {
+                child.Visibility = ((child.Tag as TabItem).IsSelected) ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
     }
 }

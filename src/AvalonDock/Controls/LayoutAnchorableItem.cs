@@ -141,13 +141,13 @@ namespace AvalonDock.Controls
         internal override void Attach(LayoutContent model)
         {
             _anchorable = model as LayoutAnchorable;
-            _anchorable.IsVisibleChanged += _anchorable_IsVisibleChanged;
+            _anchorable.IsVisibleChanged += Anchorable_IsVisibleChanged;
             base.Attach(model);
         }
 
         internal override void Detach()
         {
-            _anchorable.IsVisibleChanged -= _anchorable_IsVisibleChanged;
+            _anchorable.IsVisibleChanged -= Anchorable_IsVisibleChanged;
             _anchorable = null;
             base.Detach();
         }
@@ -165,7 +165,7 @@ namespace AvalonDock.Controls
         }
 
         /// <inheritdoc />
-        protected override void ClearDefaultBindings()
+        protected internal override void ClearDefaultBindings()
         {
             if (HideCommand == _defaultHideCommand)
             {
@@ -257,7 +257,7 @@ namespace AvalonDock.Controls
         }
 
         /// <inheritdoc />
-        protected override void SetDefaultBindings()
+        protected internal override void SetDefaultBindings()
         {
             if (HideCommand == null)
             {
@@ -306,7 +306,7 @@ namespace AvalonDock.Controls
         /// <summary>Handles changes to the <see cref="HideCommand"/> property.</summary>
         private static void OnHideCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((LayoutAnchorableItem)d).OnHideCommandChanged(e);
 
-        private void _anchorable_IsVisibleChanged(object sender, EventArgs e)
+        private void Anchorable_IsVisibleChanged(object sender, EventArgs e)
         {
             if (_anchorable?.Root == null || !_anchorableVisibilityReentrantFlag.CanEnter)
             {

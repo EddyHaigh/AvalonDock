@@ -22,21 +22,21 @@ namespace AvalonDock.Controls
             }
         }
 
-        public _ReentrantFlagHandler Enter()
+        public ReentrantFlagHandler Enter()
         {
             if (_flag)
             {
                 throw new InvalidOperationException();
             }
 
-            return new _ReentrantFlagHandler(this);
+            return new ReentrantFlagHandler(this);
         }
 
-        public class _ReentrantFlagHandler : IDisposable
+        public class ReentrantFlagHandler : IDisposable
         {
             private ReentrantFlag _owner;
 
-            public _ReentrantFlagHandler(ReentrantFlag owner)
+            public ReentrantFlagHandler(ReentrantFlag owner)
             {
                 _owner = owner;
                 _owner._flag = true;

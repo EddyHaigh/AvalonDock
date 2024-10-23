@@ -42,7 +42,7 @@ namespace AvalonDock.Layout
             // LayoutAnchorable will hide by default, not close.
             // BD: 14.08.2020 Inverting both _canClose and _canCloseDefault to false as anchorables are only hidden but not closed
             //     That would allow CanClose to be properly serialized if set to true for an instance of LayoutAnchorable
-            _canClose = _canCloseDefault = false;
+            CanClose = CanCloseDefault = false;
         }
 
         public event EventHandler<CancelEventArgs> Hiding;

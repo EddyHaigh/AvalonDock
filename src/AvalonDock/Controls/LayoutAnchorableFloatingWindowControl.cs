@@ -64,7 +64,7 @@ namespace AvalonDock.Controls
                 root.Updated += OnRootUpdated;
             }
 
-            _model.IsVisibleChanged += _model_IsVisibleChanged;
+            _model.IsVisibleChanged += ModelIsVisibleChanged;
         }
 
         internal LayoutAnchorableFloatingWindowControl(LayoutAnchorableFloatingWindow model)
@@ -100,14 +100,14 @@ namespace AvalonDock.Controls
             }
 
             BindingOperations.ClearBinding(_model, VisibilityProperty);
-            _model.PropertyChanged -= _model_PropertyChanged;
+            _model.PropertyChanged -= ModelPropertyChanged;
             base.DisableBindings();
         }
 
         /// <inheritdoc />
         public override void EnableBindings()
         {
-            _model.PropertyChanged += _model_PropertyChanged;
+            _model.PropertyChanged += ModelPropertyChanged;
             SetVisibilityBinding();
             if (Model.Root is LayoutRoot layoutRoot)
             {
@@ -239,8 +239,8 @@ namespace AvalonDock.Controls
             // We have to clear binding instead of creating a new empty binding.
             BindingOperations.ClearBinding(_model, VisibilityProperty);
 
-            _model.PropertyChanged -= _model_PropertyChanged;
-            _model.IsVisibleChanged -= _model_IsVisibleChanged;
+            _model.PropertyChanged -= ModelPropertyChanged;
+            _model.IsVisibleChanged -= ModelIsVisibleChanged;
             Activated -= LayoutAnchorableFloatingWindowControl_Activated;
             IsVisibleChanged -= LayoutAnchorableFloatingWindowControl_IsVisibleChanged;
             BindingOperations.ClearBinding(this, VisibilityProperty);
@@ -270,7 +270,7 @@ namespace AvalonDock.Controls
             //Issue: http://avalondock.codeplex.com/workitem/15036
             IsVisibleChanged += LayoutAnchorableFloatingWindowControl_IsVisibleChanged;
             SetBinding(SingleContentLayoutItemProperty, new Binding("Model.SinglePane.SelectedContent") { Source = this, Converter = new LayoutItemFromLayoutModelConverter() });
-            _model.PropertyChanged += _model_PropertyChanged;
+            _model.PropertyChanged += ModelPropertyChanged;
         }
 
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="SingleContentLayoutItem"/> property.</summary>
@@ -282,7 +282,7 @@ namespace AvalonDock.Controls
         private static void OnSingleContentLayoutItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
             => ((LayoutAnchorableFloatingWindowControl)d).OnSingleContentLayoutItemChanged(e);
 
-        private void _model_IsVisibleChanged(object sender, EventArgs e)
+        private void ModelIsVisibleChanged(object sender, EventArgs e)
         {
             if (!IsVisible && _model.IsVisible)
             {
@@ -290,7 +290,7 @@ namespace AvalonDock.Controls
             }
         }
 
-        private void _model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void ModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {

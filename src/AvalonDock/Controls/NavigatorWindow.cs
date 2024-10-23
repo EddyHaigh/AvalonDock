@@ -40,7 +40,8 @@ namespace AvalonDock.Controls
         private bool _internalSetSelectedDocument = false;
         private bool _isSelectingDocument;
         private DockingManager _manager;
-        private ResourceDictionary currentThemeResourceDictionary; // = null
+        private ResourceDictionary _currentThemeResourceDictionary; // = null
+
         static NavigatorWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigatorWindow), new FrameworkPropertyMetadata(typeof(NavigatorWindow)));
@@ -285,10 +286,10 @@ namespace AvalonDock.Controls
             {
                 if (oldTheme is DictionaryTheme)
                 {
-                    if (currentThemeResourceDictionary != null)
+                    if (_currentThemeResourceDictionary != null)
                     {
-                        Resources.MergedDictionaries.Remove(currentThemeResourceDictionary);
-                        currentThemeResourceDictionary = null;
+                        Resources.MergedDictionaries.Remove(_currentThemeResourceDictionary);
+                        _currentThemeResourceDictionary = null;
                     }
                 }
                 else
@@ -309,8 +310,8 @@ namespace AvalonDock.Controls
 
             if (_manager.Theme is DictionaryTheme dictionaryTheme)
             {
-                currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
-                Resources.MergedDictionaries.Add(currentThemeResourceDictionary);
+                _currentThemeResourceDictionary = dictionaryTheme.ThemeResourceDictionary;
+                Resources.MergedDictionaries.Add(_currentThemeResourceDictionary);
             }
             else
             {

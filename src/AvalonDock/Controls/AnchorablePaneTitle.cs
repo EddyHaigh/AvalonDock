@@ -28,7 +28,7 @@ namespace AvalonDock.Controls
 
         /// <summary><see cref="Model"/> dependency property.</summary>
         public static readonly DependencyProperty ModelProperty = DependencyProperty.Register(nameof(Model), typeof(LayoutAnchorable), typeof(AnchorablePaneTitle),
-                new FrameworkPropertyMetadata(null, _OnModelChanged));
+                new FrameworkPropertyMetadata(null, OnModelChanged));
 
         /// <summary><see cref="LayoutItem"/> Read-Only dependency property.</summary>
         private static readonly DependencyPropertyKey LayoutItemPropertyKey = DependencyProperty.RegisterReadOnly(nameof(LayoutItem), typeof(LayoutItem), typeof(AnchorablePaneTitle),
@@ -159,6 +159,7 @@ namespace AvalonDock.Controls
         /// <param name="value">The new value for the property.</param>
         protected void SetLayoutItem(LayoutItem value) => SetValue(LayoutItemPropertyKey, value);
 
-        private static void _OnModelChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e) => ((AnchorablePaneTitle)sender).OnModelChanged(e);
+        private static void OnModelChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+            => ((AnchorablePaneTitle)sender).OnModelChanged(e);
     }
 }
