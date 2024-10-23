@@ -43,7 +43,7 @@ namespace AvalonDock.Controls
                 nameof(CanHide),
                 typeof(bool),
                 typeof(LayoutAnchorableItem),
-                new FrameworkPropertyMetadata((bool)true, OnCanHideChanged));
+                new FrameworkPropertyMetadata(true, OnCanHideChanged));
 
         /// <summary><see cref="CanMove"/> dependency property.</summary>
         public static readonly DependencyProperty CanMoveProperty
@@ -51,7 +51,7 @@ namespace AvalonDock.Controls
                 nameof(CanMove),
                 typeof(bool),
                 typeof(LayoutAnchorableItem),
-                new FrameworkPropertyMetadata((bool)true, OnCanMoveChanged));
+                new FrameworkPropertyMetadata(true, OnCanMoveChanged));
 
         /// <summary><see cref="DockCommand"/> dependency property.</summary>
         public static readonly DependencyProperty DockCommandProperty

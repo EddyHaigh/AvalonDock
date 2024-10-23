@@ -74,7 +74,7 @@ namespace AvalonDock.Controls
         [Category("Menu")]
         public object DropDownContextMenuDataContext
         {
-            get => (object)GetValue(DropDownContextMenuDataContextProperty);
+            get => GetValue(DropDownContextMenuDataContextProperty);
             set => SetValue(DropDownContextMenuDataContextProperty, value);
         }
 

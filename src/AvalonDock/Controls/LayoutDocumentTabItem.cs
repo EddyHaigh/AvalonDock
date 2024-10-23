@@ -183,7 +183,7 @@ namespace AvalonDock.Controls
                 }
 
                 var targetModel = _otherTabs[indexOfTabItemWithMouseOver].Content as LayoutContent;
-                var container = Model.Parent as ILayoutContainer;
+                var container = Model.Parent;
                 var containerPane = Model.Parent as ILayoutPane;
 
                 if (containerPane is LayoutDocumentPane layoutDocumentPane && !layoutDocumentPane.CanRepositionItems)

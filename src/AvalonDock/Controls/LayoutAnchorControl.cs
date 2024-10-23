@@ -33,7 +33,7 @@ namespace AvalonDock.Controls
                 "Side",
                 typeof(AnchorSide),
                 typeof(LayoutAnchorControl),
-                new FrameworkPropertyMetadata((AnchorSide)AnchorSide.Left));
+                new FrameworkPropertyMetadata(AnchorSide.Left));
 
         private LayoutAnchorable _model;
         private DispatcherTimer _openUpTimer = null;
