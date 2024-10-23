@@ -481,7 +481,7 @@ namespace AvalonDock.Controls
 
         private static object CoerceContentValue(DependencyObject sender, object content)
         {
-            if (!(sender is LayoutFloatingWindowControl lfwc))
+            if (sender is not LayoutFloatingWindowControl lfwc)
             {
                 return null;
             }

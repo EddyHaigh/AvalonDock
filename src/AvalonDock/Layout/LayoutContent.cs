@@ -545,7 +545,7 @@ namespace AvalonDock.Layout
         /// <summary>Dock the content as document.</summary>
         public void DockAsDocument()
         {
-            if (!(Root is LayoutRoot root))
+            if (Root is not LayoutRoot root)
             {
                 throw new InvalidOperationException();
             }
