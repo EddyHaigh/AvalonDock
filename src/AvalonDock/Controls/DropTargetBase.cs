@@ -21,7 +21,7 @@ namespace AvalonDock.Controls
                 "IsDraggingOver",
                 typeof(bool),
                 typeof(DropTargetBase),
-                new FrameworkPropertyMetadata((bool)false));
+                new FrameworkPropertyMetadata(false));
 
         /// <summary>Gets wether the user is dragging a window over the target element.</summary>
         [Bindable(true)]

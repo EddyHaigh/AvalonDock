@@ -282,7 +282,7 @@ namespace AvalonDock.Controls
                 case DropTargetType.DocumentPaneDockInside:
                     {
                         var paneModel = targetModel as LayoutDocumentPane;
-                        var layoutDocumentPaneGroup = floatingWindow.RootPanel as LayoutDocumentPaneGroup;
+                        var layoutDocumentPaneGroup = floatingWindow.RootPanel;
 
                         // A LayoutFloatingDocumentWindow can contain multiple instances of both Anchorables or Documents
                         // and we should drop these back into the DocumentPane if they are available
@@ -474,7 +474,6 @@ namespace AvalonDock.Controls
                 case DropTargetType.DocumentPaneDockInside:
                     {
                         var paneModel = targetModel as LayoutDocumentPane;
-                        var layoutAnchorablePaneGroup = floatingWindow.RootPanel as LayoutAnchorablePaneGroup;
 
                         bool checkPreviousContainer = true;
                         int i = 0;
@@ -485,7 +484,7 @@ namespace AvalonDock.Controls
                         }
                         LayoutAnchorable anchorableToActivate = null;
 
-                        foreach (var anchorableToImport in layoutAnchorablePaneGroup.Descendents().OfType<LayoutAnchorable>().ToArray())
+                        foreach (var anchorableToImport in floatingWindow.RootPanel.Descendents().OfType<LayoutAnchorable>().ToArray())
                         {
                             if (checkPreviousContainer)
                             {

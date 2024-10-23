@@ -48,12 +48,11 @@ namespace AvalonDock.Controls
 
                     if (isLayoutContentSelected && !doc.IsVisible)
                     {
-                        var parentContainer = layoutContent.Parent as ILayoutContainer;
                         var parentSelector = layoutContent.Parent as ILayoutContentSelector;
                         var parentPane = layoutContent.Parent as ILayoutPane;
                         int contentIndex = parentSelector.IndexOf(layoutContent);
                         if (contentIndex > 0 &&
-                            parentContainer.ChildrenCount > 1)
+                            layoutContent.Parent.ChildrenCount > 1)
                         {
                             parentPane.MoveChild(contentIndex, 0);
                             parentSelector.SelectedContentIndex = 0;

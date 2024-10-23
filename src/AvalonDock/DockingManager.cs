@@ -1144,7 +1144,7 @@ namespace AvalonDock
         [Category("Other")]
         public object ActiveContent
         {
-            get => (object)GetValue(ActiveContentProperty);
+            get => GetValue(ActiveContentProperty);
             set => SetValue(ActiveContentProperty, value);
         }
 
@@ -2513,8 +2513,7 @@ namespace AvalonDock
             //if (layout.Descendents().OfType<LayoutDocument>().Any())
             //    throw new InvalidOperationException("Unable to set the DocumentsSource property if LayoutDocument objects are already present in the model");
             var documentsImported = layout.Descendents().OfType<LayoutDocument>().Select(d => d.Content).ToArray();
-            var documents = documentsSource as IEnumerable;
-            var listOfDocumentsToImport = new List<object>(documents.OfType<object>());
+            var listOfDocumentsToImport = new List<object>(documentsSource.OfType<object>());
 
             foreach (var document in listOfDocumentsToImport.ToArray())
             {
@@ -2657,8 +2656,7 @@ namespace AvalonDock
                 var documentsToRemove = GetItemsToRemoveAfterReset<LayoutDocument>(DocumentsSource);
                 foreach (var documentToRemove in documentsToRemove)
                 {
-                    (documentToRemove.Parent as ILayoutContainer)?.RemoveChild(
-                        documentToRemove);
+                    documentToRemove.Parent?.RemoveChild(documentToRemove);
                     RemoveViewFromLogicalChild(documentToRemove);
                 }
             }
@@ -2706,8 +2704,7 @@ namespace AvalonDock
 
             foreach (var documentToRemove in documentsToRemove)
             {
-                (documentToRemove.Parent as ILayoutContainer).RemoveChild(
-                    documentToRemove);
+                documentToRemove.Parent.RemoveChild(documentToRemove);
                 RemoveViewFromLogicalChild(documentToRemove);
             }
 
@@ -2760,8 +2757,7 @@ namespace AvalonDock
             //if (layout.Descendents().OfType<LayoutAnchorable>().Any())
             //    throw new InvalidOperationException("Unable to set the AnchorablesSource property if LayoutAnchorable objects are already present in the model");
             var anchorablesImported = layout.Descendents().OfType<LayoutAnchorable>().Select(d => d.Content).ToArray();
-            var anchorables = anchorablesSource as IEnumerable;
-            var listOfAnchorablesToImport = new List<object>(anchorables.OfType<object>());
+            var listOfAnchorablesToImport = new List<object>(anchorablesSource.OfType<object>());
 
             foreach (var document in listOfAnchorablesToImport.ToArray())
             {
@@ -2913,8 +2909,7 @@ namespace AvalonDock
                 var anchorablesToRemove = GetItemsToRemoveAfterReset<LayoutAnchorable>(AnchorablesSource);
                 foreach (var anchorableToRemove in anchorablesToRemove)
                 {
-                    (anchorableToRemove.Parent as ILayoutContainer).RemoveChild(
-                        anchorableToRemove);
+                    anchorableToRemove.Parent.RemoveChild(anchorableToRemove);
                     RemoveViewFromLogicalChild(anchorableToRemove);
                 }
             }
