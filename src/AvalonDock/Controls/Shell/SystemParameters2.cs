@@ -21,6 +21,7 @@ namespace Microsoft.Windows.Shell
     using System.Windows.Media;
 
     using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     using Standard;
 
@@ -91,7 +92,10 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeCaptionHeight()
         {
-            var ptCaption = new Point(0, NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSMCAPTION));
+            var ptCaption = new Point(
+                0,
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSMCAPTION));
+
             WindowCaptionHeight = DpiHelper.DevicePixelsToLogical(ptCaption).Y;
         }
 
@@ -103,8 +107,8 @@ namespace Microsoft.Windows.Shell
         private void _InitializeWindowResizeBorderThickness()
         {
             var frameSize = new Size(
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
             var frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
             WindowResizeBorderThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height, frameSizeInDips.Width, frameSizeInDips.Height);
         }
@@ -117,10 +121,11 @@ namespace Microsoft.Windows.Shell
         private void _InitializeWindowNonClientFrameThickness()
         {
             var frameSize = new Size(
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME));
+
             var frameSizeInDips = DpiHelper.DeviceSizeToLogical(frameSize);
-            var captionHeight = NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYCAPTION);
+            var captionHeight = Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYCAPTION);
             var captionHeightInDips = DpiHelper.DevicePixelsToLogical(new Point(0, captionHeight)).Y;
             WindowNonClientFrameThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height + captionHeightInDips, frameSizeInDips.Width, frameSizeInDips.Height);
         }
@@ -133,8 +138,8 @@ namespace Microsoft.Windows.Shell
         private void _InitializeSmallIconSize()
         {
             SmallIconSize = new Size(
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSMICON),
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSMICON));
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSMICON),
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSMICON));
         }
 
         private void _UpdateSmallIconSize(IntPtr wParam, IntPtr lParam)
@@ -146,16 +151,16 @@ namespace Microsoft.Windows.Shell
         {
             // This calculation isn't quite right, but it's pretty close.
             // I expect this is good enough for the scenarios where this is expected to be used.
-            var captionX = NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZE);
-            var captionY = NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZE);
+            var captionX = Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZE);
+            var captionY = Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZE);
 
             var frameX =
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME)
-                + NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXEDGE);
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME)
+                + Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CXEDGE);
 
             var frameY =
-                NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME)
-                + NativeMethods.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYEDGE);
+                Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME)
+                + Win32.PInvoke.GetSystemMetrics(Win32.UI.WindowsAndMessaging.SYSTEM_METRICS_INDEX.SM_CYEDGE);
 
             var captionRect = new Rect(0, 0, captionX * 3, captionY);
             captionRect.Offset(-frameX - captionRect.Width, frameY);
@@ -166,14 +171,14 @@ namespace Microsoft.Windows.Shell
         private void _InitializeCaptionButtonLocation()
         {
             // There is a completely different way to do this on XP.
-            if (!Utility.IsOSVistaOrNewer || !NativeMethods.IsThemeActive())
+            if (!Utility.IsOSVistaOrNewer || !Win32.PInvoke.IsThemeActive())
             {
                 _LegacyInitializeCaptionButtonLocation();
                 return;
             }
 
-            var tbix = new TITLEBARINFOEX { cbSize = Marshal.SizeOf<TITLEBARINFOEX>() };
-            var lParam = Marshal.AllocHGlobal(tbix.cbSize);
+            var tbix = new TITLEBARINFOEX { cbSize = (uint)Marshal.SizeOf<TITLEBARINFOEX>() };
+            var lParam = Marshal.AllocHGlobal((int)tbix.cbSize);
             try
             {
                 Marshal.StructureToPtr(tbix, lParam, false);
@@ -191,9 +196,9 @@ namespace Microsoft.Windows.Shell
 
             // TITLEBARINFOEX has information relative to the screen.  We need to convert the containing rect
             // to instead be relative to the top-right corner of the window.
-            var rcAllCaptionButtons = tbix.rgrect_CloseButton.Union(tbix.rgrect_MinimizeButton);
+            var rcAllCaptionButtons = tbix.rgrect._5.Union(tbix.rgrect._2);
             // For all known themes, the RECT for the maximize box shouldn't add anything to the union of the minimize and close boxes.
-            Assert.AreEqual(rcAllCaptionButtons, rcAllCaptionButtons.Union(tbix.rgrect_MaximizeButton));
+            Assert.AreEqual(rcAllCaptionButtons, rcAllCaptionButtons.Union(tbix.rgrect._3));
 
             Win32.PInvoke.GetWindowRect(new HWND(_messageHwnd.Handle), out RECT rcWindow);
 
@@ -214,8 +219,8 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeHighContrast()
         {
-            var hc = NativeMethods.SystemParameterInfo_GetHIGHCONTRAST();
-            HighContrast = (hc.dwFlags & HCF.HIGHCONTRASTON) != 0;
+            var hc = NativeMethods.SystemParameterInfoGetHighContrast();
+            HighContrast = (hc.dwFlags & Win32.UI.Accessibility.HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON) != 0;
         }
 
         private void _UpdateHighContrast(IntPtr wParam, IntPtr lParam)
@@ -225,7 +230,7 @@ namespace Microsoft.Windows.Shell
 
         private void _InitializeThemeInfo()
         {
-            if (!NativeMethods.IsThemeActive())
+            if (!Win32.PInvoke.IsThemeActive())
             {
                 UxThemeName = "Classic";
                 UxThemeColor = "";

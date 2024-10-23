@@ -25,6 +25,7 @@ namespace Microsoft.Windows.Shell
     using AvalonDock;
 
     using global::Windows.Win32.Foundation;
+    using global::Windows.Win32.UI.WindowsAndMessaging;
 
     using Standard;
 
@@ -38,13 +39,13 @@ namespace Microsoft.Windows.Shell
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
-        private const Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS _SwpFlags =
-            Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED
-            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOSIZE
-            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOMOVE
-            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOZORDER
-            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER
-            | Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
+        private const SET_WINDOW_POS_FLAGS _SwpFlags =
+            SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED
+            | SET_WINDOW_POS_FLAGS.SWP_NOSIZE
+            | SET_WINDOW_POS_FLAGS.SWP_NOMOVE
+            | SET_WINDOW_POS_FLAGS.SWP_NOZORDER
+            | SET_WINDOW_POS_FLAGS.SWP_NOOWNERZORDER
+            | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE;
 
         private readonly List<HANDLE_MESSAGE> _messageTable;
 
@@ -159,8 +160,8 @@ namespace Microsoft.Windows.Shell
             {
                 // On older versions of the framework the client size of the window is incorrectly calculated.
                 // We need to modify the template to fix this on behalf of the user.
-                Utility.AddDependencyPropertyChangeListener(_window, Window.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
-                Utility.AddDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.AddDependencyPropertyChangeListener(_window, System.Windows.Controls.Control.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.AddDependencyPropertyChangeListener(_window, FrameworkElement.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
             }
             _window.Closed += _UnsetWindow;
             // Use whether we can get an HWND to determine if the Window has been loaded.
@@ -196,8 +197,8 @@ namespace Microsoft.Windows.Shell
         {
             if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
-                Utility.RemoveDependencyPropertyChangeListener(_window, Window.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
-                Utility.RemoveDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.RemoveDependencyPropertyChangeListener(_window, System.Windows.Controls.Control.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.RemoveDependencyPropertyChangeListener(_window, FrameworkElement.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
             }
             if (_chromeInfo != null)
             {
@@ -406,9 +407,9 @@ namespace Microsoft.Windows.Shell
             }
 
             _hasUserMovedWindow = false;
-            var windowPlacement = new Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT()
+            var windowPlacement = new WINDOWPLACEMENT()
             {
-                length = (uint)Marshal.SizeOf<Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT>(),
+                length = (uint)Marshal.SizeOf<WINDOWPLACEMENT>(),
             };
 
             Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
@@ -424,8 +425,8 @@ namespace Microsoft.Windows.Shell
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
-            var style = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE);
-            var exstyle = (Win32.UI.WindowsAndMessaging.WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_EXSTYLE);
+            var style = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE);
+            var exstyle = (WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_EXSTYLE);
 
             Win32.PInvoke.AdjustWindowRectEx(ref rcWindow, style, false, exstyle);
             return rcWindow;
@@ -474,7 +475,7 @@ namespace Microsoft.Windows.Shell
 
         private IntPtr _HandleSetTextOrIcon(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            var modified = _ModifyStyle(Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE, 0);
+            var modified = _ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
 
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
@@ -484,7 +485,7 @@ namespace Microsoft.Windows.Shell
             // Put back the style we removed.
             if (modified)
             {
-                _ModifyStyle(0, Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE);
+                _ModifyStyle(0, WINDOW_STYLE.WS_VISIBLE);
             }
 
             handled = true;
@@ -610,7 +611,7 @@ namespace Microsoft.Windows.Shell
             if (!_isGlassEnabled)
             {
                 Assert.IsNotDefault(lParam);
-                var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                var wp = Marshal.PtrToStructure<WINDOWPOS>(lParam);
                 _SetRoundingRegion(wp);
             }
 
@@ -697,10 +698,10 @@ namespace Microsoft.Windows.Shell
         /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
         /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
         /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        private bool _ModifyStyle(Win32.UI.WindowsAndMessaging.WINDOW_STYLE removeStyle, Win32.UI.WindowsAndMessaging.WINDOW_STYLE addStyle)
+        private bool _ModifyStyle(WINDOW_STYLE removeStyle, WINDOW_STYLE addStyle)
         {
             Assert.IsNotDefault(_hwnd);
-            var dwStyle = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
+            var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
             var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
             if (dwStyle == dwNewStyle)
             {
@@ -716,18 +717,18 @@ namespace Microsoft.Windows.Shell
         /// </summary>
         private WindowState _GetHwndState()
         {
-            var windowPlacement = new Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT()
+            var windowPlacement = new WINDOWPLACEMENT()
             {
-                length = (uint)Marshal.SizeOf<Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT>()
+                length = (uint)Marshal.SizeOf<WINDOWPLACEMENT>()
             };
 
             Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
             switch (windowPlacement.showCmd)
             {
-                case Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOWMINIMIZED:
+                case SHOW_WINDOW_CMD.SW_SHOWMINIMIZED:
                     return WindowState.Minimized;
 
-                case Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED:
+                case SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED:
                     return WindowState.Maximized;
             }
             return WindowState.Normal;
@@ -755,13 +756,13 @@ namespace Microsoft.Windows.Shell
         /// </remarks>
         private void _UpdateSystemMenu(WindowState? assumeState)
         {
-            const Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS mfEnabled
-                = Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_ENABLED | Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_BYCOMMAND;
+            const MENU_ITEM_FLAGS mfEnabled
+                = MENU_ITEM_FLAGS.MF_ENABLED | MENU_ITEM_FLAGS.MF_BYCOMMAND;
 
-            const Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS mfDisabled
-                = Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_GRAYED
-                | Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_DISABLED
-                | Win32.UI.WindowsAndMessaging.MENU_ITEM_FLAGS.MF_BYCOMMAND;
+            const MENU_ITEM_FLAGS mfDisabled
+                = MENU_ITEM_FLAGS.MF_GRAYED
+                | MENU_ITEM_FLAGS.MF_DISABLED
+                | MENU_ITEM_FLAGS.MF_BYCOMMAND;
 
             var state = assumeState ?? _GetHwndState();
 
@@ -772,15 +773,15 @@ namespace Microsoft.Windows.Shell
 
             _lastMenuState = state;
 
-            var modified = _ModifyStyle(Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE, 0);
+            var modified = _ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
             SafeHandle menuSafeHandle  = Win32.PInvoke.GetSystemMenu_SafeHandle(new HWND(_hwnd), false);
             if (menuSafeHandle.IsInvalid is false)
             {
-                var dwStyle = (Win32.UI.WindowsAndMessaging.WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
+                var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
 
-                var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_MINIMIZEBOX);
-                var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_MAXIMIZEBOX);
-                var canSize = Utility.IsFlagSet((int)dwStyle, (int)Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_THICKFRAME);
+                var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_MINIMIZEBOX);
+                var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_MAXIMIZEBOX);
+                var canSize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_THICKFRAME);
 
                 switch (state)
                 {
@@ -811,7 +812,7 @@ namespace Microsoft.Windows.Shell
             }
             if (modified)
             {
-                _ModifyStyle(0, Win32.UI.WindowsAndMessaging.WINDOW_STYLE.WS_VISIBLE);
+                _ModifyStyle(0, WINDOW_STYLE.WS_VISIBLE);
             }
         }
 
@@ -854,7 +855,8 @@ namespace Microsoft.Windows.Shell
 
         private void _ClearRoundingRegion()
         {
-            NativeMethods.SetWindowRgn(_hwnd, IntPtr.Zero, NativeMethods.IsWindowVisible(_hwnd));
+            var hwnd = new HWND(_hwnd);
+            Win32.PInvoke.SetWindowRgn(hwnd, Win32.Graphics.Gdi.HRGN.Null, Win32.PInvoke.IsWindowVisible(hwnd));
         }
 
         private void _SetRoundingRegion(WINDOWPOS? wp)
@@ -863,14 +865,14 @@ namespace Microsoft.Windows.Shell
 
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
-            var windowPlacement = new Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT()
+            var windowPlacement = new WINDOWPLACEMENT()
             {
-                length = (uint)Marshal.SizeOf<Win32.UI.WindowsAndMessaging.WINDOWPLACEMENT>(),
+                length = (uint)Marshal.SizeOf<WINDOWPLACEMENT>(),
             };
 
             Win32.PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
 
-            if (windowPlacement.showCmd == Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED)
+            if (windowPlacement.showCmd == SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED)
             {
                 int left;
                 int top;
@@ -908,11 +910,11 @@ namespace Microsoft.Windows.Shell
                 Size windowSize;
 
                 // Use the size if it's specified.
-                if (null != wp && !Utility.IsFlagSet(wp.Value.flags, (int)Win32.UI.WindowsAndMessaging.SET_WINDOW_POS_FLAGS.SWP_NOSIZE))
+                if (wp != null && !Utility.IsFlagSet((int)wp.Value.flags, (int)SET_WINDOW_POS_FLAGS.SWP_NOSIZE))
                 {
                     windowSize = new Size((double)wp.Value.cx, (double)wp.Value.cy);
                 }
-                else if (null != wp && (_lastRoundingState == _window.WindowState))
+                else if (wp != null && (_lastRoundingState == _window.WindowState))
                 {
                     return;
                 }
@@ -969,7 +971,8 @@ namespace Microsoft.Windows.Shell
                         _CreateAndCombineRoundRectRgn(hRegion, bottomRightRegionRect, bottomRightRadius);
                     }
 
-                    NativeMethods.SetWindowRgn(_hwnd, hRegion, NativeMethods.IsWindowVisible(_hwnd));
+                    var hwnd = new HWND(_hwnd);
+                    NativeMethods.SetWindowRgn(hwnd, hRegion, Win32.PInvoke.IsWindowVisible(hwnd));
                     hRegion = IntPtr.Zero;
                 }
                 finally

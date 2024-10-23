@@ -33,21 +33,6 @@ internal class NativeStructs
     }
 
     /// <summary>
-    /// HIGHCONTRAST flags
-    /// </summary>
-    [Flags]
-    internal enum HCF
-    {
-        HIGHCONTRASTON = 0x00000001,
-        AVAILABLE = 0x00000002,
-        HOTKEYACTIVE = 0x00000004,
-        CONFIRMHOTKEY = 0x00000008,
-        HOTKEYSOUND = 0x00000010,
-        INDICATOR = 0x00000020,
-        HOTKEYAVAILABLE = 0x00000040,
-    }
-
-    /// <summary>
     /// Non-client hit test values, HT*
     /// </summary>
     internal enum HT
@@ -351,76 +336,11 @@ internal class NativeStructs
         public WINDOW_EX_STYLE dwExStyle;
     }
 
-    // Native Types
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct HIGHCONTRAST
-    {
-        public int cbSize;
-        public HCF dwFlags;
-
-        //[MarshalAs(UnmanagedType.LPWStr, SizeConst=80)]
-        //public String lpszDefaultScheme;
-        public IntPtr lpszDefaultScheme;
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct LOGFONT
-    {
-        public int lfHeight;
-        public int lfWidth;
-        public int lfEscapement;
-        public int lfOrientation;
-        public int lfWeight;
-        public byte lfItalic;
-        public byte lfUnderline;
-        public byte lfStrikeOut;
-        public byte lfCharSet;
-        public byte lfOutPrecision;
-        public byte lfClipPrecision;
-        public byte lfQuality;
-        public byte lfPitchAndFamily;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        public string lfFaceName;
-    }
-
-    // New to Vista.
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct TITLEBARINFOEX
-    {
-        public int cbSize;
-        public RECT rcTitleBar;
-        public STATE_SYSTEM rgstate_TitleBar;
-        public STATE_SYSTEM rgstate_Reserved;
-        public STATE_SYSTEM rgstate_MinimizeButton;
-        public STATE_SYSTEM rgstate_MaximizeButton;
-        public STATE_SYSTEM rgstate_HelpButton;
-        public STATE_SYSTEM rgstate_CloseButton;
-        public RECT rgrect_TitleBar;
-        public RECT rgrect_Reserved;
-        public RECT rgrect_MinimizeButton;
-        public RECT rgrect_MaximizeButton;
-        public RECT rgrect_HelpButton;
-        public RECT rgrect_CloseButton;
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     internal struct UNSIGNED_RATIO
     {
         public uint uiNumerator;
         public uint uiDenominator;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct WINDOWPOS
-    {
-        public IntPtr hwnd;
-        public IntPtr hwndInsertAfter;
-        public int x;
-        public int y;
-        public int cx;
-        public int cy;
-        public int flags;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

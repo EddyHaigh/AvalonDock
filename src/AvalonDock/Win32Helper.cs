@@ -20,6 +20,23 @@ namespace AvalonDock
 {
     internal static class Win32Helper
     {
+        internal unsafe static PCWSTR ToPCWStr(this string text)
+        {
+            fixed (char* chars = text)
+            {
+                return new PCWSTR(chars);
+            }
+        }
+
+        internal unsafe static PWSTR ToPWStr(this string text)
+        {
+            fixed (char* chars = text)
+            {
+                return new PWSTR(chars);
+            }
+        }
+
+
         internal const int WS_CHILD = 0x40000000;
         internal const int WS_VISIBLE = 0x10000000;
         internal const int WS_VSCROLL = 0x00200000;
