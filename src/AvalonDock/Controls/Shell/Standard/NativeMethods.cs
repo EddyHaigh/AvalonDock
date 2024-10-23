@@ -16,20 +16,18 @@ namespace Standard
     using System;
     using System.ComponentModel;
     using System.IO;
-    using System.Runtime.ConstrainedExecution;
     using System.Runtime.InteropServices;
     using System.Text;
-
-    using AvalonDock.Controls.Shell.Standard;
 
     using Windows.Win32;
     using Windows.Win32.Foundation;
     using Windows.Win32.Graphics.Dwm;
     using Windows.Win32.Graphics.Gdi;
+    using Windows.Win32.UI.Accessibility;
     using Windows.Win32.UI.WindowsAndMessaging;
 
     using static AvalonDock.Controls.Shell.Standard.NativeStructs;
-
+    using static AvalonDock.Win32Helper;
     // Some COM interfaces and Win32 structures are already declared in the framework.
     // Interesting ones to remember in System.Runtime.InteropServices.ComTypes are:
     using IStream = System.Runtime.InteropServices.ComTypes.IStream;
@@ -88,18 +86,6 @@ namespace Standard
         [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "DefWindowProcW")]
         public static extern IntPtr DefWindowProc(IntPtr hWnd, WM Msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("gdi32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DeleteObject(IntPtr hObject);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DestroyIcon(IntPtr handle);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DestroyWindow(IntPtr hwnd);
-
         [DllImport("dwmapi.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DwmDefWindowProc(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam, out IntPtr plResult);
@@ -107,9 +93,10 @@ namespace Standard
         public static bool DwmGetColorizationColor(out uint pcrColorization, out bool pfOpaqueBlend)
         {
             // Make this call safe to make on downlevel OSes...
-            if (Utility.IsOSVistaOrNewer && IsThemeActive())
+            if (Utility.IsOSVistaOrNewer && PInvoke.IsThemeActive())
             {
-                var hr = _DwmGetColorizationColor(out pcrColorization, out pfOpaqueBlend);
+                var hr = PInvoke.DwmGetColorizationColor(out pcrColorization, out BOOL pfOpaqueBlendNative);
+                pfOpaqueBlend = pfOpaqueBlendNative;
                 if (hr.Succeeded)
                 {
                     return true;
@@ -132,7 +119,7 @@ namespace Standard
                 return null; // API was new to Vista.
             }
 
-            var hr = global::Windows.Win32.PInvoke.DwmGetCompositionTimingInfo(
+            var hr = PInvoke.DwmGetCompositionTimingInfo(
                 new HWND(Utility.IsOSWindows8OrNewer ? IntPtr.Zero : hwnd),
                 out DWM_TIMING_INFO pTimingInfo);
 
@@ -141,7 +128,7 @@ namespace Standard
                 return null; // The system isn't yet ready to respond.  Return null rather than throw.
             }
 
-            hr.ThrowOnFailure(new IntPtr(hr.Value));
+            hr.ThrowOnFailure();
             return pTimingInfo;
         }
 
@@ -152,7 +139,8 @@ namespace Standard
             {
                 return false;
             }
-            return _DwmIsCompositionEnabled();
+
+            return PInvoke.DwmIsCompositionEnabled(out BOOL pfEnabled).Succeeded && pfEnabled;
         }
 
         public static MENU_ITEM_FLAGS EnableMenuItem(SafeHandle hMenu, SC uIDEnableItem, MENU_ITEM_FLAGS uEnable)
@@ -203,16 +191,13 @@ namespace Standard
         public static IntPtr GetStockObject(GET_STOCK_OBJECT_FLAGS fnObject)
         {
             var retPtr = _GetStockObject(fnObject);
-            if (retPtr == null)
+            if (retPtr == IntPtr.Zero)
             {
                 HRESULT.ThrowLastError();
             }
 
             return retPtr;
         }
-
-        [DllImport("user32.dll")]
-        public static extern int GetSystemMetrics(SYSTEM_METRICS_INDEX nIndex);
 
         // This is aliased as a macro in 32bit Windows.
         public static IntPtr GetWindowLongPtr(IntPtr hwnd, GWL nIndex)
@@ -226,18 +211,6 @@ namespace Standard
 
             return ret;
         }
-
-        [DllImport("uxtheme.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsThemeActive();
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWindow(IntPtr hwnd);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool IsWindowVisible(IntPtr hwnd);
 
         // Note that this will throw HRESULT_FROM_WIN32(ERROR_CLASS_ALREADY_EXISTS) on duplicate registration.
         // If needed, consider adding a Try* version of this function that returns the error code since that
@@ -269,10 +242,14 @@ namespace Standard
             }
         }
 
-        public static HIGHCONTRAST SystemParameterInfo_GetHIGHCONTRAST()
+        public unsafe static HIGHCONTRASTA SystemParameterInfoGetHighContrast()
         {
-            var hc = new HIGHCONTRAST { cbSize = Marshal.SizeOf<HIGHCONTRAST>() };
-            if (!_SystemParametersInfo_HIGHCONTRAST(SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETHIGHCONTRAST, hc.cbSize, ref hc, 0))
+            var hc = new HIGHCONTRASTA { cbSize = (uint)Marshal.SizeOf<HIGHCONTRASTA>() };
+            if (!PInvoke.SystemParametersInfo(
+                SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETHIGHCONTRAST,
+                hc.cbSize,
+                &hc,
+                0))
             {
                 HRESULT.ThrowLastError();
             }
@@ -309,15 +286,7 @@ namespace Standard
             IntPtr hInstance,
             IntPtr lpParam);
 
-        [DllImport("dwmapi.dll", EntryPoint = "DwmGetColorizationColor", PreserveSig = true)]
-        private static extern HRESULT _DwmGetColorizationColor(out uint pcrColorization, [Out, MarshalAs(UnmanagedType.Bool)] out bool pfOpaqueBlend);
 
-        [DllImport("dwmapi.dll", EntryPoint = "DwmGetCompositionTimingInfo")]
-        private static extern HRESULT _DwmGetCompositionTimingInfo(IntPtr hwnd, ref DWM_TIMING_INFO pTimingInfo);
-
-        [DllImport("dwmapi.dll", EntryPoint = "DwmIsCompositionEnabled", PreserveSig = false)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _DwmIsCompositionEnabled();
 
         [DllImport("uxtheme.dll", EntryPoint = "GetCurrentThemeName", CharSet = CharSet.Unicode)]
         private static extern HRESULT _GetCurrentThemeName(
@@ -338,14 +307,6 @@ namespace Standard
 
         [DllImport("user32.dll", EntryPoint = "SetWindowRgn", SetLastError = true)]
         private static extern int _SetWindowRgn(IntPtr hWnd, IntPtr hRgn, [MarshalAs(UnmanagedType.Bool)] bool bRedraw);
-
-        /// <summary>Overload of SystemParametersInfo for getting and setting HIGHCONTRAST.</summary>
-        [DllImport("user32.dll", EntryPoint = "SystemParametersInfoW", SetLastError = true, CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool _SystemParametersInfo_HIGHCONTRAST(SYSTEM_PARAMETERS_INFO_ACTION uiAction,
-            int uiParam,
-            [In, Out] ref HIGHCONTRAST pvParam,
-            SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS fWinIni);
 
         [DllImport("user32.dll", EntryPoint = "UnregisterClass", CharSet = CharSet.Unicode, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -377,6 +338,7 @@ namespace Standard
         public const uint sizeof_WCHAR = 2;
         public const uint TRUE = 1;
     }
+
     [StructLayout(LayoutKind.Explicit)]
     internal class PROPVARIANT : IDisposable
     {

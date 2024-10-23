@@ -36,6 +36,7 @@ namespace Standard
     using Windows.Win32;
     using Windows.Win32.Graphics.Gdi;
     using Windows.Win32.Foundation;
+    using Windows.Win32.UI.WindowsAndMessaging;
 
     internal static partial class Utility
     {
@@ -387,7 +388,7 @@ namespace Standard
             gdiObject = IntPtr.Zero;
             if (p != IntPtr.Zero)
             {
-                NativeMethods.DeleteObject(p);
+                PInvoke.DeleteObject(new HGDIOBJ(p));
             }
         }
 
@@ -397,17 +398,16 @@ namespace Standard
             hicon = IntPtr.Zero;
             if (p != IntPtr.Zero)
             {
-                NativeMethods.DestroyIcon(p);
+                PInvoke.DestroyIcon(new HICON(p));
             }
         }
 
         public static void SafeDestroyWindow(ref IntPtr hwnd)
         {
-            var p = hwnd;
-            hwnd = IntPtr.Zero;
-            if (NativeMethods.IsWindow(p))
+            HWND p = new(hwnd);
+            if (PInvoke.IsWindow(p))
             {
-                NativeMethods.DestroyWindow(p);
+                PInvoke.DestroyWindow(p);
             }
         }
 

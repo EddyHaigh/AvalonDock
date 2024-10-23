@@ -4,8 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.Win32.SafeHandles;
 
-using Standard;
-
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;

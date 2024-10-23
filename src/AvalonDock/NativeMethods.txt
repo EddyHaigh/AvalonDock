@@ -46,3 +46,16 @@ GetSystemMetrics
 GdipDisposeImage
 SystemParametersInfoW
 RegisterClassEx
+IsThemeActive
+DestroyWindow
+GetCurrentThemeName
+IsWindowVisible
+HIGHCONTRASTA
+DeleteObject
+DestroyIcon
+DefWindowProc
+DwmIsCompositionEnabled
+DwmGetColorizationColor
+GetModuleHandle
+TITLEBARINFOEX
+WINDOWPOS
