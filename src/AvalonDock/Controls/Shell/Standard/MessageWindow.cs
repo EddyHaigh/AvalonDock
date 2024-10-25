@@ -6,36 +6,36 @@
    This program is provided to you under the terms of the Microsoft Public
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
-
 /**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Threading;
+
+using AvalonDock;
+
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.UI.WindowsAndMessaging;
+
+
+
 namespace Standard
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.InteropServices;
-    using System.Windows;
-    using System.Windows.Threading;
-
-    using AvalonDock;
-
-    using Windows.Win32;
-    using Windows.Win32.Foundation;
-    using Windows.Win32.Graphics.Gdi;
-    using Windows.Win32.UI.WindowsAndMessaging;
-
-    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
-
     internal sealed class MessageWindow : DispatcherObject, IDisposable
     {
+
         // Alias this to a static so the wrapper doesn't get GC'd
         private static readonly WNDPROC s_WndProc = new WNDPROC(_WndProc);
 
         private static readonly Dictionary<IntPtr, MessageWindow> s_windowLookup = new Dictionary<IntPtr, MessageWindow>();
 
-        private WNDPROC _wndProcCallback;
+        private readonly WNDPROC _wndProcCallback;
         private string _className;
         private bool _isDisposed;
 
@@ -135,14 +135,14 @@ namespace Standard
             Handle = IntPtr.Zero;
         }
 
-        private static LRESULT _WndProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
+        private unsafe static LRESULT _WndProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
         {
             if (!s_windowLookup.TryGetValue(hwnd, out var hwndWrapper))
             {
-                if (msg == (uint)WM.CREATE)
+                if (msg == PInvoke.WM_ACTIVATE)
                 {
-                    var createStruct = Marshal.PtrToStructure<CREATESTRUCT>(lParam);
-                    var gcHandle = GCHandle.FromIntPtr(createStruct.lpCreateParams);
+                    var createStruct = Marshal.PtrToStructure<CREATESTRUCTW>(lParam);
+                    var gcHandle = GCHandle.FromIntPtr((nint)createStruct.lpCreateParams);
                     hwndWrapper = (MessageWindow)gcHandle.Target;
                     s_windowLookup.Add(hwnd, hwndWrapper);
                 }
@@ -155,7 +155,7 @@ namespace Standard
             var callback = hwndWrapper._wndProcCallback;
             var ret = callback != null ? callback(hwnd, msg, wParam, lParam) : PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
 
-            if (msg == (uint)WM.NCDESTROY)
+            if (msg == PInvoke.WM_NCDESTROY)
             {
                 hwndWrapper._Dispose(true, true);
                 GC.SuppressFinalize(hwndWrapper);

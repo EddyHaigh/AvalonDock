@@ -12,6 +12,8 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 
+using Standard;
+
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
@@ -35,7 +37,7 @@ namespace AvalonDock
             {
                 if (GetParentWindowHandle(element, out IntPtr parentHwnd))
                 {
-                    Win32Helper.SetOwner(new WindowInteropHelper(window).Handle, parentHwnd);
+                    NativeMethods.SetOwner(new WindowInteropHelper(window).Handle, parentHwnd);
                 }
             }
         }
@@ -48,7 +50,7 @@ namespace AvalonDock
             }
             else
             {
-                return Win32Helper.GetOwner(new WindowInteropHelper(window).Handle);
+                return NativeMethods.GetOwner(new WindowInteropHelper(window).Handle);
             }
         }
 
@@ -78,7 +80,7 @@ namespace AvalonDock
             }
             else
             {
-                Win32Helper.SetOwner(new WindowInteropHelper(window).Handle, IntPtr.Zero);
+                NativeMethods.SetOwner(new WindowInteropHelper(window).Handle, IntPtr.Zero);
             }
         }
     }

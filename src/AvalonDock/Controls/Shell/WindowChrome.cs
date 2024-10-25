@@ -18,6 +18,8 @@ namespace Microsoft.Windows.Shell
     using System.Windows;
     using System.Windows.Data;
 
+    using AvalonDock.Diagnostics;
+
     using Standard;
 
     public class WindowChrome : Freezable

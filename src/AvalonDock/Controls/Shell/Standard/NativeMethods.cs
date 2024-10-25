@@ -6,58 +6,34 @@
    This program is provided to you under the terms of the Microsoft Public
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
-
 /**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
+using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows;
+
+using AvalonDock.Diagnostics;
+
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Dwm;
+using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.WindowsAndMessaging;
+
 namespace Standard
 {
-    using System;
-    using System.ComponentModel;
-    using System.IO;
-    using System.Runtime.InteropServices;
-    using System.Text;
-
-    using Windows.Win32;
-    using Windows.Win32.Foundation;
-    using Windows.Win32.Graphics.Dwm;
-    using Windows.Win32.Graphics.Gdi;
-    using Windows.Win32.UI.Accessibility;
-    using Windows.Win32.UI.WindowsAndMessaging;
-    using Windows.Win32.Graphics.GdiPlus;
-
-    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
-    using static AvalonDock.Win32Helper;
-    // Some COM interfaces and Win32 structures are already declared in the framework.
-    // Interesting ones to remember in System.Runtime.InteropServices.ComTypes are:
-    using IStream = System.Runtime.InteropServices.ComTypes.IStream;
-
-    // Some native methods are shimmed through public versions that handle converting failures into thrown exceptions.
     internal static class NativeMethods
     {
-        public static IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect)
-        {
-            var ret = _CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect);
-            if (ret == IntPtr.Zero)
-            {
-                throw new Win32Exception();
-            }
-
-            return ret;
-        }
-
-        public static IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse)
-        {
-            var ret = _CreateRoundRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect, nWidthEllipse, nHeightEllipse);
-            if (ret == IntPtr.Zero)
-            {
-                throw new Win32Exception();
-            }
-
-            return ret;
-        }
-
+        /// <summary>
+        /// Retrieves the current color used for DWM colorization and whether the color is opaque.
+        /// </summary>
+        /// <param name="pcrColorization">The current color used for DWM colorization.</param>
+        /// <param name="pfOpaqueBlend">Indicates whether the color is opaque.</param>
+        /// <returns>True if the colorization color was successfully retrieved; otherwise, false.</returns>
         public static bool DwmGetColorizationColor(out uint pcrColorization, out bool pfOpaqueBlend)
         {
             // Make this call safe to make on downlevel OSes...
@@ -80,6 +56,11 @@ namespace Standard
             return false;
         }
 
+        /// <summary>
+        /// Retrieves the composition timing information for the specified window.
+        /// </summary>
+        /// <param name="hwnd">A handle to the window.</param>
+        /// <returns>The composition timing information, or null if the system is not ready to respond.</returns>
         public static DWM_TIMING_INFO? DwmGetCompositionTimingInfo(IntPtr hwnd)
         {
             if (!Utility.IsOSVistaOrNewer)
@@ -91,7 +72,7 @@ namespace Standard
                 new HWND(Utility.IsOSWindows8OrNewer ? IntPtr.Zero : hwnd),
                 out DWM_TIMING_INFO pTimingInfo);
 
-            if (hr.Value == HRESULT.E_PENDING.Code)
+            if (hr.Value == HResultCodes.E_PENDING)
             {
                 return null; // The system isn't yet ready to respond.  Return null rather than throw.
             }
@@ -100,75 +81,88 @@ namespace Standard
             return pTimingInfo;
         }
 
+        /// <summary>
+        /// Determines whether DWM composition is enabled.
+        /// </summary>
+        /// <returns>True if DWM composition is enabled; otherwise, false.</returns>
         public static bool DwmIsCompositionEnabled()
         {
             // Make this call safe to make on downlevel OSes...
-            if (!Utility.IsOSVistaOrNewer)
-            {
-                return false;
-            }
-
-            return PInvoke.DwmIsCompositionEnabled(out BOOL pfEnabled).Succeeded && pfEnabled;
+            return Utility.IsOSVistaOrNewer && PInvoke.DwmIsCompositionEnabled(out BOOL pfEnabled).Succeeded && pfEnabled;
         }
 
-        public static MENU_ITEM_FLAGS EnableMenuItem(SafeHandle hMenu, SC uIDEnableItem, MENU_ITEM_FLAGS uEnable)
+        /// <summary>
+        /// Enables, disables, or grays out the specified menu item.
+        /// </summary>
+        /// <param name="hMenu">A handle to the menu.</param>
+        /// <param name="uIDEnableItem">The menu item to be enabled, disabled, or grayed.</param>
+        /// <param name="uEnable">Flags specifying the action to be taken.</param>
+        /// <returns>The previous state of the menu item, or -1 if the menu item does not exist.</returns>
+        public static MENU_ITEM_FLAGS EnableMenuItem(SafeHandle hMenu, uint uIDEnableItem, MENU_ITEM_FLAGS uEnable)
         {
-            var result = (MENU_ITEM_FLAGS)(int)global::Windows.Win32.PInvoke.EnableMenuItem(hMenu, (uint)uIDEnableItem, uEnable);
+            var result = (MENU_ITEM_FLAGS)(int)global::Windows.Win32.PInvoke.EnableMenuItem(hMenu, uIDEnableItem, uEnable);
             // Returns the previous state of the menu item, or -1 if the menu item does not exist.
             return result;
         }
 
-        [DllImport("gdiplus.dll")]
-        public static extern Status GdipCreateBitmapFromStream(IStream stream, out IntPtr bitmap);
-
-        [DllImport("gdiplus.dll")]
-        public static extern Status GdipCreateHICONFromBitmap(IntPtr bitmap, out IntPtr hbmReturn);
-
-        [DllImport("gdiplus.dll")]
-        public static extern Status GdipDisposeImage(IntPtr image);
-
-        public static void GetCurrentThemeName(out string themeFileName, out string color, out string size)
+        /// <summary>
+        /// Retrieves the current theme name, color, and size.
+        /// </summary>
+        /// <param name="themeFileName">The current theme file name.</param>
+        /// <param name="color">The current color scheme name.</param>
+        /// <param name="size">The current size name.</param>
+        public unsafe static void GetCurrentThemeName(out string themeFileName, out string color, out string size)
         {
-            // Not expecting strings longer than MAX_PATH.  We will return the error
-            var fileNameBuilder = new StringBuilder((int)Win32Value.MAX_PATH);
-            var colorBuilder = new StringBuilder((int)Win32Value.MAX_PATH);
-            var sizeBuilder = new StringBuilder((int)Win32Value.MAX_PATH);
+            // The windows max path.
+            const int maxPath = 260;
+            const char whitespace = ' ';
 
-            // This will throw if the theme service is not active (e.g. not UxTheme!IsThemeActive).
-            _GetCurrentThemeName(fileNameBuilder, fileNameBuilder.Capacity,
-                                 colorBuilder, colorBuilder.Capacity,
-                                 sizeBuilder, sizeBuilder.Capacity)
-                .ThrowIfFailed();
+            // Not expecting strings longer than max path. We will return the error
+            var fileNameBuilder = new string(whitespace, maxPath);
+            var colorBuilder = new string(whitespace, maxPath);
+            var sizeBuilder = new string(whitespace, maxPath);
 
-            themeFileName = fileNameBuilder.ToString();
-            color = colorBuilder.ToString();
-            size = sizeBuilder.ToString();
-        }
-
-        public static FreeLibrarySafeHandle GetModuleHandle(string lpModuleName)
-        {
-            var retPtr = PInvoke.GetModuleHandle(lpModuleName);
-            if (retPtr.IsInvalid is true)
+            fixed (char* fileNameReference = fileNameBuilder)
+            fixed (char* colorNameReference = colorBuilder)
+            fixed (char* sizeReference = sizeBuilder)
             {
-                HRESULT.ThrowLastError();
-            }
+                var fileNamePwString = new PWSTR(fileNameReference);
+                var colorPwString = new PWSTR(colorNameReference);
+                var sizePwString = new PWSTR(sizeReference);
 
-            return retPtr;
+                PInvoke.GetCurrentThemeName(
+                    fileNamePwString,
+                    fileNamePwString.Length,
+                    colorPwString,
+                    colorPwString.Length,
+                    sizePwString,
+                    sizePwString.Length)
+                    .ThrowOnFailure();
+
+                themeFileName = fileNamePwString.ToString();
+                color = colorPwString.ToString();
+                size = sizePwString.ToString();
+            }
         }
 
-        public static DeleteObjectSafeHandle GetStockObject(GET_STOCK_OBJECT_FLAGS fnObject)
+        /// <summary>
+        /// Retrieves the owner window of the specified window.
+        /// </summary>
+        /// <param name="childHandle">A handle to the window.</param>
+        /// <returns>A handle to the owner window.</returns>
+        public static IntPtr GetOwner(IntPtr childHandle)
         {
-            var retPtr = PInvoke.GetStockObject_SafeHandle(fnObject);
-            if (retPtr.IsInvalid is true)
-            {
-                HRESULT.ThrowLastError();
-            }
-
-            return retPtr;
+            return GetWindowLongPtr(childHandle, WINDOW_LONG_PTR_INDEX.GWL_HWNDPARENT);
         }
 
-        // This is aliased as a macro in 32bit Windows.
-        public static IntPtr GetWindowLongPtr(IntPtr hwnd, GWL nIndex)
+        /// <summary>
+        /// Retrieves information about the specified window.
+        /// </summary>
+        /// <param name="hwnd">A handle to the window.</param>
+        /// <param name="nIndex">The zero-based offset to the value to be retrieved.</param>
+        /// <returns>The requested value.</returns>
+        /// <exception cref="Win32Exception">Thrown when the function fails.</exception>
+        public static IntPtr GetWindowLongPtr(IntPtr hwnd, WINDOW_LONG_PTR_INDEX nIndex)
         {
             var ret = IntPtr.Zero;
             ret = IntPtr.Size == 8 ? GetWindowLongPtr64(hwnd, nIndex) : new IntPtr(GetWindowLongPtr32(hwnd, nIndex));
@@ -180,32 +174,79 @@ namespace Standard
             return ret;
         }
 
-        // Note that this will throw HRESULT_FROM_WIN32(ERROR_CLASS_ALREADY_EXISTS) on duplicate registration.
-        // If needed, consider adding a Try* version of this function that returns the error code since that
-        // may be ignorable.
-        public static short RegisterClassEx(ref WNDCLASSEXW lpwcx)
+        /// <summary>
+        /// Retrieves the Z order of the specified window.
+        /// </summary>
+        /// <param name="hwnd">A handle to the window.</param>
+        /// <param name="zOrder">The Z order of the window.</param>
+        /// <returns>True if the Z order was successfully retrieved; otherwise, false.</returns>
+        public static bool GetWindowZOrder(IntPtr hwnd, out int zOrder)
         {
-            var ret = PInvoke.RegisterClassEx(in lpwcx);
-            if (ret == 0)
+            var lowestHwnd = PInvoke.GetWindow(new HWND(hwnd), GET_WINDOW_CMD.GW_HWNDLAST);
+
+            var z = 0;
+            var hwndTmp = lowestHwnd;
+            while (hwndTmp != IntPtr.Zero)
             {
-                HRESULT.ThrowLastError();
+                if (hwnd == hwndTmp)
+                {
+                    zOrder = z;
+                    return true;
+                }
+
+                hwndTmp = PInvoke.GetWindow(hwndTmp, GET_WINDOW_CMD.GW_HWNDPREV);
+                z++;
             }
 
-            return (short)ret;
+            zOrder = int.MinValue;
+            return false;
         }
 
-        // This is aliased as a macro in 32bit Windows.
-        public static IntPtr SetWindowLongPtr(IntPtr hwnd, GWL nIndex, IntPtr dwNewLong)
+        /// <summary>
+        /// Offsets the specified rectangle by the specified amounts.
+        /// </summary>
+        /// <param name="rect">The rectangle to be offset.</param>
+        /// <param name="dx">The amount to offset the rectangle horizontally.</param>
+        /// <param name="dy">The amount to offset the rectangle vertically.</param>
+        /// <returns>The offset rectangle.</returns>
+        public static RECT Offset(this RECT rect, int dx, int dy)
+        {
+            rect.left += dx;
+            rect.top += dy;
+            rect.right += dx;
+            rect.bottom += dy;
+
+            return rect;
+        }
+
+        /// <summary>
+        /// Sets the owner window of the specified window.
+        /// </summary>
+        /// <param name="childHandle">A handle to the window.</param>
+        /// <param name="ownerHandle">A handle to the owner window.</param>
+        public static void SetOwner(IntPtr childHandle, IntPtr ownerHandle)
+        {
+            SetWindowLongPtr(
+                childHandle,
+                WINDOW_LONG_PTR_INDEX.GWL_HWNDPARENT,
+                ownerHandle);
+        }
+
+        /// <summary>
+        /// Sets information about the specified window.
+        /// </summary>
+        /// <param name="hwnd">A handle to the window.</param>
+        /// <param name="nIndex">The zero-based offset to the value to be set.</param>
+        /// <param name="dwNewLong">The new value.</param>
+        /// <returns>The previous value.</returns>
+        public static IntPtr SetWindowLongPtr(IntPtr hwnd, WINDOW_LONG_PTR_INDEX nIndex, IntPtr dwNewLong)
             => IntPtr.Size == 8 ? SetWindowLongPtr64(hwnd, nIndex, dwNewLong) : new IntPtr(SetWindowLongPtr32(hwnd, nIndex, dwNewLong.ToInt32()));
 
-        public static void SetWindowRgn(HWND hWnd, HRGN hRgn, bool bRedraw)
-        {
-            if (PInvoke.SetWindowRgn(hWnd, hRgn, bRedraw) == 0)
-            {
-                throw new Win32Exception();
-            }
-        }
-
+        /// <summary>
+        /// Retrieves the high contrast settings for the system.
+        /// </summary>
+        /// <returns>The high contrast settings.</returns>
+        /// <exception cref="HRESULT">Thrown when the function fails.</exception>
         public unsafe static HIGHCONTRASTA SystemParameterInfoGetHighContrast()
         {
             var hc = new HIGHCONTRASTA { cbSize = (uint)Marshal.SizeOf<HIGHCONTRASTA>() };
@@ -215,170 +256,64 @@ namespace Standard
                 &hc,
                 0))
             {
-                HRESULT.ThrowLastError();
+                new HRESULT(Marshal.GetLastWin32Error()).ThrowOnFailure();
             }
 
             return hc;
         }
 
-        [DllImport("gdi32.dll", EntryPoint = "CreateRectRgn", SetLastError = true)]
-        private static extern IntPtr _CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+        /// <summary>
+        /// Returns a rectangle that represents the union of two rectangles.
+        /// </summary>
+        /// <param name="rect1">The first rectangle.</param>
+        /// <param name="rect2">The second rectangle.</param>
+        /// <returns>A rectangle that represents the union of the two rectangles.</returns>
+        public static RECT Union(this RECT rect1, RECT rect2)
+        {
+            return new RECT
+            {
+                left = Math.Min(rect1.left, rect2.left),
+                top = Math.Min(rect1.top, rect2.top),
+                right = Math.Max(rect1.right, rect2.right),
+                bottom = Math.Max(rect1.bottom, rect2.bottom),
+            };
+        }
 
-        [DllImport("gdi32.dll", EntryPoint = "CreateRoundRectRgn", SetLastError = true)]
-        private static extern IntPtr _CreateRoundRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
+        /// <summary>
+        /// Retrieves the current mouse cursor position.
+        /// </summary>
+        /// <returns>The current mouse cursor position.</returns>
+        internal static Point GetMousePosition()
+        {
+            PInvoke.GetCursorPos(out System.Drawing.Point point);
+            return new Point(point.X, point.Y);
+        }
 
-        [DllImport("uxtheme.dll", EntryPoint = "GetCurrentThemeName", CharSet = CharSet.Unicode)]
-        private static extern HRESULT _GetCurrentThemeName(
-            StringBuilder pszThemeFileName,
-            int dwMaxNameChars,
-            StringBuilder pszColorBuff,
-            int cchMaxColorChars,
-            StringBuilder pszSizeBuff,
-            int cchMaxSizeChars);
+        /// <summary>
+        /// Converts a string to a PCWSTR.
+        /// </summary>
+        /// <param name="text">The string to be converted.</param>
+        /// <returns>The PCWSTR representation of the string.</returns>
+        internal unsafe static PCWSTR ToPCWStr(this string text)
+        {
+            fixed (char* chars = text)
+            {
+                return new PCWSTR(chars);
+            }
+        }
 
-        [DllImport("user32.dll", EntryPoint = "SetWindowRgn", SetLastError = true)]
-        private static extern int _SetWindowRgn(IntPtr hWnd, IntPtr hRgn, [MarshalAs(UnmanagedType.Bool)] bool bRedraw);
+        // CS Win32 cannot source gen the 64 and 32 bit versions of the GetWindowLongPtr and SetWindowLongPtr functions without additional work without x86 and x64 versions.
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLong", SetLastError = true)]
-        private static extern int GetWindowLongPtr32(IntPtr hWnd, GWL nIndex);
+        private static extern int GetWindowLongPtr32(IntPtr hWnd, WINDOW_LONG_PTR_INDEX nIndex);
 
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", SetLastError = true)]
-        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, GWL nIndex);
+        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, WINDOW_LONG_PTR_INDEX nIndex);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", SetLastError = true)]
-        private static extern int SetWindowLongPtr32(IntPtr hWnd, GWL nIndex, int dwNewLong);
+        private static extern int SetWindowLongPtr32(IntPtr hWnd, WINDOW_LONG_PTR_INDEX nIndex, int dwNewLong);
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", SetLastError = true)]
-        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, GWL nIndex, IntPtr dwNewLong);
-    }
-
-    internal static class Win32Value
-    {
-        public const uint FALSE = 0;
-        public const uint INFOTIPSIZE = 1024;
-        public const uint MAX_PATH = 260;
-        public const uint sizeof_BOOL = 4;
-        public const uint sizeof_CHAR = 1;
-        public const uint sizeof_WCHAR = 2;
-        public const uint TRUE = 1;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    internal class PROPVARIANT : IDisposable
-    {
-        private static class NativeMethods
-        {
-            [DllImport("ole32.dll")]
-            internal static extern HRESULT PropVariantClear(PROPVARIANT pvar);
-        }
-
-        [FieldOffset(0)]
-        private ushort vt;
-        [FieldOffset(8)]
-        private IntPtr pointerVal;
-        [FieldOffset(8)]
-        private byte byteVal;
-        [FieldOffset(8)]
-        private long longVal;
-        [FieldOffset(8)]
-        private short boolVal;
-
-        public VarEnum VarType => (VarEnum)vt;
-
-        // Right now only using this for strings.
-        public string GetValue() => vt == (ushort)VarEnum.VT_LPWSTR ? Marshal.PtrToStringUni(pointerVal) : null;
-
-        public void SetValue(bool f)
-        {
-            Clear();
-            vt = (ushort)VarEnum.VT_BOOL;
-            boolVal = (short)(f ? -1 : 0);
-        }
-
-        public void SetValue(string val)
-        {
-            Clear();
-            vt = (ushort)VarEnum.VT_LPWSTR;
-            pointerVal = Marshal.StringToCoTaskMemUni(val);
-        }
-
-        public void Clear()
-        {
-            var hr = NativeMethods.PropVariantClear(this);
-            Assert.IsTrue(hr.Succeeded);
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~PROPVARIANT()
-        {
-            Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            Clear();
-        }
-    }
-    [StructLayout(LayoutKind.Sequential)]
-    internal class RefRECT
-    {
-        private int _left;
-        private int _top;
-        private int _right;
-        private int _bottom;
-
-        public RefRECT(int left, int top, int right, int bottom)
-        {
-            _left = left;
-            _top = top;
-            _right = right;
-            _bottom = bottom;
-        }
-
-        public int Width => _right - _left;
-
-        public int Height => _bottom - _top;
-
-        public int Left { get => _left; set => _left = value; }
-
-        public int Right { get => _right; set => _right = value; }
-
-        public int Top { get => _top; set => _top = value; }
-
-        public int Bottom { get => _bottom; set => _bottom = value; }
-
-        public void Offset(int dx, int dy)
-        {
-            _left += dx;
-            _top += dy;
-            _right += dx;
-            _bottom += dy;
-        }
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    [BestFitMapping(false)]
-    internal class WIN32_FIND_DATAW
-    {
-        public FileAttributes dwFileAttributes;
-        public System.Runtime.InteropServices.ComTypes.FILETIME ftCreationTime;
-        public System.Runtime.InteropServices.ComTypes.FILETIME ftLastAccessTime;
-        public System.Runtime.InteropServices.ComTypes.FILETIME ftLastWriteTime;
-        public int nFileSizeHigh;
-        public int nFileSizeLow;
-        public int dwReserved0;
-        public int dwReserved1;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-        public string cFileName;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
-        public string cAlternateFileName;
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, WINDOW_LONG_PTR_INDEX nIndex, IntPtr dwNewLong);
     }
 }

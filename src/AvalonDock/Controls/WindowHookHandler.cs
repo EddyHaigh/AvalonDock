@@ -76,11 +76,11 @@ namespace AvalonDock.Controls
 
         public LRESULT HookProc(int code, WPARAM wParam, LPARAM lParam)
         {
-            if (code == Win32Helper.HCBT_SETFOCUS)
+            if (code == PInvoke.HCBT_SETFOCUS)
             {
                 FocusChanged?.Invoke(this, new FocusChangeEventArgs(new IntPtr((int)wParam.Value), lParam.Value));
             }
-            else if (code == Win32Helper.HCBT_ACTIVATE
+            else if (code == PInvoke.HCBT_ACTIVATE
                 && _insideActivateEvent.CanEnter)
             {
                 using (_insideActivateEvent.Enter())

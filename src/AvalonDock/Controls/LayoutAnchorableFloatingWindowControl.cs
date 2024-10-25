@@ -22,6 +22,8 @@ using AvalonDock.Layout;
 
 using Microsoft.Windows.Shell;
 
+using Windows.Win32;
+
 namespace AvalonDock.Controls
 {
     /// <inheritdoc cref="LayoutFloatingWindowControl"/>
@@ -176,10 +178,10 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected override IntPtr FilterMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            switch (msg)
+            switch ((uint)msg)
             {
-                case Win32Helper.WM_ACTIVATE:
-                    var isInactive = ((int)wParam & 0xFFFF) == Win32Helper.WA_INACTIVE;
+                case PInvoke.WM_ACTIVATE:
+                    var isInactive = ((int)wParam & 0xFFFF) == PInvoke.WA_INACTIVE;
                     if (_model.IsSinglePane)
                     {
                         LayoutFloatingWindowControlHelper.ActiveTheContentOfSinglePane(this, !isInactive);
@@ -192,8 +194,8 @@ namespace AvalonDock.Controls
                     handled = true;
                     break;
 
-                case Win32Helper.WM_NCRBUTTONUP:
-                    if (wParam.ToInt32() == Win32Helper.HT_CAPTION)
+                case PInvoke.WM_NCRBUTTONUP:
+                    if (wParam.ToInt32() == PInvoke.HTCAPTION)
                     {
                         var windowChrome = WindowChrome.GetWindowChrome(this);
                         if (windowChrome != null)

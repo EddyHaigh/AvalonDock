@@ -24,8 +24,11 @@ using System.Windows.Media;
 using AvalonDock.Layout;
 using AvalonDock.Themes;
 
+using Standard;
+
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace AvalonDock.Controls
 {
@@ -266,7 +269,7 @@ namespace AvalonDock.Controls
                 CaptureMouse();
                 var windowHandle = new WindowInteropHelper(this).Handle;
                 var lParam = new IntPtr(((int)Left & 0xFFFF) | ((int)Top << 16));
-                PInvoke.SendMessage(new HWND(windowHandle), Win32Helper.WM_NCLBUTTONDOWN, new WPARAM(Win32Helper.HT_CAPTION), lParam);
+                PInvoke.SendMessage(new HWND(windowHandle), PInvoke.WM_NCLBUTTONDOWN, new WPARAM(PInvoke.HTCAPTION), lParam);
             }
         }
 
@@ -345,18 +348,18 @@ namespace AvalonDock.Controls
         {
             handled = false;
 
-            switch (msg)
+            switch ((uint)msg)
             {
-                case Win32Helper.WM_ACTIVATE:
+                case PInvoke.WM_ACTIVATE:
                     UpdateWindowsSizeBasedOnMinSize();
                     break;
 
-                case Win32Helper.WM_EXITSIZEMOVE:
+                case PInvoke.WM_EXITSIZEMOVE:
                     UpdatePositionAndSizeOfPanes();
 
                     if (_dragService != null)
                     {
-                        var mousePosition = (Win32Helper.GetMousePosition());
+                        var mousePosition = (NativeMethods.GetMousePosition());
                         _dragService.Drop(mousePosition, out var dropFlag);
                         _dragService = null;
                         SetIsDragging(false);
@@ -367,7 +370,7 @@ namespace AvalonDock.Controls
                     }
                     break;
 
-                case Win32Helper.WM_MOVING:
+                case PInvoke.WM_MOVING:
                     {
                         UpdateDragPosition();
                         if (IsMaximized)
@@ -377,7 +380,7 @@ namespace AvalonDock.Controls
                     }
                     break;
 
-                case Win32Helper.WM_LBUTTONUP: //set as handled right button click on title area (after showing context menu)
+                case PInvoke.WM_LBUTTONUP: //set as handled right button click on title area (after showing context menu)
                     if (_dragService != null && Mouse.LeftButton == MouseButtonState.Released)
                     {
                         _dragService.Abort();
@@ -386,11 +389,11 @@ namespace AvalonDock.Controls
                     }
                     break;
 
-                case Win32Helper.WM_SYSCOMMAND:
+                case PInvoke.WM_SYSCOMMAND:
                     var command = (int)wParam & 0xFFF0;
-                    if (command == Win32Helper.SC_MAXIMIZE || command == Win32Helper.SC_RESTORE)
+                    if (command == PInvoke.SC_MAXIMIZE || command == PInvoke.SC_RESTORE)
                     {
-                        UpdateMaximizedState(command == Win32Helper.SC_MAXIMIZE);
+                        UpdateMaximizedState(command == PInvoke.SC_MAXIMIZE);
                     }
 
                     break;
@@ -554,7 +557,7 @@ namespace AvalonDock.Controls
             _attachDrag = false;
             Show();
             var lParam = new IntPtr(((int)mousePosition.X & 0xFFFF) | ((int)mousePosition.Y << 16));
-            PInvoke.SendMessage(new HWND(windowHandle), Win32Helper.WM_NCLBUTTONDOWN, new WPARAM(Win32Helper.HT_CAPTION), lParam);
+            PInvoke.SendMessage(new HWND(windowHandle), PInvoke.WM_NCLBUTTONDOWN, new WPARAM(PInvoke.HTCAPTION), lParam);
         }
 
         private void OnClosing(object sender, CancelEventArgs e)
@@ -612,7 +615,7 @@ namespace AvalonDock.Controls
                 _dragService = new DragService(this);
                 SetIsDragging(true);
             }
-            var mousePosition = (Win32Helper.GetMousePosition());
+            var mousePosition = (NativeMethods.GetMousePosition());
             _dragService.UpdateMouseLocation(mousePosition);
         }
 
@@ -803,7 +806,7 @@ namespace AvalonDock.Controls
                 _wpfContentHost = new HwndSource(new HwndSourceParameters
                 {
                     ParentWindow = hwndParent.Handle,
-                    WindowStyle = Win32Helper.WS_CHILD | Win32Helper.WS_VISIBLE | Win32Helper.WS_CLIPSIBLINGS | Win32Helper.WS_CLIPCHILDREN,
+                    WindowStyle = (int)(WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CLIPSIBLINGS | WINDOW_STYLE.WS_CLIPCHILDREN),
                     Width = 1,
                     Height = 1,
                     UsesPerPixelOpacity = true,

@@ -24,6 +24,7 @@ using AvalonDock.Layout;
 
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace AvalonDock.Controls
 {
@@ -215,7 +216,7 @@ namespace AvalonDock.Controls
             _internalHwndSource = new HwndSource(new HwndSourceParameters
             {
                 ParentWindow = hwndParent.Handle,
-                WindowStyle = Win32Helper.WS_CHILD | Win32Helper.WS_VISIBLE | Win32Helper.WS_CLIPSIBLINGS | Win32Helper.WS_CLIPCHILDREN,
+                WindowStyle = (int)(WINDOW_STYLE.WS_CHILD | WINDOW_STYLE.WS_VISIBLE | WINDOW_STYLE.WS_CLIPSIBLINGS | WINDOW_STYLE.WS_CLIPCHILDREN),
                 Width = 0,
                 Height = 0,
             })

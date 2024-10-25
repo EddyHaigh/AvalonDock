@@ -7,7 +7,7 @@
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
 
-namespace Standard
+namespace AvalonDock
 {
     /// <summary>
     /// DoubleUtil uses fixed eps to provide fuzzy comparison functionality for doubles.
@@ -40,7 +40,7 @@ namespace Standard
             }
 
             double delta = value1 - value2;
-            return (delta < Epsilon) && (delta > -Epsilon);
+            return delta < Epsilon && delta > -Epsilon;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Standard
         /// <returns>The result of the LessThan comparision.</returns>
         public static bool LessThan(double value1, double value2)
         {
-            return (value1 < value2) && !AreClose(value1, value2);
+            return value1 < value2 && !AreClose(value1, value2);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Standard
         /// <returns>The result of the GreaterThan comparision.</returns>
         public static bool GreaterThan(double value1, double value2)
         {
-            return (value1 > value2) && !AreClose(value1, value2);
+            return value1 > value2 && !AreClose(value1, value2);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Standard
         /// <returns>The result of the LessThanOrClose comparision.</returns>
         public static bool LessThanOrClose(double value1, double value2)
         {
-            return (value1 < value2) || AreClose(value1, value2);
+            return value1 < value2 || AreClose(value1, value2);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Standard
         /// <returns>The result of the GreaterThanOrClose comparision.</returns>
         public static bool GreaterThanOrClose(double value1, double value2)
         {
-            return (value1 > value2) || AreClose(value1, value2);
+            return value1 > value2 || AreClose(value1, value2);
         }
 
         /// <summary>

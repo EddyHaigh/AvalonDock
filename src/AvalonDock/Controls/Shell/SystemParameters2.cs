@@ -7,30 +7,28 @@
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Media;
+
+using AvalonDock.Diagnostics;
+
+using Standard;
+
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Accessibility;
+using Windows.Win32.UI.WindowsAndMessaging;
+
 /**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
 namespace Microsoft.Windows.Shell
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Runtime.InteropServices;
-    using System.Windows;
-    using System.Windows.Media;
-
-    using global::Windows.Win32;
-    using global::Windows.Win32.Foundation;
-    using global::Windows.Win32.UI.Accessibility;
-    using global::Windows.Win32.UI.WindowsAndMessaging;
-
-    using Standard;
-
-    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
-    using static AvalonDock.Win32Helper;
-
-
     public class SystemParameters2 : INotifyPropertyChanged
     {
         private delegate void _SystemMetricUpdate(WPARAM wParam, LPARAM lParam);
@@ -53,7 +51,7 @@ namespace Microsoft.Windows.Shell
         private CornerRadius _windowCornerRadius;
         private Rect _captionButtonLocation;
 
-        private readonly Dictionary<WM, List<_SystemMetricUpdate>> _UpdateTable;
+        private readonly Dictionary<uint, List<_SystemMetricUpdate>> _UpdateTable;
 
         // Most properties exposed here have a way of being queried directly
         // and a way of being notified of updates via a window message.
@@ -188,7 +186,7 @@ namespace Microsoft.Windows.Shell
                 PInvoke.ShowWindow(new HWND(_messageHwnd.Handle), SHOW_WINDOW_CMD.SW_SHOW);
                 PInvoke.SendMessage(
                     new HWND(_messageHwnd.Handle),
-                    (uint)WM.GETTITLEBARINFOEX,
+                    PInvoke.WM_GETTITLEBARINFOEX,
                     new WPARAM(0),
                     new LPARAM(lParam));
                 tbix = Marshal.PtrToStructure<TITLEBARINFOEX>(lParam);
@@ -337,16 +335,16 @@ namespace Microsoft.Windows.Shell
             // WindowCornerRadius isn't exposed by true system parameters, so it requires the theme to be initialized first.
             _InitializeWindowCornerRadius();
 
-            _UpdateTable = new Dictionary<WM, List<_SystemMetricUpdate>>
+            _UpdateTable = new Dictionary<uint, List<_SystemMetricUpdate>>
             {
-                { WM.THEMECHANGED,
+                { PInvoke.WM_THEMECHANGED,
                     new List<_SystemMetricUpdate>
                     {
                         _UpdateThemeInfo,
                         _UpdateHighContrast,
                         _UpdateWindowCornerRadius,
                         _UpdateCaptionButtonLocation, } },
-                { WM.SETTINGCHANGE,
+                { PInvoke.WM_SETTINGCHANGE,
                     new List<_SystemMetricUpdate>
                     {
                         _UpdateCaptionHeight,
@@ -355,9 +353,9 @@ namespace Microsoft.Windows.Shell
                         _UpdateHighContrast,
                         _UpdateWindowNonClientFrameThickness,
                         _UpdateCaptionButtonLocation, } },
-                { WM.DWMNCRENDERINGCHANGED, new List<_SystemMetricUpdate> { _UpdateIsGlassEnabled } },
-                { WM.DWMCOMPOSITIONCHANGED, new List<_SystemMetricUpdate> { _UpdateIsGlassEnabled } },
-                { WM.DWMCOLORIZATIONCOLORCHANGED, new List<_SystemMetricUpdate> { _UpdateGlassColor } },
+                { PInvoke.WM_DWMNCRENDERINGCHANGED, new List<_SystemMetricUpdate> { _UpdateIsGlassEnabled } },
+                { PInvoke.WM_DWMCOMPOSITIONCHANGED, new List<_SystemMetricUpdate> { _UpdateIsGlassEnabled } },
+                { PInvoke.WM_DWMCOLORIZATIONCOLORCHANGED, new List<_SystemMetricUpdate> { _UpdateGlassColor } },
             };
         }
 
@@ -371,7 +369,7 @@ namespace Microsoft.Windows.Shell
                 return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
             }
 
-            if (!_UpdateTable.TryGetValue((WM)msg, out var handlers))
+            if (!_UpdateTable.TryGetValue(msg, out var handlers))
             {
                 return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
             }

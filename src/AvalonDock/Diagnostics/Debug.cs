@@ -20,7 +20,7 @@
 // they're not particular to any library functionality.
 // Because the classes here are internal, it's likely this file
 // might be included in multiple assemblies.
-namespace Standard
+namespace AvalonDock.Diagnostics
 {
     using System;
     using System.Diagnostics;
@@ -201,7 +201,7 @@ namespace Standard
         {
             if (!value.Equals(default(T)))
             {
-                Assert.Fail();
+                Fail();
             }
         }
 
@@ -210,7 +210,7 @@ namespace Standard
         {
             if (value.Equals(default(T)))
             {
-                Assert.Fail();
+                Fail();
             }
         }
 

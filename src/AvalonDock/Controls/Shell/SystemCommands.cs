@@ -7,21 +7,20 @@
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
 
+using System;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Interop;
+
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
+
+using Standard;
+
 namespace Microsoft.Windows.Shell
 {
-    using System;
-    using System.Runtime.InteropServices;
-    using System.Windows;
-    using System.Windows.Input;
-    using System.Windows.Interop;
-
-    using global::Windows.Win32;
-    using global::Windows.Win32.Foundation;
-
-    using Standard;
-
-    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
-
     public static class SystemCommands
     {
         public static RoutedCommand CloseWindowCommand { get; }
@@ -39,7 +38,7 @@ namespace Microsoft.Windows.Shell
             ShowSystemMenuCommand = new RoutedCommand(nameof(ShowSystemMenu), typeof(SystemCommands));
         }
 
-        private static void _PostSystemCommand(Window window, SC command)
+        private static void _PostSystemCommand(Window window, uint command)
         {
             var hWnd = new HWND(new WindowInteropHelper(window).Handle);
             if (hWnd == IntPtr.Zero || !PInvoke.IsWindow(hWnd))
@@ -47,31 +46,31 @@ namespace Microsoft.Windows.Shell
                 return;
             }
 
-            PInvoke.PostMessage(hWnd, (uint)WM.SYSCOMMAND, new WPARAM((uint)command), IntPtr.Zero);
+            PInvoke.PostMessage(hWnd, PInvoke.WM_SYSCOMMAND, new WPARAM(command), IntPtr.Zero);
         }
 
         public static void CloseWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, SC.CLOSE);
+            _PostSystemCommand(window, PInvoke.SC_CLOSE);
         }
 
         public static void MaximizeWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, SC.MAXIMIZE);
+            _PostSystemCommand(window, PInvoke.SC_MAXIMIZE);
         }
 
         public static void MinimizeWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, SC.MINIMIZE);
+            _PostSystemCommand(window, PInvoke.SC_MINIMIZE);
         }
 
         public static void RestoreWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, SC.RESTORE);
+            _PostSystemCommand(window, PInvoke.SC_RESTORE);
         }
 
         /// <summary>Display the system menu at a specified location.</summary>
@@ -85,9 +84,6 @@ namespace Microsoft.Windows.Shell
 
         internal static void ShowSystemMenuPhysicalCoordinates(Window window, Point physicalScreenLocation)
         {
-            const uint TPM_RETURNCMD = 0x0100;
-            const uint TPM_LEFTBUTTON = 0x0;
-
             Verify.IsNotNull(window, nameof(window));
             var hWnd = new HWND(new WindowInteropHelper(window).Handle);
             if (hWnd == IntPtr.Zero || !PInvoke.IsWindow(hWnd))
@@ -101,7 +97,7 @@ namespace Microsoft.Windows.Shell
             using SafeHandle hMenu = PInvoke.GetSystemMenu_SafeHandle(hWnd, false);
             var cmd = PInvoke.TrackPopupMenuEx(
                 hMenu,
-                TPM_LEFTBUTTON | TPM_RETURNCMD,
+                (uint)(TRACK_POPUP_MENU_FLAGS.TPM_LEFTBUTTON | TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD),
                 (int)physicalScreenLocation.X,
                 (int)physicalScreenLocation.Y,
                 hWnd,
@@ -109,7 +105,7 @@ namespace Microsoft.Windows.Shell
 
             if (cmd != 0)
             {
-                PInvoke.PostMessage(hWnd, (uint)WM.SYSCOMMAND, new WPARAM((nuint)cmd), IntPtr.Zero);
+                PInvoke.PostMessage(hWnd, PInvoke.WM_SYSCOMMAND, new WPARAM((nuint)cmd), IntPtr.Zero);
             }
         }
     }
