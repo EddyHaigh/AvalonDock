@@ -264,7 +264,14 @@ namespace Standard
         private static int _WeightedAbs(int valueHave, int valueWant, bool fPunish)
         {
             var diff = valueHave - valueWant;
-            return diff >= 0 ? diff : (fPunish ? -2 : -1) * diff;
+            if (diff >= 0)
+            {
+                return diff;
+            }
+            else
+            {
+                return (fPunish ? -2 : -1) * diff;
+            }
         }
  // = 0;
         private class _UrlDecoder
