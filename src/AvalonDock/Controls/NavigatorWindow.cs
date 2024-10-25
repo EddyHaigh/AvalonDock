@@ -327,6 +327,7 @@ namespace AvalonDock.Controls
             switch (e.Key)
             {
                 // Press Tab to switch Selected LayoutContent.
+                case Key.Down:
                 case Key.Tab:
                     SetNextLayoutContent(true);
                     e.Handled = true;
@@ -361,10 +362,6 @@ namespace AvalonDock.Controls
                     break;
                 case Key.Up:
                     SetNextLayoutContent(false);
-                    e.Handled = true;
-                    break;
-                case Key.Down:
-                    SetNextLayoutContent(true);
                     e.Handled = true;
                     break;
             }
