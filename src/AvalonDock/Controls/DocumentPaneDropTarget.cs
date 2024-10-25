@@ -22,8 +22,8 @@ namespace AvalonDock.Controls
     /// </summary>
     internal class DocumentPaneDropTarget : DropTarget<LayoutDocumentPaneControl>
     {
-        private int _tabIndex = -1;
-        private LayoutDocumentPaneControl _targetPane;
+        private readonly LayoutDocumentPaneControl _targetPane;
+        private readonly int _tabIndex = -1;
 
         /// <summary>
         /// Class constructor from parameters without a specific tabindex as dock position.

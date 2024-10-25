@@ -23,8 +23,8 @@ namespace AvalonDock.Controls
     /// </summary>
     public class LayoutAnchorGroupControl : Control, ILayoutControl
     {
-        private ObservableCollection<LayoutAnchorControl> _childViews = new ObservableCollection<LayoutAnchorControl>();
-        private LayoutAnchorGroup _model;
+        private readonly ObservableCollection<LayoutAnchorControl> _childViews = new ObservableCollection<LayoutAnchorControl>();
+        private readonly LayoutAnchorGroup _model;
 
         static LayoutAnchorGroupControl()
         {

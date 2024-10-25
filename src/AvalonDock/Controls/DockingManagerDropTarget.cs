@@ -26,7 +26,7 @@ namespace AvalonDock.Controls
     /// </summary>
     internal class DockingManagerDropTarget : DropTarget<DockingManager>
     {
-        private DockingManager _manager;
+        private readonly DockingManager _manager;
 
         /// <summary>
         /// Class constructor

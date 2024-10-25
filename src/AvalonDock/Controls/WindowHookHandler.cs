@@ -48,11 +48,11 @@ namespace AvalonDock.Controls
     /// </summary>
     internal class WindowHookHandler : IDisposable
     {
-        private HOOKPROC _hookProc;
-        private ReentrantFlag _insideActivateEvent = new ReentrantFlag();
-        private HHOOK _windowHook;
-        private bool _disposed;
+        private readonly ReentrantFlag _insideActivateEvent = new ReentrantFlag();
 
+        private bool _disposed;
+        private HOOKPROC _hookProc;
+        private HHOOK _windowHook;
         public WindowHookHandler()
         {
         }
@@ -72,6 +72,12 @@ namespace AvalonDock.Controls
         public void Detach()
         {
             PInvoke.UnhookWindowsHookEx(_windowHook);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public LRESULT HookProc(int code, WPARAM wParam, LPARAM lParam)
@@ -105,12 +111,6 @@ namespace AvalonDock.Controls
 
                 _disposed = true;
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

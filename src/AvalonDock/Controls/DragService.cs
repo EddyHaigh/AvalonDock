@@ -50,13 +50,14 @@ namespace AvalonDock.Controls
     /// <seeslso cref="LayoutAnchorableFloatingWindowControl"/>).
     internal class DragService
     {
+        private readonly List<IDropArea> _currentWindowAreas = new List<IDropArea>();
+        private readonly LayoutFloatingWindowControl _floatingWindow;
+        private readonly DockingManager _manager;
+
         private IDropTarget _currentDropTarget;
         private IOverlayWindowHost _currentHost;
         private IOverlayWindow _currentWindow;
-        private List<IDropArea> _currentWindowAreas = new List<IDropArea>();
-        private LayoutFloatingWindowControl _floatingWindow;
         private bool _isDrag;
-        private DockingManager _manager;
 
         // A list of hosts that can display an overlaywindow and offer a drop target (docking position)
         private List<IOverlayWindowHost> _overlayWindowHosts = new List<IOverlayWindowHost>();

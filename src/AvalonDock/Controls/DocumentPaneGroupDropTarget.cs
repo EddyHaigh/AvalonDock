@@ -21,7 +21,7 @@ namespace AvalonDock.Controls
     /// </summary>
     internal class DocumentPaneGroupDropTarget : DropTarget<LayoutDocumentPaneGroupControl>
     {
-        private LayoutDocumentPaneGroupControl _targetPane;
+        private readonly LayoutDocumentPaneGroupControl _targetPane;
 
         /// <summary>
         /// Class contructor

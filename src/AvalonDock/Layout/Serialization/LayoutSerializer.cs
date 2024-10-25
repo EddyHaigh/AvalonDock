@@ -15,8 +15,8 @@ namespace AvalonDock.Layout.Serialization
     /// <summary>Implements a base class for the layout serialization/deserialization of the docking framework.</summary>
     public abstract class LayoutSerializer
     {
-        private LayoutAnchorable[] _previousAnchorables = null;
-        private LayoutDocument[] _previousDocuments = null;
+        private readonly LayoutAnchorable[] _previousAnchorables = null;
+        private readonly LayoutDocument[] _previousDocuments = null;
 
         /// <summary>
         /// Class constructor from <see cref="DockingManager"/> instance.

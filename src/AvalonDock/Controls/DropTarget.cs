@@ -25,9 +25,9 @@ namespace AvalonDock.Controls
     /// <typeparam name="T"></typeparam>
     internal abstract class DropTarget<T> : DropTargetBase, IDropTarget where T : FrameworkElement
     {
-        private Rect[] _detectionRect;
-        private T _targetElement;
-        private DropTargetType _type;
+        private readonly Rect[] _detectionRect;
+        private readonly T _targetElement;
+        private readonly DropTargetType _type;
 
         protected DropTarget(T targetElement, Rect detectionRect, DropTargetType type)
         {

@@ -20,8 +20,8 @@ namespace AvalonDock.Controls
     /// <typeparam name="V"></typeparam>
     internal class FullWeakDictionary<K, V> where K : class
     {
-        private List<WeakReference> _keys = new List<WeakReference>();
-        private List<WeakReference> _values = new List<WeakReference>();
+        private readonly List<WeakReference> _keys = new();
+        private readonly List<WeakReference> _values = new();
 
         /// <summary>
         /// Get a value by its key index.

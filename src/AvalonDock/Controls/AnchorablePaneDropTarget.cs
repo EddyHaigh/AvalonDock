@@ -21,8 +21,8 @@ namespace AvalonDock.Controls
     /// </summary>
     internal class AnchorablePaneDropTarget : DropTarget<LayoutAnchorablePaneControl>
     {
-        private int _tabIndex = -1;
-        private LayoutAnchorablePaneControl _targetPane;
+        private readonly int _tabIndex = -1;
+        private readonly LayoutAnchorablePaneControl _targetPane;
 
         /// <summary>
         /// Class constructor from parameters without a specific tabindex as dock position.
