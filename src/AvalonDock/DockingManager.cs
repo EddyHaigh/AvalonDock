@@ -527,10 +527,7 @@ namespace AvalonDock
                 DocumentHeaderTemplate = null;
             }
 
-            if (DocumentPaneMenuItemHeaderTemplateSelector == null)
-            {
-                DocumentPaneMenuItemHeaderTemplateSelector = DocumentHeaderTemplateSelector;
-            }
+            DocumentPaneMenuItemHeaderTemplateSelector ??= DocumentHeaderTemplateSelector;
         }
 
         /// <summary>Coerces the <see cref="DocumentHeaderTemplateSelector"/> value.</summary>
@@ -2465,10 +2462,7 @@ namespace AvalonDock
 
         private void CreateOverlayWindow(LayoutFloatingWindowControl draggingWindow = null)
         {
-            if (_overlayWindow == null)
-            {
-                _overlayWindow = new OverlayWindow(this);
-            }
+            _overlayWindow ??= new OverlayWindow(this);
 
             // Usually, the overlay window is made a child of the main window. However, if the floating
             // window being dragged isn't also a child of the main window (because OwnedByDockingManagerWindow
@@ -2531,10 +2525,7 @@ namespace AvalonDock
                 documentPane = layout.LastFocusedDocument.Parent as LayoutDocumentPane;
             }
 
-            if (documentPane == null)
-            {
-                documentPane = layout.Descendents().OfType<LayoutDocumentPane>().FirstOrDefault();
-            }
+            documentPane ??= layout.Descendents().OfType<LayoutDocumentPane>().FirstOrDefault();
 
             //if (documentPane == null)
             //    throw new InvalidOperationException("Layout must contains at least one LayoutDocumentPane in order to host documents");
@@ -2611,10 +2602,9 @@ namespace AvalonDock
                 {
                     documentPane = Layout.LastFocusedDocument.Parent as LayoutDocumentPane;
                 }
-                if (documentPane == null)
-                {
-                    documentPane = Layout.Descendents().OfType<LayoutDocumentPane>().FirstOrDefault();
-                }
+
+                documentPane ??= Layout.Descendents().OfType<LayoutDocumentPane>().FirstOrDefault();
+
                 //if (documentPane == null)
                 //    throw new InvalidOperationException("Layout must contains at least one LayoutDocumentPane in order to host documents");
                 _suspendLayoutItemCreation = true;
@@ -2774,16 +2764,13 @@ namespace AvalonDock
                 //look for active content parent pane
                 anchorablePane = layout.ActiveContent.Parent as LayoutAnchorablePane;
             }
-            if (anchorablePane == null)
-            {
-                //look for a pane on the right side
-                anchorablePane = layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
-            }
-            if (anchorablePane == null)
-            {
-                //look for an available pane
-                anchorablePane = layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
-            }
+
+            //look for a pane on the right side
+            anchorablePane ??= layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
+
+            //look for an available pane
+            anchorablePane ??= layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
+
             _suspendLayoutItemCreation = true;
             foreach (var anchorableContentToImport in listOfAnchorablesToImport)
             {
@@ -2859,16 +2846,13 @@ namespace AvalonDock
                     //look for active content parent pane
                     anchorablePane = Layout.ActiveContent.Parent as LayoutAnchorablePane;
                 }
-                if (anchorablePane == null)
-                {
-                    //look for a pane on the right side
-                    anchorablePane = Layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
-                }
-                if (anchorablePane == null)
-                {
-                    //look for an available pane
-                    anchorablePane = Layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
-                }
+
+                //look for a pane on the right side
+                anchorablePane ??= Layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
+
+                //look for an available pane
+                anchorablePane ??= Layout.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
+
                 _suspendLayoutItemCreation = true;
                 foreach (var anchorableContentToImport in e.NewItems)
                 {
@@ -3158,10 +3142,7 @@ namespace AvalonDock
         }
         private void ShowNavigatorWindow()
         {
-            if (_navigatorWindow == null)
-            {
-                _navigatorWindow = new NavigatorWindow(this) { Owner = Window.GetWindow(this), WindowStartupLocation = WindowStartupLocation.CenterOwner };
-            }
+            _navigatorWindow ??= new NavigatorWindow(this) { Owner = Window.GetWindow(this), WindowStartupLocation = WindowStartupLocation.CenterOwner };
 
             _navigatorWindow.ShowDialog();
             _navigatorWindow = null;

@@ -31,7 +31,6 @@ namespace AvalonDock.Controls
         private static readonly List<DockingManager> _managers = new List<DockingManager>();
         private static readonly FullWeakDictionary<ILayoutElement, IInputElement> _modelFocusedElement = new FullWeakDictionary<ILayoutElement, IInputElement>();
         private static readonly WeakDictionary<ILayoutElement, IntPtr> _modelFocusedWindowHandle = new WeakDictionary<ILayoutElement, IntPtr>();
-        private static readonly DispatcherOperation _setFocusAsyncOperation;
 
         private static DispatcherOperation _setFocusAsyncOperation;
         private static WeakReference _lastFocusedElement;

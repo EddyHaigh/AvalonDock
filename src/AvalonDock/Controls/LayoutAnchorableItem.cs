@@ -259,20 +259,9 @@ namespace AvalonDock.Controls
         /// <inheritdoc />
         protected internal override void SetDefaultBindings()
         {
-            if (HideCommand == null)
-            {
-                HideCommand = _defaultHideCommand;
-            }
-
-            if (AutoHideCommand == null)
-            {
-                AutoHideCommand = _defaultAutoHideCommand;
-            }
-
-            if (DockCommand == null)
-            {
-                DockCommand = _defaultDockCommand;
-            }
+            HideCommand ??= _defaultHideCommand;
+            AutoHideCommand ??= _defaultAutoHideCommand;
+            DockCommand ??= _defaultDockCommand;
 
             Visibility = _anchorable.IsVisible ? Visibility.Visible : Visibility.Hidden;
             base.SetDefaultBindings();

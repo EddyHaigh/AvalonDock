@@ -723,55 +723,16 @@ namespace AvalonDock.Controls
 
         protected internal virtual void SetDefaultBindings()
         {
-            if (CloseCommand == null)
-            {
-                CloseCommand = _defaultCloseCommand;
-            }
-
-            if (FloatCommand == null)
-            {
-                FloatCommand = _defaultFloatCommand;
-            }
-
-            if (DockAsDocumentCommand == null)
-            {
-                DockAsDocumentCommand = _defaultDockAsDocumentCommand;
-            }
-
-            if (CloseAllButThisCommand == null)
-            {
-                CloseAllButThisCommand = _defaultCloseAllButThisCommand;
-            }
-
-            if (CloseAllCommand == null)
-            {
-                CloseAllCommand = _defaultCloseAllCommand;
-            }
-
-            if (ActivateCommand == null)
-            {
-                ActivateCommand = _defaultActivateCommand;
-            }
-
-            if (NewVerticalTabGroupCommand == null)
-            {
-                NewVerticalTabGroupCommand = _defaultNewVerticalTabGroupCommand;
-            }
-
-            if (NewHorizontalTabGroupCommand == null)
-            {
-                NewHorizontalTabGroupCommand = _defaultNewHorizontalTabGroupCommand;
-            }
-
-            if (MoveToNextTabGroupCommand == null)
-            {
-                MoveToNextTabGroupCommand = _defaultMoveToNextTabGroupCommand;
-            }
-
-            if (MoveToPreviousTabGroupCommand == null)
-            {
-                MoveToPreviousTabGroupCommand = _defaultMoveToPreviousTabGroupCommand;
-            }
+            CloseCommand ??= _defaultCloseCommand;
+            FloatCommand ??= _defaultFloatCommand;
+            DockAsDocumentCommand ??= _defaultDockAsDocumentCommand;
+            CloseAllButThisCommand ??= _defaultCloseAllButThisCommand;
+            CloseAllCommand ??= _defaultCloseAllCommand;
+            ActivateCommand ??= _defaultActivateCommand;
+            NewVerticalTabGroupCommand ??= _defaultNewVerticalTabGroupCommand;
+            NewHorizontalTabGroupCommand ??= _defaultNewHorizontalTabGroupCommand;
+            MoveToNextTabGroupCommand ??= _defaultMoveToNextTabGroupCommand;
+            MoveToPreviousTabGroupCommand ??= _defaultMoveToPreviousTabGroupCommand;
 
             IsSelected = LayoutElement.IsSelected;
             IsActive = LayoutElement.IsActive;
