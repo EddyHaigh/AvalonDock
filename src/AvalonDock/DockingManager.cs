@@ -2140,9 +2140,9 @@ namespace AvalonDock
                 return;
             }
 
-            AnchorableClosingEventArgs closingArgs = null;
-            AnchorableClosing?.Invoke(this, closingArgs = new AnchorableClosingEventArgs(model));
-            if (closingArgs?.Cancel == true)
+            AnchorableClosingEventArgs closingArgs = new AnchorableClosingEventArgs(model);
+            AnchorableClosing?.Invoke(this, closingArgs);
+            if (closingArgs.Cancel is true)
             {
                 return;
             }
@@ -2226,14 +2226,14 @@ namespace AvalonDock
                 return;
             }
 
-            AnchorableHidingEventArgs hidingArgs = null;
-            AnchorableHiding?.Invoke(this, hidingArgs = new AnchorableHidingEventArgs(model));
-            if (hidingArgs?.CloseInsteadOfHide == true)
+            AnchorableHidingEventArgs hidingArgs = new AnchorableHidingEventArgs(model);
+            AnchorableHiding?.Invoke(this, hidingArgs);
+            if (hidingArgs.CloseInsteadOfHide is true)
             {
                 ExecuteCloseCommand(model);
                 return;
             }
-            if (hidingArgs?.Cancel == true)
+            if (hidingArgs.Cancel is true)
             {
                 return;
             }
