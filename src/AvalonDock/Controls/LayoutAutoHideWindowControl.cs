@@ -51,6 +51,7 @@ namespace AvalonDock.Controls
                 new FrameworkPropertyMetadata(null));
 
         private readonly ContentPresenter _internalHostPresenter = new ContentPresenter();
+        private readonly SizeChangedEventHandler _sizeChangedHandler;
 
         private LayoutAnchorControl _anchor;
         private Vector _initialStartPoint;
@@ -63,8 +64,8 @@ namespace AvalonDock.Controls
         private Border _resizerGhost = null;
         private Window _resizerWindowHost = null;
         private AnchorSide _side;
-        private SizeChangedEventHandler _sizeChangedHandler;
         private List<FrameworkElement> _sizeChangedListeningControls;
+
         static LayoutAutoHideWindowControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(LayoutAutoHideWindowControl), new FrameworkPropertyMetadata(typeof(LayoutAutoHideWindowControl)));
@@ -255,19 +256,6 @@ namespace AvalonDock.Controls
             return _internalHostPresenter.DesiredSize;
         }
 
-        private void ModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName != nameof(LayoutAnchorable.IsAutoHidden))
-            {
-                return;
-            }
-
-            if (!_model.IsAutoHidden)
-            {
-                _manager.HideAutoHideWindow(_anchor);
-            }
-        }
-
         private void CreateInternalGrid()
         {
             _internalGrid = new Grid { FlowDirection = FlowDirection.LeftToRight };
@@ -341,6 +329,18 @@ namespace AvalonDock.Controls
             _resizerWindowHost = null;
         }
 
+        private void ModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(LayoutAnchorable.IsAutoHidden))
+            {
+                return;
+            }
+
+            if (!_model.IsAutoHidden)
+            {
+                _manager.HideAutoHideWindow(_anchor);
+            }
+        }
         private void OnResizerDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             //var splitter = sender as LayoutGridResizerControl;

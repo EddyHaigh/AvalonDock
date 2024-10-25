@@ -22,7 +22,7 @@ namespace AvalonDock.Controls
     /// </summary>
     public class LayoutAnchorablePaneGroupControl : LayoutGridControl<ILayoutAnchorablePane>
     {
-        private LayoutAnchorablePaneGroup _model;
+        private readonly LayoutAnchorablePaneGroup _model;
 
         /// <summary>
         /// Class constructor from layout model.

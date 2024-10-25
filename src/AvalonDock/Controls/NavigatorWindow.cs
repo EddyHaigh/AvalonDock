@@ -34,12 +34,14 @@ namespace AvalonDock.Controls
     {
         private const string PART_AnchorableListBox = "PART_AnchorableListBox";
         private const string PART_DocumentListBox = "PART_DocumentListBox";
+
+        private readonly DockingManager _manager;
+
         private ListBox _anchorableListBox;
         private ListBox _documentListBox;
         private bool _internalSetSelectedAnchorable = false;
         private bool _internalSetSelectedDocument = false;
         private bool _isSelectingDocument;
-        private DockingManager _manager;
         private ResourceDictionary _currentThemeResourceDictionary; // = null
 
         static NavigatorWindow()

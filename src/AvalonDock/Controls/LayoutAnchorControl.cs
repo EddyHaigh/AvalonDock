@@ -35,7 +35,7 @@ namespace AvalonDock.Controls
                 typeof(LayoutAnchorControl),
                 new FrameworkPropertyMetadata(AnchorSide.Left));
 
-        private LayoutAnchorable _model;
+        private readonly LayoutAnchorable _model;
         private DispatcherTimer _openUpTimer = null;
 
         static LayoutAnchorControl()

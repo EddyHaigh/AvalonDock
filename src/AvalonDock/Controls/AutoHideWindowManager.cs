@@ -22,9 +22,10 @@ namespace AvalonDock.Controls
     /// </summary>
     internal class AutoHideWindowManager
     {
+        private readonly DockingManager _manager;
+
         private DispatcherTimer _closeTimer = null;
         private WeakReference _currentAutohiddenAnchor = null;
-        private DockingManager _manager;
 
         /// <summary>Class constructor from <see cref="DockingManager"/>.</summary>
         /// <param name="manager"></param>

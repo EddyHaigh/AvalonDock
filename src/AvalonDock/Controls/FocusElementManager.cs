@@ -28,12 +28,14 @@ namespace AvalonDock.Controls
 {
     internal static class FocusElementManager
     {
+        private static readonly List<DockingManager> _managers = new List<DockingManager>();
+        private static readonly FullWeakDictionary<ILayoutElement, IInputElement> _modelFocusedElement = new FullWeakDictionary<ILayoutElement, IInputElement>();
+        private static readonly WeakDictionary<ILayoutElement, IntPtr> _modelFocusedWindowHandle = new WeakDictionary<ILayoutElement, IntPtr>();
+        private static readonly DispatcherOperation _setFocusAsyncOperation;
+
+        private static DispatcherOperation _setFocusAsyncOperation;
         private static WeakReference _lastFocusedElement;
         private static WeakReference _lastFocusedElementBeforeEnterMenuMode = null;
-        private static List<DockingManager> _managers = new List<DockingManager>();
-        private static FullWeakDictionary<ILayoutElement, IInputElement> _modelFocusedElement = new FullWeakDictionary<ILayoutElement, IInputElement>();
-        private static WeakDictionary<ILayoutElement, IntPtr> _modelFocusedWindowHandle = new WeakDictionary<ILayoutElement, IntPtr>();
-        private static DispatcherOperation _setFocusAsyncOperation;
         private static WindowHookHandler _windowHandler = null;
         internal static void FinalizeFocusManagement(DockingManager manager)
         {

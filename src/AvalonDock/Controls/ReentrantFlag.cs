@@ -34,7 +34,7 @@ namespace AvalonDock.Controls
 
         public class ReentrantFlagHandler : IDisposable
         {
-            private ReentrantFlag _owner;
+            private readonly ReentrantFlag _owner;
 
             public ReentrantFlagHandler(ReentrantFlag owner)
             {
