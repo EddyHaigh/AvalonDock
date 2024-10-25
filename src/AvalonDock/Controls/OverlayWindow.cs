@@ -195,9 +195,8 @@ namespace AvalonDock.Controls
                                     _documentPaneFullDropTargetBottom.Visibility = Visibility.Visible;
                                 }
                             }
-                            else if (parentDocumentPaneGroup == null &&
-                                layoutDocumentPane != null &&
-                                layoutDocumentPane.ChildrenCount == 0)
+                            else if (parentDocumentPaneGroup == null
+                                && layoutDocumentPane.ChildrenCount == 0)
                             {
                                 _documentPaneFullDropTargetLeft.Visibility = Visibility.Hidden;
                                 _documentPaneFullDropTargetRight.Visibility = Visibility.Hidden;
@@ -300,9 +299,8 @@ namespace AvalonDock.Controls
                                     _documentPaneDropTargetBottom.Visibility = Visibility.Visible;
                                 }
                             }
-                            else if (parentDocumentPaneGroup == null &&
-                                layoutDocumentPane != null &&
-                                layoutDocumentPane.ChildrenCount == 0)
+                            else if (parentDocumentPaneGroup == null
+                                && layoutDocumentPane.ChildrenCount == 0)
                             {
                                 _documentPaneDropTargetLeft.Visibility = Visibility.Hidden;
                                 _documentPaneDropTargetRight.Visibility = Visibility.Hidden;
