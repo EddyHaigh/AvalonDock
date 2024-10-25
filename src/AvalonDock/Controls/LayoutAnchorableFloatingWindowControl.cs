@@ -370,10 +370,7 @@ namespace AvalonDock.Controls
 
         private void CreateOverlayWindow(LayoutFloatingWindowControl draggingWindow)
         {
-            if (_overlayWindow == null)
-            {
-                _overlayWindow = new OverlayWindow(this);
-            }
+            _overlayWindow ??= new OverlayWindow(this);
 
             // Usually, the overlay window is made a child of the main window. However, if the floating
             // window being dragged isn't also a child of the main window (because OwnedByDockingManagerWindow

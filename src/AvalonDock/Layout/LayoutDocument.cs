@@ -140,10 +140,7 @@ namespace AvalonDock.Layout
                 documentPane = root.LastFocusedDocument.Parent as LayoutDocumentPane;
             }
 
-            if (documentPane == null)
-            {
-                documentPane = root.Descendents().OfType<LayoutDocumentPane>().FirstOrDefault();
-            }
+            documentPane ??= root.Descendents().OfType<LayoutDocumentPane>().FirstOrDefault();
 
             var added = false;
             if (root?.Manager.LayoutUpdateStrategy != null)

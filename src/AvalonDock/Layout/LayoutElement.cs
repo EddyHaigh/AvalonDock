@@ -110,10 +110,7 @@ namespace AvalonDock.Layout
         /// </summary>
         internal void FixCachedRootOnDeserialize()
         {
-            if (_root == null)
-            {
-                _root = Root;
-            }
+            _root ??= Root;
         }
 
         /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Parent"/> property.</summary>

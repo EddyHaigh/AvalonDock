@@ -755,16 +755,12 @@ namespace AvalonDock.Layout
             {
                 anchorablePane = root.ActiveContent.Parent as LayoutAnchorablePane;
             }
+
             //look for a pane on the right side
-            if (anchorablePane == null)
-            {
-                anchorablePane = root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
-            }
+            anchorablePane ??= root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault(pane => !pane.IsHostedInFloatingWindow && pane.GetSide() == AnchorSide.Right);
+
             //look for an available pane
-            if (anchorablePane == null)
-            {
-                anchorablePane = root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
-            }
+            anchorablePane ??= root.Descendents().OfType<LayoutAnchorablePane>().FirstOrDefault();
 
             var added = false;
             if (root.Manager.LayoutUpdateStrategy != null)
