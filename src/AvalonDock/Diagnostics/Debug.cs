@@ -175,7 +175,7 @@ namespace AvalonDock.Diagnostics
                 _Break();
             }
 
-            if (value.Trim().Length == 0)
+            if (value!.Trim().Length == 0)
             {
                 _Break();
             }
