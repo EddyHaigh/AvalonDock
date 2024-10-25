@@ -74,11 +74,11 @@ namespace AvalonDock.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(typeof(OverlayWindow)));
 
-            OverlayWindow.AllowsTransparencyProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(true));
-            OverlayWindow.WindowStyleProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(WindowStyle.None));
-            OverlayWindow.ShowInTaskbarProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(false));
-            OverlayWindow.ShowActivatedProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(false));
-            OverlayWindow.VisibilityProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(Visibility.Hidden));
+            AllowsTransparencyProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(true));
+            WindowStyleProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(WindowStyle.None));
+            ShowInTaskbarProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(false));
+            ShowActivatedProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(false));
+            VisibilityProperty.OverrideMetadata(typeof(OverlayWindow), new FrameworkPropertyMetadata(Visibility.Hidden));
         }
 
         internal OverlayWindow(IOverlayWindowHost host)
@@ -215,10 +215,10 @@ namespace AvalonDock.Controls
                             {
                                 // Hide outer buttons if drop area is a document floating window host
                                 // since these 4 drop area buttons are available over the DockingManager ONLY.
-                                _documentPaneDropTargetBottomAsAnchorablePane.Visibility = System.Windows.Visibility.Collapsed;
-                                _documentPaneDropTargetLeftAsAnchorablePane.Visibility = System.Windows.Visibility.Collapsed;
-                                _documentPaneDropTargetRightAsAnchorablePane.Visibility = System.Windows.Visibility.Collapsed;
-                                _documentPaneDropTargetTopAsAnchorablePane.Visibility = System.Windows.Visibility.Collapsed;
+                                _documentPaneDropTargetBottomAsAnchorablePane.Visibility = Visibility.Collapsed;
+                                _documentPaneDropTargetLeftAsAnchorablePane.Visibility = Visibility.Collapsed;
+                                _documentPaneDropTargetRightAsAnchorablePane.Visibility = Visibility.Collapsed;
+                                _documentPaneDropTargetTopAsAnchorablePane.Visibility = Visibility.Collapsed;
                             }
                             else if (parentDocumentPaneGroup != null &&
                                 parentDocumentPaneGroup.Children.Count(c => c.IsVisible) > 1)
@@ -232,37 +232,34 @@ namespace AvalonDock.Controls
                                 {
                                     _documentPaneDropTargetBottomAsAnchorablePane.Visibility =
                                     parentDocumentPaneGroup.Orientation == Orientation.Vertical ?
-                                        (isLastChild ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden) :
-                                        System.Windows.Visibility.Hidden;
+                                        GetVisibility(isFirstChild) : Visibility.Hidden;
+
                                     _documentPaneDropTargetTopAsAnchorablePane.Visibility =
                                         parentDocumentPaneGroup.Orientation == Orientation.Vertical ?
-                                            (isFirstChild ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden) :
-                                            System.Windows.Visibility.Hidden;
+                                            GetVisibility(isFirstChild) : Visibility.Hidden;
 
                                     _documentPaneDropTargetLeftAsAnchorablePane.Visibility =
                                         parentDocumentPaneGroup.Orientation == Orientation.Horizontal ?
-                                            (isFirstChild ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden) :
-                                            System.Windows.Visibility.Hidden;
+                                            GetVisibility(isFirstChild) : Visibility.Hidden;
 
                                     _documentPaneDropTargetRightAsAnchorablePane.Visibility =
                                         parentDocumentPaneGroup.Orientation == Orientation.Horizontal ?
-                                            (isLastChild ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden) :
-                                            System.Windows.Visibility.Hidden;
+                                            GetVisibility(isFirstChild) : Visibility.Hidden;
                                 }
                                 else
                                 {
-                                    _documentPaneDropTargetBottomAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
-                                    _documentPaneDropTargetLeftAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
-                                    _documentPaneDropTargetRightAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
-                                    _documentPaneDropTargetTopAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
+                                    _documentPaneDropTargetBottomAsAnchorablePane.Visibility = Visibility.Visible;
+                                    _documentPaneDropTargetLeftAsAnchorablePane.Visibility = Visibility.Visible;
+                                    _documentPaneDropTargetRightAsAnchorablePane.Visibility = Visibility.Visible;
+                                    _documentPaneDropTargetTopAsAnchorablePane.Visibility = Visibility.Visible;
                                 }
                             }
                             else
                             {
-                                _documentPaneDropTargetBottomAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
-                                _documentPaneDropTargetLeftAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
-                                _documentPaneDropTargetRightAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
-                                _documentPaneDropTargetTopAsAnchorablePane.Visibility = System.Windows.Visibility.Visible;
+                                _documentPaneDropTargetBottomAsAnchorablePane.Visibility = Visibility.Visible;
+                                _documentPaneDropTargetLeftAsAnchorablePane.Visibility = Visibility.Visible;
+                                _documentPaneDropTargetRightAsAnchorablePane.Visibility = Visibility.Visible;
+                                _documentPaneDropTargetTopAsAnchorablePane.Visibility = Visibility.Visible;
                             }
                         }
                         else
@@ -323,7 +320,10 @@ namespace AvalonDock.Controls
             Canvas.SetTop(areaElement, area.DetectionRect.Top - Top);
             areaElement.Width = area.DetectionRect.Width;
             areaElement.Height = area.DetectionRect.Height;
-            areaElement.Visibility = System.Windows.Visibility.Visible;
+            areaElement.Visibility = Visibility.Visible;
+
+            static Visibility GetVisibility(bool isLastChild)
+                => isLastChild ? Visibility.Visible : Visibility.Hidden;
         }
 
         /// <inheritdoc cref="IOverlayWindow"/>
@@ -333,14 +333,14 @@ namespace AvalonDock.Controls
             if (previewBoxPath != null)
             {
                 _previewBox.Data = previewBoxPath;
-                _previewBox.Visibility = System.Windows.Visibility.Visible;
+                _previewBox.Visibility = Visibility.Visible;
             }
         }
 
         /// <inheritdoc cref="IOverlayWindow"/>
         void IOverlayWindow.DragLeave(LayoutFloatingWindowControl floatingWindow)
         {
-            Visibility = System.Windows.Visibility.Hidden;
+            Visibility = Visibility.Hidden;
             _floatingWindow = null;
         }
 
@@ -380,13 +380,13 @@ namespace AvalonDock.Controls
                     break;
             }
 
-            areaElement.Visibility = System.Windows.Visibility.Hidden;
+            areaElement.Visibility = Visibility.Hidden;
         }
 
         /// <inheritdoc cref="IOverlayWindow"/>
         void IOverlayWindow.DragLeave(IDropTarget target)
         {
-            _previewBox.Visibility = System.Windows.Visibility.Hidden;
+            _previewBox.Visibility = Visibility.Hidden;
         }
 
         /// <inheritdoc cref="IOverlayWindow"/>
@@ -603,12 +603,12 @@ namespace AvalonDock.Controls
             _gridDocumentPaneDropTargets = GetTemplateChild("PART_DocumentPaneDropTargets") as Grid;
             _gridDocumentPaneFullDropTargets = GetTemplateChild("PART_DocumentPaneFullDropTargets") as Grid;
 
-            _gridDockingManagerDropTargets.Visibility = System.Windows.Visibility.Hidden;
-            _gridAnchorablePaneDropTargets.Visibility = System.Windows.Visibility.Hidden;
-            _gridDocumentPaneDropTargets.Visibility = System.Windows.Visibility.Hidden;
+            _gridDockingManagerDropTargets.Visibility = Visibility.Hidden;
+            _gridAnchorablePaneDropTargets.Visibility = Visibility.Hidden;
+            _gridDocumentPaneDropTargets.Visibility = Visibility.Hidden;
             if (_gridDocumentPaneFullDropTargets != null)
             {
-                _gridDocumentPaneFullDropTargets.Visibility = System.Windows.Visibility.Hidden;
+                _gridDocumentPaneFullDropTargets.Visibility = Visibility.Hidden;
             }
 
             _dockingManagerDropTargetBottom = GetTemplateChild("PART_DockingManagerDropTargetBottom") as FrameworkElement;
@@ -646,7 +646,7 @@ namespace AvalonDock.Controls
         {
             if (_mainCanvasPanel != null)
             {
-                _mainCanvasPanel.Visibility = System.Windows.Visibility.Visible;
+                _mainCanvasPanel.Visibility = Visibility.Visible;
             }
         }
 
@@ -654,7 +654,7 @@ namespace AvalonDock.Controls
         {
             if (_mainCanvasPanel != null)
             {
-                _mainCanvasPanel.Visibility = System.Windows.Visibility.Hidden;
+                _mainCanvasPanel.Visibility = Visibility.Hidden;
             }
         }
 
