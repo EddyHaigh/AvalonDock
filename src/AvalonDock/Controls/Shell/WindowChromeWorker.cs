@@ -7,38 +7,40 @@
    License (Ms-PL) as published at https://opensource.org/licenses/MS-PL
  ************************************************************************/
 
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Controls.Primitives;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Threading;
+
+using AvalonDock;
+
+
+using Standard;
+
+using global::Windows.Win32;
+using global::Windows.Win32.Graphics.Gdi;
+using global::Windows.Win32.Foundation;
+using global::Windows.Win32.UI.WindowsAndMessaging;
+using global::Windows.Win32.UI.Controls;
+
+using AvalonDock.Diagnostics;
+using static Microsoft.Windows.Shell.WindowChromeWorker;
+using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<uint, Microsoft.Windows.Shell.WindowChromeWorker.MessageHandler>;
+
 /**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
 \**************************************************************************/
 
 namespace Microsoft.Windows.Shell
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Runtime.InteropServices;
-    using System.Windows;
-    using System.Windows.Controls.Primitives;
-    using System.Windows.Interop;
-    using System.Windows.Media;
-    using System.Windows.Threading;
-
-    using AvalonDock;
-
-
-    using Standard;
-
-    using global::Windows.Win32;
-    using global::Windows.Win32.Graphics.Gdi;
-    using global::Windows.Win32.Foundation;
-    using global::Windows.Win32.UI.WindowsAndMessaging;
-    using global::Windows.Win32.UI.Controls;
-
-    using static AvalonDock.Controls.Shell.Standard.NativeStructs;
-
-    using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<AvalonDock.Controls.Shell.Standard.NativeStructs.WM, AvalonDock.Controls.Shell.Standard.NativeStructs.MessageHandler>;
-
     internal class WindowChromeWorker : DependencyObject
     {
+        internal delegate LRESULT MessageHandler(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled);
+
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
@@ -85,25 +87,25 @@ namespace Microsoft.Windows.Shell
         {
             _messageTable = new List<HANDLE_MESSAGE>
             {
-                new HANDLE_MESSAGE(WM.SETTEXT,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(WM.SETICON,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(WM.NCACTIVATE,            _HandleNCActivate),
-                new HANDLE_MESSAGE(WM.NCCALCSIZE,            _HandleNCCalcSize),
-                new HANDLE_MESSAGE(WM.NCHITTEST,             _HandleNCHitTest),
-                new HANDLE_MESSAGE(WM.NCRBUTTONUP,           _HandleNCRButtonUp),
-                new HANDLE_MESSAGE(WM.SIZE,                  _HandleSize),
-                new HANDLE_MESSAGE(WM.WINDOWPOSCHANGED,      _HandleWindowPosChanged),
-                new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged),
+                new HANDLE_MESSAGE(PInvoke.WM_SETTEXT,               _HandleSetTextOrIcon),
+                new HANDLE_MESSAGE(PInvoke.WM_SETICON,               _HandleSetTextOrIcon),
+                new HANDLE_MESSAGE(PInvoke.WM_NCACTIVATE,            _HandleNCActivate),
+                new HANDLE_MESSAGE(PInvoke.WM_NCCALCSIZE,            _HandleNCCalcSize),
+                new HANDLE_MESSAGE(PInvoke.WM_NCHITTEST,             _HandleNCHitTest),
+                new HANDLE_MESSAGE(PInvoke.WM_NCRBUTTONUP,           _HandleNCRButtonUp),
+                new HANDLE_MESSAGE(PInvoke.WM_SIZE,                  _HandleSize),
+                new HANDLE_MESSAGE(PInvoke.WM_WINDOWPOSCHANGED,      _HandleWindowPosChanged),
+                new HANDLE_MESSAGE(PInvoke.WM_DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged),
             };
 
             if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 _messageTable.AddRange(new[]
                 {
-                   new HANDLE_MESSAGE(WM.SETTINGCHANGE,         _HandleSettingChange),
-                   new HANDLE_MESSAGE(WM.ENTERSIZEMOVE,         _HandleEnterSizeMove),
-                   new HANDLE_MESSAGE(WM.EXITSIZEMOVE,          _HandleExitSizeMove),
-                   new HANDLE_MESSAGE(WM.MOVE,                  _HandleMove),
+                   new HANDLE_MESSAGE(PInvoke.WM_SETTINGCHANGE,         _HandleSettingChange),
+                   new HANDLE_MESSAGE(PInvoke.WM_ENTERSIZEMOVE,         _HandleEnterSizeMove),
+                   new HANDLE_MESSAGE(PInvoke.WM_EXITSIZEMOVE,          _HandleExitSizeMove),
+                   new HANDLE_MESSAGE(PInvoke.WM_MOVE,                  _HandleMove),
                 });
             }
         }
@@ -428,8 +430,8 @@ namespace Microsoft.Windows.Shell
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
-            var style = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE);
-            var exstyle = (WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_EXSTYLE);
+            var style = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+            var exstyle = (WINDOW_EX_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
 
             PInvoke.AdjustWindowRectEx(ref rcWindow, style, false, exstyle);
             return rcWindow;
@@ -464,12 +466,11 @@ namespace Microsoft.Windows.Shell
             // Only expecting messages for our cached HWND.
             Assert.AreEqual<nint>(hwnd, _hwnd);
 
-            var message = (WM)msg;
             foreach (var handlePair in _messageTable)
             {
-                if (handlePair.Key == message)
+                if (handlePair.Key == msg)
                 {
-                    return handlePair.Value((uint)message, new WPARAM((nuint)wParam), new LPARAM(lParam), out handled);
+                    return handlePair.Value((uint)msg, new WPARAM((nuint)wParam), new LPARAM(lParam), out handled);
                 }
             }
 
@@ -504,7 +505,7 @@ namespace Microsoft.Windows.Shell
             // which bypasses any other handling of the message.
             var lRet = PInvoke.DefWindowProc(
                 new HWND(_hwnd),
-                (uint)WM.NCACTIVATE,
+                PInvoke.WM_NCACTIVATE,
                 wParam,
                 new LPARAM(-1));
             handled = true;
@@ -520,7 +521,7 @@ namespace Microsoft.Windows.Shell
             // Since we always want the client size to equal the window size, we can unconditionally handle it
             // without having to modify the parameters.
             handled = true;
-            return new LRESULT((int)WVR.REDRAW);
+            return new LRESULT((nint)PInvoke.WVR_REDRAW);
         }
 
         private LRESULT _HandleNCHitTest(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
@@ -547,7 +548,7 @@ namespace Microsoft.Windows.Shell
             var ht = _HitTestNca(DpiHelper.DeviceRectToLogical(windowPosition), DpiHelper.DevicePixelsToLogical(mousePosScreen));
             // Don't blindly respect HTCAPTION.
             // We want UIElements in the caption area to be actionable so run through a hittest first.
-            if (ht != HT.CLIENT)
+            if (ht != PInvoke.HTCLIENT)
             {
                 var mousePosWindow = mousePosScreen;
                 mousePosWindow.Offset(-windowPosition.X, -windowPosition.Y);
@@ -555,7 +556,7 @@ namespace Microsoft.Windows.Shell
                 var inputElement = _window.InputHitTest(mousePosWindow);
                 if (inputElement != null && WindowChrome.GetIsHitTestVisibleInChrome(inputElement))
                 {
-                    ht = HT.CLIENT;
+                    ht = PInvoke.HTCLIENT;
                 }
             }
             handled = true;
@@ -567,7 +568,7 @@ namespace Microsoft.Windows.Shell
         {
             // Emulate the system behavior of clicking the right mouse button over the caption area
             // to bring up the system menu.
-            if (HT.CAPTION == (HT)(int)wParam.Value)
+            if (PInvoke.HTCAPTION == wParam.Value)
             {
                 if (_window.ContextMenu != null)
                 {
@@ -708,14 +709,14 @@ namespace Microsoft.Windows.Shell
         private bool _ModifyStyle(WINDOW_STYLE removeStyle, WINDOW_STYLE addStyle)
         {
             Assert.IsNotDefault(_hwnd);
-            var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
+            var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt32();
             var dwNewStyle = (dwStyle & ~removeStyle) | addStyle;
             if (dwStyle == dwNewStyle)
             {
                 return false;
             }
 
-            NativeMethods.SetWindowLongPtr(_hwnd, GWL.GWL_STYLE, new IntPtr((int)dwNewStyle));
+            NativeMethods.SetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((int)dwNewStyle));
             return true;
         }
 
@@ -784,7 +785,7 @@ namespace Microsoft.Windows.Shell
             SafeHandle menuSafeHandle = PInvoke.GetSystemMenu_SafeHandle(new HWND(_hwnd), false);
             if (menuSafeHandle.IsInvalid is false)
             {
-                var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, GWL.GWL_STYLE).ToInt32();
+                var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt32();
 
                 var canMinimize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_MINIMIZEBOX);
                 var canMaximize = Utility.IsFlagSet((int)dwStyle, (int)WINDOW_STYLE.WS_MAXIMIZEBOX);
@@ -793,27 +794,27 @@ namespace Microsoft.Windows.Shell
                 switch (state)
                 {
                     case WindowState.Maximized:
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.RESTORE, mfEnabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MOVE, mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.SIZE, mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MAXIMIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_RESTORE, mfEnabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MOVE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_SIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MAXIMIZE, mfDisabled);
                         break;
 
                     case WindowState.Minimized:
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.RESTORE, mfEnabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MOVE, mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.SIZE, mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MINIMIZE, mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_RESTORE, mfEnabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MOVE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_SIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MINIMIZE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
                         break;
 
                     default:
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.RESTORE, mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MOVE, mfEnabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.SIZE, canSize ? mfEnabled : mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
-                        NativeMethods.EnableMenuItem(menuSafeHandle, SC.MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_RESTORE, mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MOVE, mfEnabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_SIZE, canSize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MINIMIZE, canMinimize ? mfEnabled : mfDisabled);
+                        NativeMethods.EnableMenuItem(menuSafeHandle, PInvoke.SC_MAXIMIZE, canMaximize ? mfEnabled : mfDisabled);
                         break;
                 }
             }
@@ -1070,13 +1071,13 @@ namespace Microsoft.Windows.Shell
         /// <summary>
         /// Matrix of the HT values to return when responding to NC window messages.
         /// </summary>
-        private static readonly HT[,] _HitTestBorders = {
-            { HT.TOPLEFT,    HT.TOP,     HT.TOPRIGHT    },
-            { HT.LEFT,       HT.CLIENT,  HT.RIGHT       },
-            { HT.BOTTOMLEFT, HT.BOTTOM,  HT.BOTTOMRIGHT },
+        private static readonly uint[,] _HitTestBorders = {
+            { PInvoke.HTTOPLEFT,    PInvoke.HTTOP,     PInvoke.HTTOPRIGHT    },
+            { PInvoke.HTLEFT,       PInvoke.HTCLIENT,  PInvoke.HTRIGHT       },
+            { PInvoke.HTBOTTOMLEFT, PInvoke.HTBOTTOM,  PInvoke.HTBOTTOMRIGHT },
         };
 
-        private HT _HitTestNca(Rect windowPosition, Point mousePosition)
+        private uint _HitTestNca(Rect windowPosition, Point mousePosition)
         {
             // Determine if hit test is for resizing, default middle (1,1).
             var uRow = 1;
@@ -1112,9 +1113,9 @@ namespace Microsoft.Windows.Shell
             }
 
             var ht = _HitTestBorders[uRow, uCol];
-            if (ht == HT.TOP && !onResizeBorder)
+            if (ht == PInvoke.HTTOP && !onResizeBorder)
             {
-                ht = HT.CAPTION;
+                ht = PInvoke.HTCAPTION;
             }
 
             return ht;

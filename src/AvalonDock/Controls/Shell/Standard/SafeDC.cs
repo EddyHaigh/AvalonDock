@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
+using AvalonDock.Diagnostics;
+
 using Microsoft.Win32.SafeHandles;
 
 using Windows.Win32;
@@ -35,23 +37,22 @@ internal sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
 #endif
     internal static SafeDC GetDC(HWND hWND)
     {
-        SafeDC? safeDC = null;
-        try
+        HDC hDC = PInvoke.GetDC(hWND);
+        if (hDC.Value == IntPtr.Zero)
         {
-            safeDC = new(PInvoke.GetDC(hWND));
-        }
-        finally
-        {
-            if (safeDC is not null)
-            {
-                safeDC._hWND = hWND;
-            }
+            Trace.TraceError("Failed to get device context.");
+            new HRESULT(HResultCodes.E_FAIL).ThrowOnFailure();
         }
 
-        if (safeDC.IsInvalid is true)
+        SafeDC safeDC = new(hDC)
+        {
+            _hWND = hWND
+        };
+
+        if (safeDC.IsInvalid)
         {
             Trace.TraceError("Invalid SafeDC object detected.");
-            global::Standard.HRESULT.E_FAIL.ThrowIfFailed();
+            new HRESULT(HResultCodes.E_FAIL).ThrowOnFailure();
         }
 
         return safeDC;
@@ -71,7 +72,7 @@ internal sealed class SafeDC : SafeHandleZeroOrMinusOneIsInvalid
     {
         if (!_hWND.HasValue || _hWND.Value == IntPtr.Zero)
         {
-            return true;
+            return false;
         }
 
         return PInvoke.ReleaseDC(_hWND.Value, HDC) == 1;

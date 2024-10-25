@@ -26,6 +26,8 @@ using AvalonDock.Controls;
 using AvalonDock.Layout;
 using AvalonDock.Themes;
 
+using Standard;
+
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -2075,7 +2077,7 @@ namespace AvalonDock
 
             var parentWindow = Window.GetWindow(this);
             var windowParentHandle = parentWindow != null ? new WindowInteropHelper(parentWindow).Handle : Process.GetCurrentProcess().MainWindowHandle;
-            var b = Win32Helper.GetWindowZOrder(windowParentHandle, out var mainWindow_z);
+            var b = NativeMethods.GetWindowZOrder(windowParentHandle, out var mainWindow_z);
             var currentHandle = PInvoke.GetWindow(new HWND(windowParentHandle), GET_WINDOW_CMD.GW_HWNDFIRST);
             while (currentHandle != IntPtr.Zero)
             {
@@ -2087,7 +2089,7 @@ namespace AvalonDock
                         var fw_hwnd = new WindowInteropHelper(fw).Handle;
                         if (currentHandle == fw_hwnd && fw.Model.Root != null && fw.Model.Root.Manager == this)
                         {
-                            if (fw.OwnedByDockingManagerWindow || (Win32Helper.GetWindowZOrder(fw_hwnd, out var fw_z) && fw_z > mainWindow_z))
+                            if (fw.OwnedByDockingManagerWindow || (NativeMethods.GetWindowZOrder(fw_hwnd, out var fw_z) && fw_z > mainWindow_z))
                             {
                                 topFloatingWindows.Add(host);
                             }

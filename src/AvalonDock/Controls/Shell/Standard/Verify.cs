@@ -24,6 +24,8 @@ namespace Standard
     using System.IO;
     using System.Threading;
 
+    using AvalonDock.Diagnostics;
+
     /// <summary>
     /// A static class for retail validated assertions.
     /// Instead of breaking into the debugger an exception is thrown.

@@ -39,7 +39,6 @@ GetStockObject
 CombineRgn
 CreateRectRgn
 CreateRoundRectRgn
-SystemParameterInfo
 ShowWindow
 GetStockObject
 GetSystemMetrics
@@ -61,3 +60,14 @@ TITLEBARINFOEX
 WINDOWPOS
 UnregisterClass
 DwmDefWindowProc
+PropVariantClear
+CREATESTRUCTW
+WM_*
+WA_*
+WS_*
+SC_*
+HT*
+WVR_*
+HCBT_*
+WINDOW_LONG_PTR_INDEX
+TRACK_POPUP_MENU_FLAGS
