@@ -835,9 +835,10 @@ namespace AvalonDock.Layout
         {
             var bNotifyChildren = false;
 
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
+            if (e.NewItems != null)
             {
-                if (e.OldItems != null)
+                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove
+                    || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
                 {
                     foreach (LayoutAnchorable element in e.OldItems)
                     {
@@ -850,11 +851,9 @@ namespace AvalonDock.Layout
                         bNotifyChildren = true;
                     }
                 }
-            }
 
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
-            {
-                if (e.NewItems != null)
+                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
+                    || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
                 {
                     foreach (LayoutAnchorable element in e.NewItems)
                     {

@@ -107,23 +107,21 @@ namespace AvalonDock.Commands
 
             var actionTarget = ActionTarget;
 
-            if (IsAlive)
+            if (IsAlive
+                && Method != null
+                && ActionReference != null
+                && actionTarget != null)
             {
-                if (Method != null
-                    && ActionReference != null
-                    && actionTarget != null)
+                try
                 {
-                    try
+                    Method.Invoke(
+                    actionTarget,
+                    new object[]
                     {
-                        Method.Invoke(
-                        actionTarget,
-                        new object[]
-                        {
                             parameter
-                        });
-                    }
-                    catch { }
+                    });
                 }
+                catch { }
             }
         }
 

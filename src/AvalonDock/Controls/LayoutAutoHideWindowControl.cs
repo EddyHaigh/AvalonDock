@@ -140,20 +140,16 @@ namespace AvalonDock.Controls
             {
                 var viewboxes = _manager.GetParents().OfType<Viewbox>().ToList();
 
-                if (viewboxes.Count > 0)
+                if (viewboxes.Count > 0
+                    && _manager.TransformToAncestor(viewboxes[viewboxes.Count - 1]) is Transform transform
+                    && !transform.Value.IsIdentity)
                 {
-                    if (_manager.TransformToAncestor(viewboxes[viewboxes.Count - 1]) is Transform transform)
-                    {
-                        if (!transform.Value.IsIdentity)
-                        {
-                            var origin = transform.Transform(new Point());
+                    var origin = transform.Transform(new Point());
 
-                            var newTransformGroup = new TransformGroup();
-                            newTransformGroup.Children.Add(transform);
-                            newTransformGroup.Children.Add(new TranslateTransform(-origin.X, -origin.Y));
-                            return newTransformGroup;
-                        }
-                    }
+                    var newTransformGroup = new TransformGroup();
+                    newTransformGroup.Children.Add(transform);
+                    newTransformGroup.Children.Add(new TranslateTransform(-origin.X, -origin.Y));
+                    return newTransformGroup;
                 }
 
                 return Transform.Identity;
