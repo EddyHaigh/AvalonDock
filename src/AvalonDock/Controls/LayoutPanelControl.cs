@@ -75,11 +75,7 @@ namespace AvalonDock.Controls
                         var childPositionableModel = _model.Children[i] as ILayoutPositionableElement;
                         if (!childPositionableModel.DockWidth.IsStar)
                         {
-                            // Keep set values (from XML for instance)
-                            if (!childPositionableModel.DockWidth.IsStar)
-                            {
-                                childPositionableModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
-                            }
+                            childPositionableModel.DockWidth = new GridLength(1.0, GridUnitType.Star);
                         }
                     }
                 }
@@ -119,11 +115,7 @@ namespace AvalonDock.Controls
                         var childPositionableModel = _model.Children[i] as ILayoutPositionableElement;
                         if (!childPositionableModel.DockHeight.IsStar)
                         {
-                            // Keep set values (from XML for instance)
-                            if (!childPositionableModel.DockHeight.IsStar)
-                            {
-                                childPositionableModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
-                            }
+                            childPositionableModel.DockHeight = new GridLength(1.0, GridUnitType.Star);
                         }
                     }
                 }

@@ -201,9 +201,9 @@ namespace AvalonDock.Layout
 
         private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Remove || e.Action == NotifyCollectionChangedAction.Replace)
+            if (e.OldItems != null)
             {
-                if (e.OldItems != null)
+                if (e.Action == NotifyCollectionChangedAction.Remove || e.Action == NotifyCollectionChangedAction.Replace)
                 {
                     foreach (LayoutElement element in e.OldItems)
                     {
@@ -213,10 +213,8 @@ namespace AvalonDock.Layout
                         }
                     }
                 }
-            }
-            if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Replace)
-            {
-                if (e.NewItems != null)
+
+                if (e.Action == NotifyCollectionChangedAction.Add || e.Action == NotifyCollectionChangedAction.Replace)
                 {
                     foreach (LayoutElement element in e.NewItems)
                     {

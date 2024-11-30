@@ -120,19 +120,17 @@ namespace AvalonDock.Commands
 
             var funcTarget = FuncTarget;
 
-            if (IsAlive)
+            if (IsAlive
+                && Method != null
+                && FuncReference != null
+                && funcTarget != null)
             {
-                if (Method != null
-                    && FuncReference != null
-                    && funcTarget != null)
-                {
-                    return (TResult)Method.Invoke(
-                        funcTarget,
-                        new object[]
-                        {
+                return (TResult)Method.Invoke(
+                    funcTarget,
+                    new object[]
+                    {
                             parameter
-                        });
-                }
+                    });
             }
 
             return default;
