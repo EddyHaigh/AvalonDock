@@ -30,6 +30,7 @@ using global::Windows.Win32.UI.Controls;
 using AvalonDock.Diagnostics;
 using static Microsoft.Windows.Shell.WindowChromeWorker;
 using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<uint, Microsoft.Windows.Shell.WindowChromeWorker.MessageHandler>;
+using System.Diagnostics;
 
 /**************************************************************************\
     Copyright Microsoft Corporation. All Rights Reserved.
@@ -90,7 +91,7 @@ namespace Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(PInvoke.WM_SETTEXT,               HandleSetTextOrIcon),
                 new HANDLE_MESSAGE(PInvoke.WM_SETICON,               HandleSetTextOrIcon),
                 new HANDLE_MESSAGE(PInvoke.WM_NCACTIVATE,            HandleNCActivate),
-                new HANDLE_MESSAGE(PInvoke.WM_NCCALCSIZE,            HandleNCCalcSize),
+                new HANDLE_MESSAGE(PInvoke.WM_NCCALCSIZE,            HandleNcCalcSize),
                 new HANDLE_MESSAGE(PInvoke.WM_NCHITTEST,             HandleNCHitTest),
                 new HANDLE_MESSAGE(PInvoke.WM_NCRBUTTONUP,           HandleNCRButtonUp),
                 new HANDLE_MESSAGE(PInvoke.WM_SIZE,                  HandleSize),
@@ -373,14 +374,12 @@ namespace Microsoft.Windows.Shell
                 var dti = NativeMethods.DwmGetCompositionTimingInfo(_hwnd);
                 success = dti != null;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // We aren't sure of all the reasons this could fail.
                 // If we find new ones we should consider making the NativeMethod swallow them as well.
                 // Since we have a limited number of retries and this method isn't actually critical, just repost.
-
-                // Disabling this for the published code to reduce debug noise.  This will get compiled away for retail binaries anyways.
-                //Assert.Fail(e.Message);
+                Debug.Fail(e.Message);
             }
 
             // NativeMethods.DwmGetCompositionTimingInfo swallows E_PENDING.
@@ -512,7 +511,7 @@ namespace Microsoft.Windows.Shell
             return lRet;
         }
 
-        private LRESULT HandleNCCalcSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private static LRESULT HandleNcCalcSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // lParam is an [in, out] that can be either a RECT* (wParam == FALSE) or an NCCALCSIZE_PARAMS*.
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
@@ -655,14 +654,12 @@ namespace Microsoft.Windows.Shell
             // On Win7 if the user is dragging the window out of the maximized state then we don't want to use that location
             // as a restore point.
             Assert.Implies(_window.WindowState == WindowState.Maximized, Utility.IsOSWindows7OrNewer);
-            if (_window.WindowState != WindowState.Maximized)
+
+            // Check for the docked window case.  The window can still be restored when it's in this position so
+            // try to account for that and not update the start position.
+            if (_window.WindowState != WindowState.Maximized && !_IsWindowDocked)
             {
-                // Check for the docked window case.  The window can still be restored when it's in this position so
-                // try to account for that and not update the start position.
-                if (!_IsWindowDocked)
-                {
-                    _windowPosAtStartOfUserMove = new Point(_window.Left, _window.Top);
-                }
+                _windowPosAtStartOfUserMove = new Point(_window.Left, _window.Top);
                 // Realistically we also don't want to update the start position when moving from one docked state to another (or to and from maximized),
                 // but it's tricky to detect and this is already a workaround for a bug that's fixed in newer versions of the framework.
                 // Not going to try to handle all cases.
@@ -783,7 +780,7 @@ namespace Microsoft.Windows.Shell
 
             var modified = ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
             SafeHandle menuSafeHandle = PInvoke.GetSystemMenu_SafeHandle(new HWND(_hwnd), false);
-            if (menuSafeHandle.IsInvalid is false)
+            if (menuSafeHandle.IsInvalid)
             {
                 var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt32();
 
@@ -869,8 +866,6 @@ namespace Microsoft.Windows.Shell
 
         private void SetRoundingRegion(WINDOWPOS? wp)
         {
-            const int MONITOR_DEFAULTTONEAREST = 0x00000002;
-
             // We're early - WPF hasn't necessarily updated the state of the window.
             // Need to query it ourselves.
             var windowPlacement = new WINDOWPLACEMENT()
