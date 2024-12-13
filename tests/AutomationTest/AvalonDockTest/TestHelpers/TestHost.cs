@@ -61,9 +61,10 @@ public class TestHost
         _app.Exit += (sender, args) =>
             {
                 var message = $"""
-======= Exit TestApp =======
+========================= Exit TestApp =========================
 Thread.CurrentThread:       {Environment.CurrentManagedThreadId}
 Current.Dispatcher.Thread:  {Application.Current.Dispatcher.Thread.ManagedThreadId}
+================================================================
 """;
                 Debug.WriteLine(message);
             };
@@ -71,9 +72,10 @@ Current.Dispatcher.Thread:  {Application.Current.Dispatcher.Thread.ManagedThread
         _app.Startup += (sender, args) =>
             {
                 var message = $"""
-====== Start TestApp ======
+========================= Start TestApp =========================
 Thread.CurrentThread:      {Environment.CurrentManagedThreadId}
 Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}
+=================================================================
 """;
                 Debug.WriteLine(message);
                 _gate.Set();

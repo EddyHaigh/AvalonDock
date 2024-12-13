@@ -19,8 +19,12 @@ public class AutomationTestBase
     [TestInitialize]
     public void Before()
     {
-        var message = $"Setup for test '{this.TestContext.TestName}' with Thread.CurrentThread: {Environment.CurrentManagedThreadId}" +
-                      $" and Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}";
+        var message = $"""
+=================== Setup for test '{this.TestContext.TestName}' ====================
+Environment.CurrentManagedThreadId:                    {Environment.CurrentManagedThreadId}
+Application.Current.Dispatcher.Thread.ManagedThreadId: {Application.Current.Dispatcher.Thread.ManagedThreadId}
+=====================================================================================
+""";
         this.TestContext.WriteLine(message);
     }
 
@@ -36,8 +40,12 @@ public class AutomationTestBase
             }
         });
 
-        var message = $"TearDown for test '{this.TestContext.TestName}' with Thread.CurrentThread: {Environment.CurrentManagedThreadId}" +
-                      $" and Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}";
+        var message = $"""
+================== TearDown for test '{this.TestContext.TestName}' ==================
+Environment.CurrentManagedThreadId: {Environment.CurrentManagedThreadId}
+Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}
+=====================================================================================
+""";
         this.TestContext.WriteLine(message);
     }
 
