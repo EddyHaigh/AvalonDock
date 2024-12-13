@@ -87,25 +87,25 @@ namespace Microsoft.Windows.Shell
         {
             _messageTable = new List<HANDLE_MESSAGE>
             {
-                new HANDLE_MESSAGE(PInvoke.WM_SETTEXT,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(PInvoke.WM_SETICON,               _HandleSetTextOrIcon),
-                new HANDLE_MESSAGE(PInvoke.WM_NCACTIVATE,            _HandleNCActivate),
-                new HANDLE_MESSAGE(PInvoke.WM_NCCALCSIZE,            _HandleNCCalcSize),
-                new HANDLE_MESSAGE(PInvoke.WM_NCHITTEST,             _HandleNCHitTest),
-                new HANDLE_MESSAGE(PInvoke.WM_NCRBUTTONUP,           _HandleNCRButtonUp),
-                new HANDLE_MESSAGE(PInvoke.WM_SIZE,                  _HandleSize),
-                new HANDLE_MESSAGE(PInvoke.WM_WINDOWPOSCHANGED,      _HandleWindowPosChanged),
-                new HANDLE_MESSAGE(PInvoke.WM_DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged),
+                new HANDLE_MESSAGE(PInvoke.WM_SETTEXT,               HandleSetTextOrIcon),
+                new HANDLE_MESSAGE(PInvoke.WM_SETICON,               HandleSetTextOrIcon),
+                new HANDLE_MESSAGE(PInvoke.WM_NCACTIVATE,            HandleNCActivate),
+                new HANDLE_MESSAGE(PInvoke.WM_NCCALCSIZE,            HandleNCCalcSize),
+                new HANDLE_MESSAGE(PInvoke.WM_NCHITTEST,             HandleNCHitTest),
+                new HANDLE_MESSAGE(PInvoke.WM_NCRBUTTONUP,           HandleNCRButtonUp),
+                new HANDLE_MESSAGE(PInvoke.WM_SIZE,                  HandleSize),
+                new HANDLE_MESSAGE(PInvoke.WM_WINDOWPOSCHANGED,      HandleWindowPosChanged),
+                new HANDLE_MESSAGE(PInvoke.WM_DWMCOMPOSITIONCHANGED, HandleDwmCompositionChanged),
             };
 
             if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
                 _messageTable.AddRange(new[]
                 {
-                   new HANDLE_MESSAGE(PInvoke.WM_SETTINGCHANGE,         _HandleSettingChange),
-                   new HANDLE_MESSAGE(PInvoke.WM_ENTERSIZEMOVE,         _HandleEnterSizeMove),
-                   new HANDLE_MESSAGE(PInvoke.WM_EXITSIZEMOVE,          _HandleExitSizeMove),
-                   new HANDLE_MESSAGE(PInvoke.WM_MOVE,                  _HandleMove),
+                   new HANDLE_MESSAGE(PInvoke.WM_SETTINGCHANGE,         HandleSettingChange),
+                   new HANDLE_MESSAGE(PInvoke.WM_ENTERSIZEMOVE,         HandleEnterSizeMove),
+                   new HANDLE_MESSAGE(PInvoke.WM_EXITSIZEMOVE,          HandleExitSizeMove),
+                   new HANDLE_MESSAGE(PInvoke.WM_MOVE,                  HandleMove),
                 });
             }
         }
@@ -123,24 +123,24 @@ namespace Microsoft.Windows.Shell
 
             if (_chromeInfo != null)
             {
-                _chromeInfo.PropertyChangedThatRequiresRepaint -= _OnChromePropertyChangedThatRequiresRepaint;
+                _chromeInfo.PropertyChangedThatRequiresRepaint -= OnChromePropertyChangedThatRequiresRepaint;
             }
 
             _chromeInfo = newChrome;
             if (_chromeInfo != null)
             {
-                _chromeInfo.PropertyChangedThatRequiresRepaint += _OnChromePropertyChangedThatRequiresRepaint;
+                _chromeInfo.PropertyChangedThatRequiresRepaint += OnChromePropertyChangedThatRequiresRepaint;
             }
 
-            _ApplyNewCustomChrome();
+            ApplyNewCustomChrome();
         }
 
-        private void _OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e) => _UpdateFrameState(true);
+        private void OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e) => UpdateFrameState(true);
 
         public static readonly DependencyProperty WindowChromeWorkerProperty = DependencyProperty.RegisterAttached(nameof(WindowChromeWorker), typeof(WindowChromeWorker), typeof(WindowChromeWorker),
-            new PropertyMetadata(null, _OnChromeWorkerChanged));
+            new PropertyMetadata(null, OnChromeWorkerChanged));
 
-        private static void _OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var w = (Window)d;
             var cw = (WindowChromeWorker)e.NewValue;
@@ -148,10 +148,10 @@ namespace Microsoft.Windows.Shell
             Assert.IsNotNull(w);
             Assert.IsNotNull(cw);
             Assert.IsNull(cw._window);
-            cw._SetWindow(w);
+            cw.SetWindow(w);
         }
 
-        private void _SetWindow(Window window)
+        private void SetWindow(Window window)
         {
             Assert.IsNull(_window);
             Assert.IsNotNull(window);
@@ -165,10 +165,10 @@ namespace Microsoft.Windows.Shell
             {
                 // On older versions of the framework the client size of the window is incorrectly calculated.
                 // We need to modify the template to fix this on behalf of the user.
-                Utility.AddDependencyPropertyChangeListener(_window, System.Windows.Controls.Control.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
-                Utility.AddDependencyPropertyChangeListener(_window, FrameworkElement.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.AddDependencyPropertyChangeListener(_window, System.Windows.Controls.Control.TemplateProperty, OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.AddDependencyPropertyChangeListener(_window, FrameworkElement.FlowDirectionProperty, OnWindowPropertyChangedThatRequiresTemplateFixup);
             }
-            _window.Closed += _UnsetWindow;
+            _window.Closed += UnsetWindow;
             // Use whether we can get an HWND to determine if the Window has been loaded.
             if (_hwnd != IntPtr.Zero)
             {
@@ -179,7 +179,7 @@ namespace Microsoft.Windows.Shell
                 _window.ApplyTemplate();
                 if (_chromeInfo != null)
                 {
-                    _ApplyNewCustomChrome();
+                    ApplyNewCustomChrome();
                 }
             }
             else
@@ -192,25 +192,25 @@ namespace Microsoft.Windows.Shell
                     Assert.IsNotNull(_hwndSource);
                     if (_chromeInfo != null)
                     {
-                        _ApplyNewCustomChrome();
+                        ApplyNewCustomChrome();
                     }
                 };
             }
         }
 
-        private void _UnsetWindow(object sender, EventArgs e)
+        private void UnsetWindow(object sender, EventArgs e)
         {
             if (Utility.IsPresentationFrameworkVersionLessThan4)
             {
-                Utility.RemoveDependencyPropertyChangeListener(_window, System.Windows.Controls.Control.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
-                Utility.RemoveDependencyPropertyChangeListener(_window, FrameworkElement.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.RemoveDependencyPropertyChangeListener(_window, System.Windows.Controls.Control.TemplateProperty, OnWindowPropertyChangedThatRequiresTemplateFixup);
+                Utility.RemoveDependencyPropertyChangeListener(_window, FrameworkElement.FlowDirectionProperty, OnWindowPropertyChangedThatRequiresTemplateFixup);
             }
             if (_chromeInfo != null)
             {
-                _chromeInfo.PropertyChangedThatRequiresRepaint -= _OnChromePropertyChangedThatRequiresRepaint;
+                _chromeInfo.PropertyChangedThatRequiresRepaint -= OnChromePropertyChangedThatRequiresRepaint;
             }
 
-            _RestoreStandardChromeState(true);
+            RestoreStandardChromeState(true);
         }
 
         public static WindowChromeWorker GetWindowChromeWorker(Window window)
@@ -225,7 +225,7 @@ namespace Microsoft.Windows.Shell
             window.SetValue(WindowChromeWorkerProperty, chrome);
         }
 
-        private void _OnWindowPropertyChangedThatRequiresTemplateFixup(object sender, EventArgs e)
+        private void OnWindowPropertyChangedThatRequiresTemplateFixup(object sender, EventArgs e)
         {
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
             if (_chromeInfo == null || _hwnd == IntPtr.Zero)
@@ -237,10 +237,10 @@ namespace Microsoft.Windows.Shell
             // actually being applied, so we asynchronously post the fixup operation
             // at Loaded priority, so it's expected that the visual tree will be
             // updated before _FixupFrameworkIssues is called.
-            _window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)_FixupFrameworkIssues);
+            _window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)FixupFrameworkIssues);
         }
 
-        private void _ApplyNewCustomChrome()
+        private void ApplyNewCustomChrome()
         {
             // Not yet hooked.
             if (_hwnd == IntPtr.Zero)
@@ -250,18 +250,18 @@ namespace Microsoft.Windows.Shell
 
             if (_chromeInfo == null)
             {
-                _RestoreStandardChromeState(false);
+                RestoreStandardChromeState(false);
                 return;
             }
             if (!_isHooked)
             {
-                _hwndSource.AddHook(_WndProc);
+                _hwndSource.AddHook(WndProc);
                 _isHooked = true;
             }
-            _FixupFrameworkIssues();
+            FixupFrameworkIssues();
             // Force this the first time.
-            _UpdateSystemMenu(_window.WindowState);
-            _UpdateFrameState(true);
+            UpdateSystemMenu(_window.WindowState);
+            UpdateFrameState(true);
 
             PInvoke.SetWindowPos(
                 new HWND(_hwnd),
@@ -273,7 +273,7 @@ namespace Microsoft.Windows.Shell
                 _SwpFlags);
         }
 
-        private void _FixupFrameworkIssues()
+        private void FixupFrameworkIssues()
         {
             Assert.IsNotNull(_chromeInfo);
             Assert.IsNotNull(_window);
@@ -294,13 +294,13 @@ namespace Microsoft.Windows.Shell
             {
                 // The template isn't null, but we don't have a visual tree.
                 // Hope that ApplyTemplate is in the queue and repost this, because there's not much we can do right now.
-                _window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)_FixupFrameworkIssues);
+                _window.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)FixupFrameworkIssues);
                 return;
             }
             var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
 
             PInvoke.GetWindowRect(new HWND(_hwnd), out RECT rcWindow);
-            var rcAdjustedClient = _GetAdjustedWindowRect(rcWindow);
+            var rcAdjustedClient = GetAdjustedWindowRect(rcWindow);
 
             var rcLogicalWindow = DpiHelper.DeviceRectToLogical(new Rect(rcWindow.left, rcWindow.top, rcWindow.Width, rcWindow.Height));
             var rcLogicalClient = DpiHelper.DeviceRectToLogical(new Rect(rcAdjustedClient.left, rcAdjustedClient.top, rcAdjustedClient.Width, rcAdjustedClient.Height));
@@ -340,7 +340,7 @@ namespace Microsoft.Windows.Shell
             }
 
             _hasUserMovedWindow = false;
-            _window.StateChanged += _FixupRestoreBounds;
+            _window.StateChanged += FixupRestoreBounds;
             _isFixedUp = true;
         }
 
@@ -353,7 +353,7 @@ namespace Microsoft.Windows.Shell
         // the system, just the application.
         // WPF also tends to call this function anyways during animations, so we're just forcing the issue
         // consistently and a bit earlier.
-        private void _FixupWindows7Issues()
+        private void FixupWindows7Issues()
         {
             if (_blackGlassFixupAttemptCount > 5)
             {
@@ -387,7 +387,7 @@ namespace Microsoft.Windows.Shell
             // If the call wasn't successful, try again later.
             if (!success)
             {
-                Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)_FixupWindows7Issues);
+                Dispatcher.BeginInvoke(DispatcherPriority.Loaded, (_Action)FixupWindows7Issues);
             }
             else
             {
@@ -396,7 +396,7 @@ namespace Microsoft.Windows.Shell
             }
         }
 
-        private void _FixupRestoreBounds(object sender, EventArgs e)
+        private void FixupRestoreBounds(object sender, EventArgs e)
         {
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
             if (_window.WindowState != WindowState.Maximized && _window.WindowState != WindowState.Minimized)
@@ -418,7 +418,7 @@ namespace Microsoft.Windows.Shell
             };
 
             PInvoke.GetWindowPlacement(new HWND(_hwnd), ref windowPlacement);
-            var adjustedDeviceRc = _GetAdjustedWindowRect(new RECT { bottom = 100, right = 100 });
+            var adjustedDeviceRc = GetAdjustedWindowRect(new RECT { bottom = 100, right = 100 });
             var adjustedTopLeft = DpiHelper.DevicePixelsToLogical(new Point(
                 windowPlacement.rcNormalPosition.left - adjustedDeviceRc.left,
                 windowPlacement.rcNormalPosition.top - adjustedDeviceRc.top));
@@ -426,7 +426,7 @@ namespace Microsoft.Windows.Shell
             _window.Left = adjustedTopLeft.X;
         }
 
-        private RECT _GetAdjustedWindowRect(RECT rcWindow)
+        private RECT GetAdjustedWindowRect(RECT rcWindow)
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -454,14 +454,14 @@ namespace Microsoft.Windows.Shell
                     return false;
                 }
 
-                var adjustedOffset = _GetAdjustedWindowRect(new RECT { bottom = 100, right = 100 });
+                var adjustedOffset = GetAdjustedWindowRect(new RECT { bottom = 100, right = 100 });
                 var windowTopLeft = new Point(_window.Left, _window.Top);
                 windowTopLeft -= (Vector)DpiHelper.DevicePixelsToLogical(new Point(adjustedOffset.left, adjustedOffset.top));
                 return _window.RestoreBounds.Location != windowTopLeft;
             }
         }
 
-        private nint _WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
+        private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
         {
             // Only expecting messages for our cached HWND.
             Assert.AreEqual<nint>(hwnd, _hwnd);
@@ -477,9 +477,9 @@ namespace Microsoft.Windows.Shell
             return 0;
         }
 
-        private LRESULT _HandleSetTextOrIcon(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleSetTextOrIcon(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
-            var modified = _ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
+            var modified = ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
 
             // Setting the caption text and icon cause Windows to redraw the caption.
             // Letting the default WndProc handle the message without the WS_VISIBLE
@@ -489,14 +489,14 @@ namespace Microsoft.Windows.Shell
             // Put back the style we removed.
             if (modified)
             {
-                _ModifyStyle(0, WINDOW_STYLE.WS_VISIBLE);
+                ModifyStyle(0, WINDOW_STYLE.WS_VISIBLE);
             }
 
             handled = true;
             return lRet;
         }
 
-        private LRESULT _HandleNCActivate(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleNCActivate(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // Despite MSDN's documentation of lParam not being used,
             // calling DefWindowProc with lParam set to -1 causes Windows not to draw over the caption.
@@ -512,7 +512,7 @@ namespace Microsoft.Windows.Shell
             return lRet;
         }
 
-        private LRESULT _HandleNCCalcSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleNCCalcSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // lParam is an [in, out] that can be either a RECT* (wParam == FALSE) or an NCCALCSIZE_PARAMS*.
             // Since the first field of NCCALCSIZE_PARAMS is a RECT and is the only field we care about
@@ -524,7 +524,7 @@ namespace Microsoft.Windows.Shell
             return new LRESULT((nint)PInvoke.WVR_REDRAW);
         }
 
-        private LRESULT _HandleNCHitTest(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleNCHitTest(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             LRESULT lRet = new LRESULT(IntPtr.Zero);
             handled = false;
@@ -544,8 +544,8 @@ namespace Microsoft.Windows.Shell
             }
 
             var mousePosScreen = new Point(Utility.GET_X_LPARAM(lParam), Utility.GET_Y_LPARAM(lParam));
-            var windowPosition = _GetWindowRect();
-            var ht = _HitTestNca(DpiHelper.DeviceRectToLogical(windowPosition), DpiHelper.DevicePixelsToLogical(mousePosScreen));
+            var windowPosition = GetWindowRect();
+            var ht = HitTestNca(DpiHelper.DeviceRectToLogical(windowPosition), DpiHelper.DevicePixelsToLogical(mousePosScreen));
             // Don't blindly respect HTCAPTION.
             // We want UIElements in the caption area to be actionable so run through a hittest first.
             if (ht != PInvoke.HTCLIENT)
@@ -564,7 +564,7 @@ namespace Microsoft.Windows.Shell
             return lRet;
         }
 
-        private LRESULT _HandleNCRButtonUp(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleNCRButtonUp(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // Emulate the system behavior of clicking the right mouse button over the caption area
             // to bring up the system menu.
@@ -584,7 +584,7 @@ namespace Microsoft.Windows.Shell
             return new LRESULT(0);
         }
 
-        private LRESULT _HandleSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleSize(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             const int SIZE_MAXIMIZED = 2;
 
@@ -598,14 +598,14 @@ namespace Microsoft.Windows.Shell
                 state = WindowState.Maximized;
             }
 
-            _UpdateSystemMenu(state);
+            UpdateSystemMenu(state);
 
             // Still let the default WndProc handle this.
             handled = false;
             return new LRESULT(0);
         }
 
-        private LRESULT _HandleWindowPosChanged(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleWindowPosChanged(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // http://blogs.msdn.com/oldnewthing/archive/2008/01/15/7113860.aspx
             // The WM_WINDOWPOSCHANGED message is sent at the end of the window
@@ -614,13 +614,13 @@ namespace Microsoft.Windows.Shell
             // suffer from the same limitations as WM_SHOWWINDOW, so you can
             // reliably use it to react to the window being shown or hidden.
 
-            _UpdateSystemMenu(null);
+            UpdateSystemMenu(null);
 
             if (!_isGlassEnabled)
             {
                 Assert.IsNotDefault(lParam);
                 var wp = Marshal.PtrToStructure<WINDOWPOS>(lParam);
-                _SetRoundingRegion(wp);
+                SetRoundingRegion(wp);
             }
 
             // Still want to pass this to DefWndProc
@@ -628,24 +628,24 @@ namespace Microsoft.Windows.Shell
             return new LRESULT(0);
         }
 
-        private LRESULT _HandleDwmCompositionChanged(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleDwmCompositionChanged(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
-            _UpdateFrameState(false);
+            UpdateFrameState(false);
             handled = false;
             return new LRESULT(0);
         }
 
-        private LRESULT _HandleSettingChange(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleSettingChange(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // There are several settings that can cause fixups for the template to become invalid when changed.
             // These shouldn't be required on the v4 framework.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
-            _FixupFrameworkIssues();
+            FixupFrameworkIssues();
             handled = false;
             return new LRESULT(0);
         }
 
-        private LRESULT _HandleEnterSizeMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleEnterSizeMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -672,7 +672,7 @@ namespace Microsoft.Windows.Shell
             return new LRESULT(0);
         }
 
-        private LRESULT _HandleExitSizeMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleExitSizeMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -689,7 +689,7 @@ namespace Microsoft.Windows.Shell
             return new LRESULT(0);
         }
 
-        private LRESULT _HandleMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
+        private LRESULT HandleMove(uint uMsg, WPARAM wParam, LPARAM lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
             Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
@@ -706,7 +706,7 @@ namespace Microsoft.Windows.Shell
         /// <param name="removeStyle">The styles to be removed.  These can be bitwise combined.</param>
         /// <param name="addStyle">The styles to be added.  These can be bitwise combined.</param>
         /// <returns>Whether the styles of the HWND were modified as a result of this call.</returns>
-        private bool _ModifyStyle(WINDOW_STYLE removeStyle, WINDOW_STYLE addStyle)
+        private bool ModifyStyle(WINDOW_STYLE removeStyle, WINDOW_STYLE addStyle)
         {
             Assert.IsNotDefault(_hwnd);
             var dwStyle = (WINDOW_STYLE)NativeMethods.GetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt32();
@@ -723,7 +723,7 @@ namespace Microsoft.Windows.Shell
         /// <summary>
         /// Get the WindowState as the native HWND knows it to be.  This isn't necessarily the same as what Window thinks.
         /// </summary>
-        private WindowState _GetHwndState()
+        private WindowState GetHwndState()
         {
             var windowPlacement = new WINDOWPLACEMENT()
             {
@@ -746,7 +746,7 @@ namespace Microsoft.Windows.Shell
         /// Get the bounding rectangle for the window in physical coordinates.
         /// </summary>
         /// <returns>The bounding rectangle for the window.</returns>
-        private Rect _GetWindowRect()
+        private Rect GetWindowRect()
         {
             // Get the window rectangle.
             PInvoke.GetWindowRect(new HWND(_hwnd), out RECT windowPosition);
@@ -762,7 +762,7 @@ namespace Microsoft.Windows.Shell
         /// <remarks>
         /// We want to update the menu while we have some control over whether the caption will be repainted.
         /// </remarks>
-        private void _UpdateSystemMenu(WindowState? assumeState)
+        private void UpdateSystemMenu(WindowState? assumeState)
         {
             const MENU_ITEM_FLAGS mfEnabled
                 = MENU_ITEM_FLAGS.MF_ENABLED | MENU_ITEM_FLAGS.MF_BYCOMMAND;
@@ -772,7 +772,7 @@ namespace Microsoft.Windows.Shell
                 | MENU_ITEM_FLAGS.MF_DISABLED
                 | MENU_ITEM_FLAGS.MF_BYCOMMAND;
 
-            var state = assumeState ?? _GetHwndState();
+            var state = assumeState ?? GetHwndState();
 
             if (null == assumeState && _lastMenuState == state)
             {
@@ -781,7 +781,7 @@ namespace Microsoft.Windows.Shell
 
             _lastMenuState = state;
 
-            var modified = _ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
+            var modified = ModifyStyle(WINDOW_STYLE.WS_VISIBLE, 0);
             SafeHandle menuSafeHandle = PInvoke.GetSystemMenu_SafeHandle(new HWND(_hwnd), false);
             if (menuSafeHandle.IsInvalid is false)
             {
@@ -820,11 +820,11 @@ namespace Microsoft.Windows.Shell
             }
             if (modified)
             {
-                _ModifyStyle(0, WINDOW_STYLE.WS_VISIBLE);
+                ModifyStyle(0, WINDOW_STYLE.WS_VISIBLE);
             }
         }
 
-        private void _UpdateFrameState(bool force)
+        private void UpdateFrameState(bool force)
         {
             if (_hwnd == IntPtr.Zero)
             {
@@ -842,13 +842,13 @@ namespace Microsoft.Windows.Shell
 
             if (_isGlassEnabled)
             {
-                _ClearRoundingRegion();
-                _ExtendGlassFrame();
-                _FixupWindows7Issues();
+                ClearRoundingRegion();
+                ExtendGlassFrame();
+                FixupWindows7Issues();
             }
             else
             {
-                _SetRoundingRegion(null);
+                SetRoundingRegion(null);
             }
 
             PInvoke.SetWindowPos(
@@ -861,13 +861,13 @@ namespace Microsoft.Windows.Shell
                 _SwpFlags);
         }
 
-        private void _ClearRoundingRegion()
+        private void ClearRoundingRegion()
         {
             var hwnd = new HWND(_hwnd);
             PInvoke.SetWindowRgn(hwnd, HRGN.Null, PInvoke.IsWindowVisible(hwnd));
         }
 
-        private void _SetRoundingRegion(WINDOWPOS? wp)
+        private void SetRoundingRegion(WINDOWPOS? wp)
         {
             const int MONITOR_DEFAULTTONEAREST = 0x00000002;
 
@@ -892,7 +892,7 @@ namespace Microsoft.Windows.Shell
                 }
                 else
                 {
-                    var r = _GetWindowRect();
+                    var r = GetWindowRect();
                     left = (int)r.Left;
                     top = (int)r.Top;
                 }
@@ -927,7 +927,7 @@ namespace Microsoft.Windows.Shell
                 }
                 else
                 {
-                    windowSize = _GetWindowRect().Size;
+                    windowSize = GetWindowRect().Size;
                 }
 
                 _lastRoundingState = _window.WindowState;
@@ -935,11 +935,11 @@ namespace Microsoft.Windows.Shell
                 var shortestDimension = Math.Min(windowSize.Width, windowSize.Height);
                 var topLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopLeft, 0)).X;
                 topLeftRadius = Math.Min(topLeftRadius, shortestDimension / 2);
-                var rect = _IsUniform(_chromeInfo.CornerRadius) ?
+                var rect = IsUniform(_chromeInfo.CornerRadius) ?
                     new Rect(windowSize)
                     : new Rect(0, 0, windowSize.Width / 2 + topLeftRadius, windowSize.Height / 2 + topLeftRadius);
 
-                using var hRegion = _CreateRoundRectRgn(rect, topLeftRadius);
+                using var hRegion = CreateRoundRectRgn(rect, topLeftRadius);
 
                 var topRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.TopRight, 0)).X;
                 topRightRadius = Math.Min(topRightRadius, shortestDimension / 2);
@@ -947,7 +947,7 @@ namespace Microsoft.Windows.Shell
                 topRightRegionRect.Offset(windowSize.Width / 2 - topRightRadius, 0);
                 Assert.AreEqual(topRightRegionRect.Right, windowSize.Width);
 
-                _CreateAndCombineRoundRectRgn(hRegion, topRightRegionRect, topRightRadius);
+                CreateAndCombineRoundRectRgn(hRegion, topRightRegionRect, topRightRadius);
 
                 var bottomLeftRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomLeft, 0)).X;
                 bottomLeftRadius = Math.Min(bottomLeftRadius, shortestDimension / 2);
@@ -955,7 +955,7 @@ namespace Microsoft.Windows.Shell
                 bottomLeftRegionRect.Offset(0, windowSize.Height / 2 - bottomLeftRadius);
                 Assert.AreEqual(bottomLeftRegionRect.Bottom, windowSize.Height);
 
-                _CreateAndCombineRoundRectRgn(hRegion, bottomLeftRegionRect, bottomLeftRadius);
+                CreateAndCombineRoundRectRgn(hRegion, bottomLeftRegionRect, bottomLeftRadius);
 
                 var bottomRightRadius = DpiHelper.LogicalPixelsToDevice(new Point(_chromeInfo.CornerRadius.BottomRight, 0)).X;
                 bottomRightRadius = Math.Min(bottomRightRadius, shortestDimension / 2);
@@ -964,14 +964,14 @@ namespace Microsoft.Windows.Shell
                 Assert.AreEqual(bottomRightRegionRect.Right, windowSize.Width);
                 Assert.AreEqual(bottomRightRegionRect.Bottom, windowSize.Height);
 
-                _CreateAndCombineRoundRectRgn(hRegion, bottomRightRegionRect, bottomRightRadius);
+                CreateAndCombineRoundRectRgn(hRegion, bottomRightRegionRect, bottomRightRadius);
 
                 var hwnd = new HWND(_hwnd);
                 PInvoke.SetWindowRgn(hwnd, hRegion, PInvoke.IsWindowVisible(hwnd));
             }
         }
 
-        private static SafeHandle _CreateRoundRectRgn(Rect region, double radius)
+        private static SafeHandle CreateRoundRectRgn(Rect region, double radius)
         {
             // Round outwards.
             if (DoubleUtilities.AreClose(0, radius))
@@ -993,9 +993,9 @@ namespace Microsoft.Windows.Shell
                 (int)Math.Ceiling(radius));
         }
 
-        private static void _CreateAndCombineRoundRectRgn(SafeHandle hrgnSource, Rect region, double radius)
+        private static void CreateAndCombineRoundRectRgn(SafeHandle hrgnSource, Rect region, double radius)
         {
-            using SafeHandle hRegion = _CreateRoundRectRgn(region, radius);
+            using SafeHandle hRegion = CreateRoundRectRgn(region, radius);
             var result = PInvoke.CombineRgn(hrgnSource, hrgnSource, hRegion, RGN_COMBINE_MODE.RGN_OR);
             if (result == GDI_REGION_TYPE.NULLREGION)
             {
@@ -1003,7 +1003,7 @@ namespace Microsoft.Windows.Shell
             }
         }
 
-        private static bool _IsUniform(CornerRadius cornerRadius)
+        private static bool IsUniform(CornerRadius cornerRadius)
         {
             if (!DoubleUtilities.AreClose(cornerRadius.BottomLeft, cornerRadius.BottomRight))
             {
@@ -1023,7 +1023,7 @@ namespace Microsoft.Windows.Shell
             return true;
         }
 
-        private void _ExtendGlassFrame()
+        private void ExtendGlassFrame()
         {
             Assert.IsNotNull(_window);
 
@@ -1071,13 +1071,13 @@ namespace Microsoft.Windows.Shell
         /// <summary>
         /// Matrix of the HT values to return when responding to NC window messages.
         /// </summary>
-        private static readonly uint[,] _HitTestBorders = {
+        private static readonly uint[,] HitTestBorders = {
             { PInvoke.HTTOPLEFT,    PInvoke.HTTOP,     PInvoke.HTTOPRIGHT    },
             { PInvoke.HTLEFT,       PInvoke.HTCLIENT,  PInvoke.HTRIGHT       },
             { PInvoke.HTBOTTOMLEFT, PInvoke.HTBOTTOM,  PInvoke.HTBOTTOMRIGHT },
         };
 
-        private uint _HitTestNca(Rect windowPosition, Point mousePosition)
+        private uint HitTestNca(Rect windowPosition, Point mousePosition)
         {
             // Determine if hit test is for resizing, default middle (1,1).
             var uRow = 1;
@@ -1112,7 +1112,7 @@ namespace Microsoft.Windows.Shell
                 uRow = 1;
             }
 
-            var ht = _HitTestBorders[uRow, uCol];
+            var ht = HitTestBorders[uRow, uCol];
             if (ht == PInvoke.HTTOP && !onResizeBorder)
             {
                 ht = PInvoke.HTCAPTION;
@@ -1123,22 +1123,22 @@ namespace Microsoft.Windows.Shell
 
         // Remove Custom Chrome Methods
 
-        private void _RestoreStandardChromeState(bool isClosing)
+        private void RestoreStandardChromeState(bool isClosing)
         {
             VerifyAccess();
-            _UnhookCustomChrome();
+            UnhookCustomChrome();
             if (isClosing)
             {
                 return;
             }
 
-            _RestoreFrameworkIssueFixups();
-            _RestoreGlassFrame();
-            _RestoreHrgn();
+            RestoreFrameworkIssueFixups();
+            RestoreGlassFrame();
+            RestoreHrgn();
             _window.InvalidateMeasure();
         }
 
-        private void _UnhookCustomChrome()
+        private void UnhookCustomChrome()
         {
             Assert.IsNotDefault(_hwnd);
             Assert.IsNotNull(_window);
@@ -1147,11 +1147,11 @@ namespace Microsoft.Windows.Shell
                 return;
             }
 
-            _hwndSource.RemoveHook(_WndProc);
+            _hwndSource.RemoveHook(WndProc);
             _isHooked = false;
         }
 
-        private void _RestoreFrameworkIssueFixups()
+        private void RestoreFrameworkIssueFixups()
         {
             // This margin is only necessary if the client rect is going to be calculated incorrectly by WPF.
             // This bug was fixed in V4 of the framework.
@@ -1167,11 +1167,11 @@ namespace Microsoft.Windows.Shell
                 // Undo anything that was done before.
                 rootElement.Margin = new Thickness();
             }
-            _window.StateChanged -= _FixupRestoreBounds;
+            _window.StateChanged -= FixupRestoreBounds;
             _isFixedUp = false;
         }
 
-        private void _RestoreGlassFrame()
+        private void RestoreGlassFrame()
         {
             Assert.IsNull(_chromeInfo);
             Assert.IsNotNull(_window);
@@ -1193,9 +1193,9 @@ namespace Microsoft.Windows.Shell
             PInvoke.DwmExtendFrameIntoClientArea(new HWND(_hwnd), in dwmMargin);
         }
 
-        private void _RestoreHrgn()
+        private void RestoreHrgn()
         {
-            _ClearRoundingRegion();
+            ClearRoundingRegion();
             PInvoke.SetWindowPos(
                 new HWND(_hwnd),
                 new HWND(IntPtr.Zero),
