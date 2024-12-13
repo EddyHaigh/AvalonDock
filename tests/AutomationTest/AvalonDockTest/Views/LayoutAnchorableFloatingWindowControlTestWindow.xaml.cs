@@ -1,15 +1,14 @@
 ﻿using System.Windows;
 
-namespace AvalonDockTest.Views
+namespace AvalonDockTest.Views;
+
+/// <summary>
+/// Interaction logic for LayoutAnchorableFloatingWindowControlTestWindow.xaml
+/// </summary>
+public partial class LayoutAnchorableFloatingWindowControlTestWindow : Window
 {
-	/// <summary>
-	/// Interaction logic for LayoutAnchorableFloatingWindowControlTestWindow.xaml
-	/// </summary>
-	public partial class LayoutAnchorableFloatingWindowControlTestWindow : Window
-	{
-		public LayoutAnchorableFloatingWindowControlTestWindow()
-		{
-			InitializeComponent();
-		}
-	}
+    public LayoutAnchorableFloatingWindowControlTestWindow()
+    {
+        InitializeComponent();
+    }
 }

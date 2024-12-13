@@ -1,111 +1,110 @@
-﻿namespace AvalonDockTest
+﻿namespace AvalonDockTest;
+
+using System;
+using System.Windows.Controls;
+
+using AvalonDock.Layout;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public sealed class DockingUtilitiesTest
 {
-	using System;
-	using System.Windows.Controls;
+    [TestMethod]
+    public void CalculatedDockMinWidthHeightTest()
+    {
+        double defaultDockMinHeight = 25;
+        double defaultDockMinWidth = 25;
 
-	using Microsoft.VisualStudio.TestTools.UnitTesting;
+        const double documentPaneDockMinHeight = 200;
+        const double documentPaneDockMinWidth = 400;
+        LayoutDocumentPane layoutDocumentPane = new LayoutDocumentPane { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
+        layoutDocumentPane.InsertChildAt(0, new LayoutDocument { ContentId = "Document" });
 
-	using AvalonDock.Layout;
+        LayoutDocumentPaneGroup layoutDocumentPaneGroup = new LayoutDocumentPaneGroup();
+        layoutDocumentPaneGroup.InsertChildAt(0, layoutDocumentPane);
 
-	[TestClass]
-	public sealed class DockingUtilitiesTest
-	{
-		[TestMethod]
-		public void CalculatedDockMinWidthHeightTest()
-		{
-			double defaultDockMinHeight = 25;
-			double defaultDockMinWidth = 25;
+        const double anchorablePaneDockMinHeight = 80;
+        const double anchorablePaneDockMinWidth = 160;
+        LayoutAnchorablePane layoutAnchorablePane = new LayoutAnchorablePane { DockMinHeight = anchorablePaneDockMinHeight, DockMinWidth = anchorablePaneDockMinWidth };
+        layoutAnchorablePane.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable" });
 
-			const double documentPaneDockMinHeight = 200;
-			const double documentPaneDockMinWidth = 400;
-			LayoutDocumentPane layoutDocumentPane = new LayoutDocumentPane { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
-			layoutDocumentPane.InsertChildAt(0, new LayoutDocument { ContentId = "Document" });
+        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new LayoutAnchorablePaneGroup();
+        layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane);
 
-			LayoutDocumentPaneGroup layoutDocumentPaneGroup = new LayoutDocumentPaneGroup();
-			layoutDocumentPaneGroup.InsertChildAt(0, layoutDocumentPane);
+        LayoutPanel layoutPanel = new LayoutPanel();
+        layoutPanel.InsertChildAt(0, layoutDocumentPaneGroup);
+        layoutPanel.InsertChildAt(1, layoutAnchorablePaneGroup);
 
-			const double anchorablePaneDockMinHeight = 80;
-			const double anchorablePaneDockMinWidth = 160;
-			LayoutAnchorablePane layoutAnchorablePane = new LayoutAnchorablePane { DockMinHeight = anchorablePaneDockMinHeight, DockMinWidth = anchorablePaneDockMinWidth };
-			layoutAnchorablePane.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable" });
+        Assert.AreEqual(defaultDockMinWidth, layoutPanel.DockMinWidth);
+        Assert.AreEqual(defaultDockMinHeight, layoutPanel.DockMinHeight);
+        Assert.AreEqual(documentPaneDockMinWidth + anchorablePaneDockMinWidth, layoutPanel.CalculatedDockMinWidth());
+        Assert.AreEqual(Math.Max(documentPaneDockMinHeight, anchorablePaneDockMinHeight), layoutPanel.CalculatedDockMinHeight());
 
-			LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new LayoutAnchorablePaneGroup();
-			layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane);
+        Assert.AreEqual(documentPaneDockMinWidth, layoutDocumentPane.DockMinWidth);
+        Assert.AreEqual(documentPaneDockMinHeight, layoutDocumentPane.DockMinHeight);
+        Assert.AreEqual(layoutDocumentPane.DockMinWidth, layoutDocumentPane.CalculatedDockMinWidth());
+        Assert.AreEqual(layoutDocumentPane.DockMinHeight, layoutDocumentPane.CalculatedDockMinHeight());
 
-			LayoutPanel layoutPanel = new LayoutPanel();
-			layoutPanel.InsertChildAt(0, layoutDocumentPaneGroup);
-			layoutPanel.InsertChildAt(1, layoutAnchorablePaneGroup);
+        Assert.AreEqual(defaultDockMinWidth, layoutDocumentPaneGroup.DockMinWidth);
+        Assert.AreEqual(defaultDockMinWidth, layoutDocumentPaneGroup.DockMinHeight);
+        Assert.AreEqual(documentPaneDockMinWidth, layoutDocumentPaneGroup.CalculatedDockMinWidth());
+        Assert.AreEqual(documentPaneDockMinHeight, layoutDocumentPaneGroup.CalculatedDockMinHeight());
 
-			Assert.AreEqual(defaultDockMinWidth, layoutPanel.DockMinWidth);
-			Assert.AreEqual(defaultDockMinHeight, layoutPanel.DockMinHeight);
-			Assert.AreEqual(documentPaneDockMinWidth + anchorablePaneDockMinWidth, layoutPanel.CalculatedDockMinWidth());
-			Assert.AreEqual(Math.Max(documentPaneDockMinHeight, anchorablePaneDockMinHeight), layoutPanel.CalculatedDockMinHeight());
+        Assert.AreEqual(anchorablePaneDockMinWidth, layoutAnchorablePane.DockMinWidth);
+        Assert.AreEqual(anchorablePaneDockMinHeight, layoutAnchorablePane.DockMinHeight);
+        Assert.AreEqual(layoutAnchorablePane.DockMinWidth, layoutAnchorablePane.CalculatedDockMinWidth());
+        Assert.AreEqual(layoutAnchorablePane.DockMinHeight, layoutAnchorablePane.CalculatedDockMinHeight());
 
-			Assert.AreEqual(documentPaneDockMinWidth, layoutDocumentPane.DockMinWidth);
-			Assert.AreEqual(documentPaneDockMinHeight, layoutDocumentPane.DockMinHeight);
-			Assert.AreEqual(layoutDocumentPane.DockMinWidth, layoutDocumentPane.CalculatedDockMinWidth());
-			Assert.AreEqual(layoutDocumentPane.DockMinHeight, layoutDocumentPane.CalculatedDockMinHeight());
+        Assert.AreEqual(defaultDockMinWidth, layoutAnchorablePaneGroup.DockMinWidth);
+        Assert.AreEqual(defaultDockMinWidth, layoutAnchorablePaneGroup.DockMinHeight);
+        Assert.AreEqual(anchorablePaneDockMinWidth, layoutAnchorablePaneGroup.CalculatedDockMinWidth());
+        Assert.AreEqual(anchorablePaneDockMinHeight, layoutAnchorablePaneGroup.CalculatedDockMinHeight());
 
-			Assert.AreEqual(defaultDockMinWidth, layoutDocumentPaneGroup.DockMinWidth);
-			Assert.AreEqual(defaultDockMinWidth, layoutDocumentPaneGroup.DockMinHeight);
-			Assert.AreEqual(documentPaneDockMinWidth, layoutDocumentPaneGroup.CalculatedDockMinWidth());
-			Assert.AreEqual(documentPaneDockMinHeight, layoutDocumentPaneGroup.CalculatedDockMinHeight());
+        layoutPanel.RemoveChild(layoutDocumentPaneGroup);
+        Assert.AreEqual(anchorablePaneDockMinWidth, layoutPanel.CalculatedDockMinWidth());
+        Assert.AreEqual(anchorablePaneDockMinHeight, layoutPanel.CalculatedDockMinHeight());
+    }
 
-			Assert.AreEqual(anchorablePaneDockMinWidth, layoutAnchorablePane.DockMinWidth);
-			Assert.AreEqual(anchorablePaneDockMinHeight, layoutAnchorablePane.DockMinHeight);
-			Assert.AreEqual(layoutAnchorablePane.DockMinWidth, layoutAnchorablePane.CalculatedDockMinWidth());
-			Assert.AreEqual(layoutAnchorablePane.DockMinHeight, layoutAnchorablePane.CalculatedDockMinHeight());
+    [TestMethod]
+    public void UpdateDocMinWidthHeightTest()
+    {
+        double documentPaneDockMinHeight = 100;
+        double documentPaneDockMinWidth = 101;
+        LayoutDocumentPane layoutDocumentPane = new LayoutDocumentPane { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
+        layoutDocumentPane.InsertChildAt(0, new LayoutDocument { ContentId = "Document" });
 
-			Assert.AreEqual(defaultDockMinWidth, layoutAnchorablePaneGroup.DockMinWidth);
-			Assert.AreEqual(defaultDockMinWidth, layoutAnchorablePaneGroup.DockMinHeight);
-			Assert.AreEqual(anchorablePaneDockMinWidth, layoutAnchorablePaneGroup.CalculatedDockMinWidth());
-			Assert.AreEqual(anchorablePaneDockMinHeight, layoutAnchorablePaneGroup.CalculatedDockMinHeight());
+        LayoutDocumentPaneGroup layoutDocumentPaneGroup = new LayoutDocumentPaneGroup();
+        layoutDocumentPaneGroup.InsertChildAt(0, layoutDocumentPane);
 
-			layoutPanel.RemoveChild(layoutDocumentPaneGroup);
-			Assert.AreEqual(anchorablePaneDockMinWidth, layoutPanel.CalculatedDockMinWidth());
-			Assert.AreEqual(anchorablePaneDockMinHeight, layoutPanel.CalculatedDockMinHeight());
-		}
+        double anchorablePane1DockMinHeight = 150;
+        double anchorablePane1DockMinWidth = 151;
+        LayoutAnchorablePane layoutAnchorablePane1 = new LayoutAnchorablePane { DockMinHeight = anchorablePane1DockMinHeight, DockMinWidth = anchorablePane1DockMinWidth };
+        layoutAnchorablePane1.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable1" });
 
-		[TestMethod]
-		public void UpdateDocMinWidthHeightTest()
-		{
-			double documentPaneDockMinHeight = 100;
-			double documentPaneDockMinWidth = 101;
-			LayoutDocumentPane layoutDocumentPane = new LayoutDocumentPane { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
-			layoutDocumentPane.InsertChildAt(0, new LayoutDocument { ContentId = "Document" });
+        double anchorablePane2DockMinHeight = 200;
+        double anchorablePane2DockMinWidth = 201;
+        LayoutAnchorablePane layoutAnchorablePane2 = new LayoutAnchorablePane { DockMinHeight = anchorablePane2DockMinHeight, DockMinWidth = anchorablePane2DockMinWidth };
+        layoutAnchorablePane2.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable2" });
 
-			LayoutDocumentPaneGroup layoutDocumentPaneGroup = new LayoutDocumentPaneGroup();
-			layoutDocumentPaneGroup.InsertChildAt(0, layoutDocumentPane);
+        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new LayoutAnchorablePaneGroup { Orientation = Orientation.Horizontal };
+        layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane1);
+        layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane2);
 
-			double anchorablePane1DockMinHeight = 150;
-			double anchorablePane1DockMinWidth = 151;
-			LayoutAnchorablePane layoutAnchorablePane1 = new LayoutAnchorablePane { DockMinHeight = anchorablePane1DockMinHeight, DockMinWidth = anchorablePane1DockMinWidth };
-			layoutAnchorablePane1.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable1" });
+        LayoutPanel layoutPanel = new LayoutPanel { Orientation = Orientation.Vertical };
+        layoutPanel.InsertChildAt(0, layoutDocumentPaneGroup);
+        layoutPanel.InsertChildAt(1, layoutAnchorablePaneGroup);
 
-			double anchorablePane2DockMinHeight = 200;
-			double anchorablePane2DockMinWidth = 201;
-			LayoutAnchorablePane layoutAnchorablePane2 = new LayoutAnchorablePane { DockMinHeight = anchorablePane2DockMinHeight, DockMinWidth = anchorablePane2DockMinWidth };
-			layoutAnchorablePane2.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable2" });
+        Assert.AreEqual(anchorablePane2DockMinWidth + anchorablePane1DockMinWidth, layoutAnchorablePaneGroup.CalculatedDockMinWidth());
+        Assert.AreEqual(Math.Max(anchorablePane2DockMinHeight, anchorablePane1DockMinHeight), layoutAnchorablePaneGroup.CalculatedDockMinHeight());
 
-			LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new LayoutAnchorablePaneGroup { Orientation = Orientation.Horizontal };
-			layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane1);
-			layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane2);
+        Assert.AreEqual(documentPaneDockMinWidth, layoutDocumentPaneGroup.CalculatedDockMinWidth());
+        Assert.AreEqual(documentPaneDockMinHeight, layoutDocumentPaneGroup.CalculatedDockMinHeight());
 
-			LayoutPanel layoutPanel = new LayoutPanel { Orientation = Orientation.Vertical };
-			layoutPanel.InsertChildAt(0, layoutDocumentPaneGroup);
-			layoutPanel.InsertChildAt(1, layoutAnchorablePaneGroup);
+        Assert.AreEqual(
+            Math.Max(anchorablePane1DockMinWidth + anchorablePane2DockMinWidth, documentPaneDockMinWidth),
+            layoutPanel.CalculatedDockMinWidth());
 
-			Assert.AreEqual(anchorablePane2DockMinWidth + anchorablePane1DockMinWidth, layoutAnchorablePaneGroup.CalculatedDockMinWidth());
-			Assert.AreEqual(Math.Max(anchorablePane2DockMinHeight, anchorablePane1DockMinHeight), layoutAnchorablePaneGroup.CalculatedDockMinHeight());
-
-			Assert.AreEqual(documentPaneDockMinWidth, layoutDocumentPaneGroup.CalculatedDockMinWidth());
-			Assert.AreEqual(documentPaneDockMinHeight, layoutDocumentPaneGroup.CalculatedDockMinHeight());
-
-			Assert.AreEqual(
-				Math.Max(anchorablePane1DockMinWidth + anchorablePane2DockMinWidth, documentPaneDockMinWidth),
-				layoutPanel.CalculatedDockMinWidth());
-
-			Assert.AreEqual(documentPaneDockMinHeight + anchorablePane2DockMinHeight, layoutPanel.CalculatedDockMinHeight());
-		}
-	}
+        Assert.AreEqual(documentPaneDockMinHeight + anchorablePane2DockMinHeight, layoutPanel.CalculatedDockMinHeight());
+    }
 }

@@ -1,36 +1,36 @@
-namespace AvalonDockTest.TestHelpers
+namespace AvalonDockTest.TestHelpers;
+
+using System;
+using System.Threading.Tasks;
+using System.Windows;
+
+public static class WindowHelpers
 {
-	using System;
-	using System.Threading.Tasks;
-	using System.Windows;
+    public static Task<T> CreateInvisibleWindowAsync<T>(Action<T> changeAdditionalProperties = null)
+        where T : Window, new()
+    {
+        var window = new T()
+        {
+            Visibility = Visibility.Hidden,
+            ShowInTaskbar = false
+        };
 
-	public static class WindowHelpers
-	{
-		public static Task<T> CreateInvisibleWindowAsync<T>(Action<T> changeAdditionalProperties = null) where T : Window, new()
-		{
-			var window = new T()
-			{
-				Visibility = Visibility.Hidden,
-				ShowInTaskbar = false
-			};
+        changeAdditionalProperties?.Invoke(window);
 
-			changeAdditionalProperties?.Invoke(window);
+        var completionSource = new TaskCompletionSource<T>();
 
-			var completionSource = new TaskCompletionSource<T>();
+        EventHandler handler = null;
 
-			EventHandler handler = null;
+        handler = (sender, args) =>
+        {
+            window.Activated -= handler;
+            completionSource.SetResult(window);
+        };
 
-			handler = (sender, args) =>
-			{
-				window.Activated -= handler;
-				completionSource.SetResult(window);
-			};
+        window.Activated += handler;
 
-			window.Activated += handler;
+        window.Show();
 
-			window.Show();
-
-			return completionSource.Task;
-		}
-	}
+        return completionSource.Task;
+    }
 }
