@@ -13,6 +13,7 @@
 
 namespace Microsoft.Windows.Shell
 {
+#pragma warning disable IDE0065 // Misplaced using directive, some MS stuff so dont want to mess with it rn
     using System;
     using System.Collections.Generic;
     using System.Windows;
@@ -21,6 +22,7 @@ namespace Microsoft.Windows.Shell
     using AvalonDock.Diagnostics;
 
     using Standard;
+#pragma warning restore IDE0065 // Misplaced using directive
 
     public class WindowChrome : Freezable
     {
@@ -31,7 +33,7 @@ namespace Microsoft.Windows.Shell
             // A more correct way to do this would be to Coerce the value iff the source of the DP was the default value.
             // Unfortunately with the current property system we can't detect whether the value being applied at the time
             // of the coersion is the default.
-            foreach (var bp in _BoundProperties)
+            foreach (var bp in BoundProperties)
             {
                 // This list must be declared after the DP's are assigned.
                 Assert.IsNotNull(bp.DependencyProperty);
@@ -39,7 +41,7 @@ namespace Microsoft.Windows.Shell
                     new Binding
                     {
                         Source = SystemParameters2.Current,
-                        Path = new PropertyPath(bp.SystemParameterPropertyName),
+                        Path = new PropertyPath(path: bp.SystemParameterPropertyName),
                         Mode = BindingMode.OneWay,
                         UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                     });
@@ -48,19 +50,19 @@ namespace Microsoft.Windows.Shell
 
         internal event EventHandler PropertyChangedThatRequiresRepaint;
 
-        private struct _SystemParameterBoundProperty
+        private struct SystemParameterBoundProperty
         {
             public string SystemParameterPropertyName { get; set; }
             public DependencyProperty DependencyProperty { get; set; }
         }
 
         // Named property available for fully extending the glass frame.
-        public static Thickness GlassFrameCompleteThickness => new Thickness(-1);
+        public static Thickness GlassFrameCompleteThickness => new(-1);
 
         public static readonly DependencyProperty WindowChromeProperty = DependencyProperty.RegisterAttached("WindowChrome", typeof(WindowChrome), typeof(WindowChrome),
-            new PropertyMetadata(null, _OnChromeChanged));
+            new PropertyMetadata(null, OnChromeChanged));
 
-        private static void _OnChromeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnChromeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             // The different design tools handle drawing outside their custom window objects differently.
             // Rather than try to support this concept in the design surface let the designer draw its own
@@ -107,7 +109,7 @@ namespace Microsoft.Windows.Shell
         public static bool GetIsHitTestVisibleInChrome(IInputElement inputElement)
         {
             Verify.IsNotNull(inputElement, nameof(inputElement));
-            if (!(inputElement is DependencyObject dobj))
+            if (inputElement is not DependencyObject dobj)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
@@ -118,7 +120,7 @@ namespace Microsoft.Windows.Shell
         public static void SetIsHitTestVisibleInChrome(IInputElement inputElement, bool hitTestVisible)
         {
             Verify.IsNotNull(inputElement, nameof(inputElement));
-            if (!(inputElement is DependencyObject dobj))
+            if (inputElement is not DependencyObject dobj)
             {
                 throw new ArgumentException("The element must be a DependencyObject", nameof(inputElement));
             }
@@ -127,7 +129,7 @@ namespace Microsoft.Windows.Shell
         }
 
         public static readonly DependencyProperty CaptionHeightProperty = DependencyProperty.Register(nameof(CaptionHeight), typeof(double), typeof(WindowChrome),
-            new PropertyMetadata(0d, (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()), value => (double)value >= 0d);
+            new PropertyMetadata(0d, (d, e) => ((WindowChrome)d).OnPropertyChangedThatRequiresRepaint()), value => (double)value >= 0d);
 
         /// <summary>The extent of the top of the window to treat as the caption.</summary>
         public double CaptionHeight
@@ -146,9 +148,9 @@ namespace Microsoft.Windows.Shell
         }
 
         public static readonly DependencyProperty GlassFrameThicknessProperty = DependencyProperty.Register(nameof(GlassFrameThickness), typeof(Thickness), typeof(WindowChrome),
-            new PropertyMetadata(default(Thickness), (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint(), (d, o) => _CoerceGlassFrameThickness((Thickness)o)));
+            new PropertyMetadata(default(Thickness), (d, e) => ((WindowChrome)d).OnPropertyChangedThatRequiresRepaint(), (d, o) => CoerceGlassFrameThickness((Thickness)o)));
 
-        private static object _CoerceGlassFrameThickness(Thickness thickness)
+        private static object CoerceGlassFrameThickness(Thickness thickness)
         {
             // If it's explicitly set, but set to a thickness with at least one negative side then
             // coerce the value to the stock GlassFrameCompleteThickness.
@@ -162,7 +164,7 @@ namespace Microsoft.Windows.Shell
         }
 
         public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(WindowChrome),
-            new PropertyMetadata(default(CornerRadius), (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()), (value) => Utility.IsCornerRadiusValid((CornerRadius)value));
+            new PropertyMetadata(default(CornerRadius), (d, e) => ((WindowChrome)d).OnPropertyChangedThatRequiresRepaint()), (value) => Utility.IsCornerRadiusValid((CornerRadius)value));
 
         public CornerRadius CornerRadius
         {
@@ -179,14 +181,14 @@ namespace Microsoft.Windows.Shell
             return new WindowChrome();
         }
 
-        private static readonly List<_SystemParameterBoundProperty> _BoundProperties = new List<_SystemParameterBoundProperty>
-        {
-            new _SystemParameterBoundProperty { DependencyProperty = CornerRadiusProperty, SystemParameterPropertyName = "WindowCornerRadius" },
-            new _SystemParameterBoundProperty { DependencyProperty = CaptionHeightProperty, SystemParameterPropertyName = "WindowCaptionHeight" },
-            new _SystemParameterBoundProperty { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
-            new _SystemParameterBoundProperty { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },
-        };
+        private static readonly List<SystemParameterBoundProperty> BoundProperties =
+        [
+            new() { DependencyProperty = CornerRadiusProperty, SystemParameterPropertyName = "WindowCornerRadius" },
+            new() { DependencyProperty = CaptionHeightProperty, SystemParameterPropertyName = "WindowCaptionHeight" },
+            new() { DependencyProperty = ResizeBorderThicknessProperty, SystemParameterPropertyName = "WindowResizeBorderThickness" },
+            new() { DependencyProperty = GlassFrameThicknessProperty, SystemParameterPropertyName = "WindowNonClientFrameThickness" },
+        ];
 
-        private void _OnPropertyChangedThatRequiresRepaint() => PropertyChangedThatRequiresRepaint?.Invoke(this, EventArgs.Empty);
+        private void OnPropertyChangedThatRequiresRepaint() => PropertyChangedThatRequiresRepaint?.Invoke(this, EventArgs.Empty);
     }
 }
