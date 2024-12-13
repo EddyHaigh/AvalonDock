@@ -1,5 +1,3 @@
-namespace AvalonDockTest;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +9,8 @@ using AvalonDockTest.TestHelpers;
 using AvalonDockTest.Views;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace AvalonDockTest;
 
 [STATestClass]
 public class AnchorablePaneTest : AutomationTestBase
@@ -52,10 +52,10 @@ public class AnchorablePaneTest : AutomationTestBase
 
         // These lists hold a record of the anchorable hide and close events
 
-        List<LayoutAnchorable> isHidingRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isHiddenRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isClosingRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isClosedRaised = new List<LayoutAnchorable>();
+        List<LayoutAnchorable> isHidingRaised = [];
+        List<LayoutAnchorable> isHiddenRaised = [];
+        List<LayoutAnchorable> isClosingRaised = [];
+        List<LayoutAnchorable> isClosedRaised = [];
 
         // Event handlers for the hide and close events
 
@@ -120,10 +120,10 @@ public class AnchorablePaneTest : AutomationTestBase
 
         // These lists hold a record of the anchorable hide and close events
 
-        List<LayoutAnchorable> isHidingRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isHiddenRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isClosingRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isClosedRaised = new List<LayoutAnchorable>();
+        List<LayoutAnchorable> isHidingRaised = [];
+        List<LayoutAnchorable> isHiddenRaised = [];
+        List<LayoutAnchorable> isClosingRaised = [];
+        List<LayoutAnchorable> isClosedRaised = [];
 
         // Event handlers for the hide and close events
 
@@ -193,10 +193,10 @@ public class AnchorablePaneTest : AutomationTestBase
 
         // These lists hold a record of the anchorable hide and close events
 
-        List<LayoutAnchorable> isHidingRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isHiddenRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isClosingRaised = new List<LayoutAnchorable>();
-        List<LayoutAnchorable> isClosedRaised = new List<LayoutAnchorable>();
+        List<LayoutAnchorable> isHidingRaised = [];
+        List<LayoutAnchorable> isHiddenRaised = [];
+        List<LayoutAnchorable> isClosingRaised = [];
+        List<LayoutAnchorable> isClosedRaised = [];
 
         // Event handlers for the hide and close events
 

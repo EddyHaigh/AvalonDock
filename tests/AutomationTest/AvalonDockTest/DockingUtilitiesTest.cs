@@ -1,11 +1,11 @@
-﻿namespace AvalonDockTest;
-
-using System;
+﻿using System;
 using System.Windows.Controls;
 
 using AvalonDock.Layout;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace AvalonDockTest;
 
 [TestClass]
 public sealed class DockingUtilitiesTest
@@ -18,21 +18,21 @@ public sealed class DockingUtilitiesTest
 
         const double documentPaneDockMinHeight = 200;
         const double documentPaneDockMinWidth = 400;
-        LayoutDocumentPane layoutDocumentPane = new LayoutDocumentPane { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
+        LayoutDocumentPane layoutDocumentPane = new() { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
         layoutDocumentPane.InsertChildAt(0, new LayoutDocument { ContentId = "Document" });
 
-        LayoutDocumentPaneGroup layoutDocumentPaneGroup = new LayoutDocumentPaneGroup();
+        LayoutDocumentPaneGroup layoutDocumentPaneGroup = new();
         layoutDocumentPaneGroup.InsertChildAt(0, layoutDocumentPane);
 
         const double anchorablePaneDockMinHeight = 80;
         const double anchorablePaneDockMinWidth = 160;
-        LayoutAnchorablePane layoutAnchorablePane = new LayoutAnchorablePane { DockMinHeight = anchorablePaneDockMinHeight, DockMinWidth = anchorablePaneDockMinWidth };
+        LayoutAnchorablePane layoutAnchorablePane = new() { DockMinHeight = anchorablePaneDockMinHeight, DockMinWidth = anchorablePaneDockMinWidth };
         layoutAnchorablePane.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable" });
 
-        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new LayoutAnchorablePaneGroup();
+        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new();
         layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane);
 
-        LayoutPanel layoutPanel = new LayoutPanel();
+        LayoutPanel layoutPanel = new();
         layoutPanel.InsertChildAt(0, layoutDocumentPaneGroup);
         layoutPanel.InsertChildAt(1, layoutAnchorablePaneGroup);
 
@@ -71,27 +71,27 @@ public sealed class DockingUtilitiesTest
     {
         double documentPaneDockMinHeight = 100;
         double documentPaneDockMinWidth = 101;
-        LayoutDocumentPane layoutDocumentPane = new LayoutDocumentPane { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
+        LayoutDocumentPane layoutDocumentPane = new() { DockMinHeight = documentPaneDockMinHeight, DockMinWidth = documentPaneDockMinWidth };
         layoutDocumentPane.InsertChildAt(0, new LayoutDocument { ContentId = "Document" });
 
-        LayoutDocumentPaneGroup layoutDocumentPaneGroup = new LayoutDocumentPaneGroup();
+        LayoutDocumentPaneGroup layoutDocumentPaneGroup = new();
         layoutDocumentPaneGroup.InsertChildAt(0, layoutDocumentPane);
 
         double anchorablePane1DockMinHeight = 150;
         double anchorablePane1DockMinWidth = 151;
-        LayoutAnchorablePane layoutAnchorablePane1 = new LayoutAnchorablePane { DockMinHeight = anchorablePane1DockMinHeight, DockMinWidth = anchorablePane1DockMinWidth };
+        LayoutAnchorablePane layoutAnchorablePane1 = new() { DockMinHeight = anchorablePane1DockMinHeight, DockMinWidth = anchorablePane1DockMinWidth };
         layoutAnchorablePane1.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable1" });
 
         double anchorablePane2DockMinHeight = 200;
         double anchorablePane2DockMinWidth = 201;
-        LayoutAnchorablePane layoutAnchorablePane2 = new LayoutAnchorablePane { DockMinHeight = anchorablePane2DockMinHeight, DockMinWidth = anchorablePane2DockMinWidth };
+        LayoutAnchorablePane layoutAnchorablePane2 = new() { DockMinHeight = anchorablePane2DockMinHeight, DockMinWidth = anchorablePane2DockMinWidth };
         layoutAnchorablePane2.InsertChildAt(0, new LayoutAnchorable { ContentId = "Anchorable2" });
 
-        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new LayoutAnchorablePaneGroup { Orientation = Orientation.Horizontal };
+        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new() { Orientation = Orientation.Horizontal };
         layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane1);
         layoutAnchorablePaneGroup.InsertChildAt(0, layoutAnchorablePane2);
 
-        LayoutPanel layoutPanel = new LayoutPanel { Orientation = Orientation.Vertical };
+        LayoutPanel layoutPanel = new() { Orientation = Orientation.Vertical };
         layoutPanel.InsertChildAt(0, layoutDocumentPaneGroup);
         layoutPanel.InsertChildAt(1, layoutAnchorablePaneGroup);
 

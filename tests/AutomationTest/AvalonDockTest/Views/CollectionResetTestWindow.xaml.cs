@@ -11,8 +11,8 @@ public partial class CollectionResetTestWindow : Window
     {
         InitializeComponent();
         DataContext = this;
-        Anchorables = new CustomObservableCollection<object>();
-        Documents = new CustomObservableCollection<object>();
+        Anchorables = [];
+        Documents = [];
     }
 
     public CustomObservableCollection<object> Anchorables { get; private set; }

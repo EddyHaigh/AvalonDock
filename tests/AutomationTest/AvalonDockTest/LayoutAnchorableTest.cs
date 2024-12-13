@@ -17,16 +17,16 @@ public sealed class LayoutAnchorableTest
     [STATestMethod]
     public void ClearBindingOfHiddenWindowTest()
     {
-        LayoutAnchorable layoutAnchorable = new LayoutAnchorable
+        LayoutAnchorable layoutAnchorable = new()
         {
             FloatingWidth = 50,
             FloatingHeight = 100,
             ContentId = "Test"
         };
 
-        LayoutAnchorablePane layoutAnchorablePane = new LayoutAnchorablePane(layoutAnchorable);
-        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new LayoutAnchorablePaneGroup(layoutAnchorablePane);
-        LayoutAnchorableFloatingWindow layoutFloatingWindow = new LayoutAnchorableFloatingWindow
+        LayoutAnchorablePane layoutAnchorablePane = new(layoutAnchorable);
+        LayoutAnchorablePaneGroup layoutAnchorablePaneGroup = new(layoutAnchorablePane);
+        LayoutAnchorableFloatingWindow layoutFloatingWindow = new()
         {
             RootPanel = layoutAnchorablePaneGroup
         };
@@ -36,7 +36,7 @@ public sealed class LayoutAnchorableTest
           .GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)
           .First(x => x.GetParameters().Length == 1);
 
-        LayoutAnchorableFloatingWindowControl floatingWindowControl = ctor.Invoke(new object[] { layoutFloatingWindow }) as LayoutAnchorableFloatingWindowControl;
+        LayoutAnchorableFloatingWindowControl floatingWindowControl = ctor.Invoke([layoutFloatingWindow]) as LayoutAnchorableFloatingWindowControl;
         floatingWindowControl.SetBinding(
           UIElement.VisibilityProperty,
           new Binding("IsVisible")

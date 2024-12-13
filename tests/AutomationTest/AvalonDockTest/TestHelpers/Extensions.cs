@@ -1,8 +1,7 @@
-﻿namespace AvalonDockTest.TestHelpers;
-
-using System;
+﻿using System;
 using System.Windows.Threading;
 
+namespace AvalonDockTest.TestHelpers;
 public static class Extensions
 {
     public static void Invoke(this DispatcherObject dispatcherObject, Action invokeAction)

@@ -1,6 +1,4 @@
-﻿namespace AvalonDockTest.TestHelpers;
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -9,6 +7,7 @@ using System.Windows.Threading;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace AvalonDockTest.TestHelpers;
 /// <summary>
 /// This is the base class for all of our UI tests.
 /// </summary>
@@ -20,7 +19,7 @@ public class AutomationTestBase
     [TestInitialize]
     public void Before()
     {
-        var message = $"Setup for test '{this.TestContext.TestName}' with Thread.CurrentThread: {Thread.CurrentThread.ManagedThreadId}" +
+        var message = $"Setup for test '{this.TestContext.TestName}' with Thread.CurrentThread: {Environment.CurrentManagedThreadId}" +
                       $" and Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}";
         this.TestContext.WriteLine(message);
     }
@@ -37,7 +36,7 @@ public class AutomationTestBase
             }
         });
 
-        var message = $"TearDown for test '{this.TestContext.TestName}' with Thread.CurrentThread: {Thread.CurrentThread.ManagedThreadId}" +
+        var message = $"TearDown for test '{this.TestContext.TestName}' with Thread.CurrentThread: {Environment.CurrentManagedThreadId}" +
                       $" and Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}";
         this.TestContext.WriteLine(message);
     }
