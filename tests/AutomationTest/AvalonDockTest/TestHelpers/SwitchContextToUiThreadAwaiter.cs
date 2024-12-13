@@ -1,16 +1,16 @@
-﻿namespace AvalonDockTest.TestHelpers;
-
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 
+namespace AvalonDockTest.TestHelpers;
+
 public class SwitchContextToUiThreadAwaiter : INotifyCompletion
 {
-    private readonly Dispatcher uiContext;
+    private readonly Dispatcher _uiContext;
 
     public SwitchContextToUiThreadAwaiter(Dispatcher uiContext)
     {
-        this.uiContext = uiContext;
+        this._uiContext = uiContext;
     }
 
     public SwitchContextToUiThreadAwaiter GetAwaiter()
@@ -22,7 +22,7 @@ public class SwitchContextToUiThreadAwaiter : INotifyCompletion
 
     public void OnCompleted(Action continuation)
     {
-        this.uiContext.Invoke(continuation);
+        this._uiContext.Invoke(continuation);
     }
 
     public void GetResult() { }

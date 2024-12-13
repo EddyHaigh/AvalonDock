@@ -1,8 +1,8 @@
-namespace AvalonDockTest.TestHelpers;
-
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+
+namespace AvalonDockTest.TestHelpers;
 
 public static class WindowHelpers
 {
@@ -19,18 +19,16 @@ public static class WindowHelpers
 
         var completionSource = new TaskCompletionSource<T>();
 
-        EventHandler handler = null;
-
-        handler = (sender, args) =>
-        {
-            window.Activated -= handler;
-            completionSource.SetResult(window);
-        };
-
-        window.Activated += handler;
+        window.Activated += Handler;
 
         window.Show();
 
         return completionSource.Task;
+
+        void Handler(object sender, EventArgs args)
+        {
+            window.Activated -= Handler;
+            completionSource.SetResult(window);
+        }
     }
 }

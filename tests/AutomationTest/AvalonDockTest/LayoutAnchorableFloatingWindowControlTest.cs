@@ -1,6 +1,4 @@
-﻿namespace AvalonDockTest;
-
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using AvalonDock.Layout.Serialization;
 
@@ -8,6 +6,8 @@ using AvalonDockTest.TestHelpers;
 using AvalonDockTest.Views;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace AvalonDockTest;
 
 [STATestClass]
 public class LayoutAnchorableFloatingWindowControlTest : AutomationTestBase

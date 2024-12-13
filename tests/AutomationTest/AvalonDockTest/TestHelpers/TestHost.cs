@@ -1,9 +1,9 @@
-﻿namespace AvalonDockTest.TestHelpers;
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
+
+namespace AvalonDockTest.TestHelpers;
 
 /// <summary>
 /// This class is the ultimate hack to work around that we can't 
@@ -19,29 +19,22 @@ using System.Windows;
 /// </summary>
 public class TestHost
 {
-    private TestApp app;
-    private readonly Thread appThread;
-    private readonly AutoResetEvent gate = new AutoResetEvent(false);
-
     private static TestHost testHost;
 
-    public static void Initialize()
-    {
-        if (testHost == null)
-        {
-            testHost = new TestHost();
-        }
-    }
+    private readonly Thread _appThread;
+    private readonly AutoResetEvent _gate = new(false);
+
+    private TestApp _app;
 
     private TestHost()
     {
         try
         {
-            appThread = new Thread(StartDispatcher);
-            appThread.SetApartmentState(ApartmentState.STA);
-            appThread.Start();
+            _appThread = new Thread(StartDispatcher);
+            _appThread.SetApartmentState(ApartmentState.STA);
+            _appThread.Start();
 
-            gate.WaitOne();
+            _gate.WaitOne();
         }
         catch (Exception e)
         {
@@ -49,24 +42,9 @@ public class TestHost
         }
     }
 
-    private void StartDispatcher()
+    public static void Initialize()
     {
-        app = new TestApp { ShutdownMode = ShutdownMode.OnExplicitShutdown };
-        app.Exit += (sender, args) =>
-            {
-                var message = $"Exit TestApp with Thread.CurrentThread: {Thread.CurrentThread.ManagedThreadId}" +
-                              $" and Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}";
-                Debug.WriteLine(message);
-
-            };
-        app.Startup += (sender, args) =>
-            {
-                var message = $"Start TestApp with Thread.CurrentThread: {Thread.CurrentThread.ManagedThreadId}" +
-                              $" and Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}";
-                Debug.WriteLine(message);
-                gate.Set();
-            };
-        app.Run();
+        testHost ??= new TestHost();
     }
 
     /// <summary>
@@ -74,6 +52,32 @@ public class TestHost
     /// </summary>
     public static SwitchContextToUiThreadAwaiter SwitchToAppThread()
     {
-        return new SwitchContextToUiThreadAwaiter(testHost.app.Dispatcher);
+        return new SwitchContextToUiThreadAwaiter(testHost._app.Dispatcher);
+    }
+
+    private void StartDispatcher()
+    {
+        _app = new TestApp { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        _app.Exit += (sender, args) =>
+            {
+                var message = $"""
+======= Exit TestApp =======
+Thread.CurrentThread:       {Environment.CurrentManagedThreadId}
+Current.Dispatcher.Thread:  {Application.Current.Dispatcher.Thread.ManagedThreadId}
+""";
+                Debug.WriteLine(message);
+            };
+
+        _app.Startup += (sender, args) =>
+            {
+                var message = $"""
+====== Start TestApp ======
+Thread.CurrentThread:      {Environment.CurrentManagedThreadId}
+Current.Dispatcher.Thread: {Application.Current.Dispatcher.Thread.ManagedThreadId}
+""";
+                Debug.WriteLine(message);
+                _gate.Set();
+            };
+        _app.Run();
     }
 }
