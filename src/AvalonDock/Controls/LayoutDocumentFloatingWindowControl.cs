@@ -106,20 +106,17 @@ namespace AvalonDock.Controls
 
             // Determine if floatingWindow is configured to dock as document or not
             var dockAsDocument = true;
-            if (!isDraggingDocuments)
+            if (!isDraggingDocuments && draggingWindow.Model is LayoutAnchorableFloatingWindow)
             {
-                if (draggingWindow.Model is LayoutAnchorableFloatingWindow)
+                foreach (var item in GetAnchorableInFloatingWindow(draggingWindow))
                 {
-                    foreach (var item in GetAnchorableInFloatingWindow(draggingWindow))
+                    if (item.CanDockAsTabbedDocument != false)
                     {
-                        if (item.CanDockAsTabbedDocument != false)
-                        {
-                            continue;
-                        }
-
-                        dockAsDocument = false;
-                        break;
+                        continue;
                     }
+
+                    dockAsDocument = false;
+                    break;
                 }
             }
 

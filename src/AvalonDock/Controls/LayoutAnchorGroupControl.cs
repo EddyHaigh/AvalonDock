@@ -68,17 +68,13 @@ namespace AvalonDock.Controls
 
         private void OnModelChildrenCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove ||
+            if ((e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove ||
                 e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
+                && e.OldItems != null)
             {
-                if (e.OldItems != null)
+                foreach (var childModel in e.OldItems)
                 {
-                    {
-                        foreach (var childModel in e.OldItems)
-                        {
-                            _childViews.Remove(_childViews.First(cv => cv.Model == childModel));
-                        }
-                    }
+                    _childViews.Remove(_childViews.First(cv => cv.Model == childModel));
                 }
             }
 
@@ -87,19 +83,17 @@ namespace AvalonDock.Controls
                 _childViews.Clear();
             }
 
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add ||
-                e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
+            if ((e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add
+                || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
+                && e.NewItems != null)
             {
-                if (e.NewItems != null)
+                var manager = _model.Root.Manager;
+                int insertIndex = e.NewStartingIndex;
+                foreach (LayoutAnchorable childModel in e.NewItems)
                 {
-                    var manager = _model.Root.Manager;
-                    int insertIndex = e.NewStartingIndex;
-                    foreach (LayoutAnchorable childModel in e.NewItems)
-                    {
-                        var lac = new LayoutAnchorControl(childModel);
-                        lac.SetBinding(LayoutAnchorControl.TemplateProperty, new Binding(DockingManager.AnchorTemplateProperty.Name) { Source = manager });
-                        _childViews.Insert(insertIndex++, lac);
-                    }
+                    var lac = new LayoutAnchorControl(childModel);
+                    lac.SetBinding(LayoutAnchorControl.TemplateProperty, new Binding(DockingManager.AnchorTemplateProperty.Name) { Source = manager });
+                    _childViews.Insert(insertIndex++, lac);
                 }
             }
         }

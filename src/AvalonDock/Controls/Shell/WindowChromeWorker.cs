@@ -655,14 +655,11 @@ namespace Microsoft.Windows.Shell
             // On Win7 if the user is dragging the window out of the maximized state then we don't want to use that location
             // as a restore point.
             Assert.Implies(_window.WindowState == WindowState.Maximized, Utility.IsOSWindows7OrNewer);
-            if (_window.WindowState != WindowState.Maximized)
+            if (_window.WindowState != WindowState.Maximized && !_IsWindowDocked)
             {
                 // Check for the docked window case.  The window can still be restored when it's in this position so
                 // try to account for that and not update the start position.
-                if (!_IsWindowDocked)
-                {
-                    _windowPosAtStartOfUserMove = new Point(_window.Left, _window.Top);
-                }
+                _windowPosAtStartOfUserMove = new Point(_window.Left, _window.Top);
                 // Realistically we also don't want to update the start position when moving from one docked state to another (or to and from maximized),
                 // but it's tricky to detect and this is already a workaround for a bug that's fixed in newer versions of the framework.
                 // Not going to try to handle all cases.

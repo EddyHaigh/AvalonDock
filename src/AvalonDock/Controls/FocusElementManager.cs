@@ -41,17 +41,11 @@ namespace AvalonDock.Controls
             manager.PreviewGotKeyboardFocus -= new KeyboardFocusChangedEventHandler(ManagerPreviewGotKeyboardFocus);
             _managers.Remove(manager);
 
-            if (_managers.Count == 0)
+            if (_managers.Count == 0 && _windowHandler != null)
             {
-                //InputManager.Current.EnterMenuMode -= new EventHandler(InputManager_EnterMenuMode);
-                //InputManager.Current.LeaveMenuMode -= new EventHandler(InputManager_LeaveMenuMode);
-                if (_windowHandler != null)
-                {
-                    _windowHandler.FocusChanged -= new EventHandler<FocusChangeEventArgs>(WindowFocusChanging);
-                    //_windowHandler.Activate -= new EventHandler<WindowActivateEventArgs>(WindowActivating);
-                    _windowHandler.Detach();
-                    _windowHandler = null;
-                }
+                _windowHandler.FocusChanged -= new EventHandler<FocusChangeEventArgs>(WindowFocusChanging);
+                _windowHandler.Detach();
+                _windowHandler = null;
             }
         }
 
@@ -193,12 +187,9 @@ namespace AvalonDock.Controls
                 _lastFocusedElementBeforeEnterMenuMode.IsAlive)
             {
                 var lastFocusedInputElement = _lastFocusedElementBeforeEnterMenuMode.GetValueOrDefault<UIElement>();
-                if (lastFocusedInputElement != null)
+                if (lastFocusedInputElement != null && lastFocusedInputElement != Keyboard.Focus(lastFocusedInputElement))
                 {
-                    if (lastFocusedInputElement != Keyboard.Focus(lastFocusedInputElement))
-                    {
-                        Debug.WriteLine("Unable to activate the element");
-                    }
+                    Debug.WriteLine("Unable to activate the element");
                 }
             }
         }
