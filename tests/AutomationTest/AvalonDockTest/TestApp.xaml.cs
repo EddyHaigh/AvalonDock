@@ -1,11 +1,10 @@
-﻿namespace AvalonDockTest
-{
-    using System.Windows;
+﻿namespace AvalonDockTest;
 
-    public partial class TestApp : Application
+using System.Windows;
+
+public partial class TestApp : Application
+{
+    public TestApp()
     {
-        public TestApp()
-        {
-        }
     }
 }
