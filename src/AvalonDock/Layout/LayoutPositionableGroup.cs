@@ -111,7 +111,7 @@ namespace AvalonDock.Layout
                         new GridLength(_resizableAbsoluteDockHeight.Value) : _dockHeight;
             set
             {
-                if (_dockHeight == value || !(value.Value > 0))
+                if (_dockHeight == value || value.Value <= 0)
                 {
                     return;
                 }

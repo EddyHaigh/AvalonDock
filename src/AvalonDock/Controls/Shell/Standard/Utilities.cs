@@ -108,7 +108,7 @@ namespace Standard
             return true;
         }
 
-        public static bool IsDoubleFiniteAndNonNegative(double d) => !double.IsNaN(d) && !double.IsInfinity(d) && !(d < 0);
+        public static bool IsDoubleFiniteAndNonNegative(double d) => !double.IsNaN(d) && !double.IsInfinity(d) && d >= 0;
 
         public static bool IsFlagSet(int value, int mask) => (value & mask) != 0;
 
