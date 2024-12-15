@@ -38,7 +38,7 @@ namespace Microsoft.Windows.Shell
             ShowSystemMenuCommand = new RoutedCommand(nameof(ShowSystemMenu), typeof(SystemCommands));
         }
 
-        private static void _PostSystemCommand(Window window, uint command)
+        private static void PostSystemCommand(Window window, uint command)
         {
             var hWnd = new HWND(new WindowInteropHelper(window).Handle);
             if (hWnd == IntPtr.Zero || !PInvoke.IsWindow(hWnd))
@@ -52,25 +52,25 @@ namespace Microsoft.Windows.Shell
         public static void CloseWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, PInvoke.SC_CLOSE);
+            PostSystemCommand(window, PInvoke.SC_CLOSE);
         }
 
         public static void MaximizeWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, PInvoke.SC_MAXIMIZE);
+            PostSystemCommand(window, PInvoke.SC_MAXIMIZE);
         }
 
         public static void MinimizeWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, PInvoke.SC_MINIMIZE);
+            PostSystemCommand(window, PInvoke.SC_MINIMIZE);
         }
 
         public static void RestoreWindow(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
-            _PostSystemCommand(window, PInvoke.SC_RESTORE);
+            PostSystemCommand(window, PInvoke.SC_RESTORE);
         }
 
         /// <summary>Display the system menu at a specified location.</summary>
