@@ -33,7 +33,7 @@ namespace Standard
         // Alias this to a static so the wrapper doesn't get GC'd
         private static readonly WNDPROC s_WndProc = new WNDPROC(_WndProc);
 
-        private static readonly Dictionary<IntPtr, MessageWindow> s_windowLookup = new Dictionary<IntPtr, MessageWindow>();
+        private static readonly Dictionary<IntPtr, MessageWindow> s_windowLookup = new();
 
         private readonly WNDPROC _wndProcCallback;
         private string _className;
@@ -92,18 +92,18 @@ namespace Standard
 
         ~MessageWindow()
         {
-            _Dispose(false, false);
+            Dispose(false, false);
         }
 
         public void Dispose()
         {
-            _Dispose(true, false);
+            Dispose(true, false);
             GC.SuppressFinalize(this);
         }
 
         // This isn't right if the Dispatcher has already started shutting down.
         // It will wind up leaking the class ATOM...
-        private void _Dispose(bool disposing, bool isHwndBeingDestroyed)
+        private void Dispose(bool disposing, bool isHwndBeingDestroyed)
         {
             // Block against reentrancy.
             if (_isDisposed)
@@ -117,17 +117,17 @@ namespace Standard
 
             if (isHwndBeingDestroyed)
             {
-                Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(IntPtr.Zero, className)));
+                Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => DestroyWindow(IntPtr.Zero, className)));
             }
             else if (Handle != IntPtr.Zero)
             {
                 if (CheckAccess())
                 {
-                    _DestroyWindow(hwnd, className);
+                    DestroyWindow(hwnd, className);
                 }
                 else
                 {
-                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => _DestroyWindow(hwnd, className)));
+                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, (DispatcherOperationCallback)(arg => DestroyWindow(hwnd, className)));
                 }
             }
             s_windowLookup.Remove(hwnd);
@@ -157,14 +157,14 @@ namespace Standard
 
             if (msg == PInvoke.WM_NCDESTROY)
             {
-                hwndWrapper._Dispose(true, true);
+                hwndWrapper.Dispose(true, true);
                 GC.SuppressFinalize(hwndWrapper);
             }
 
             return ret;
         }
 
-        private static object _DestroyWindow(IntPtr hwnd, string className)
+        private static object DestroyWindow(IntPtr hwnd, string className)
         {
             Utility.SafeDestroyWindow(ref hwnd);
             PInvoke.UnregisterClass(className, PInvoke.GetModuleHandle(string.Empty));
