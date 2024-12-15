@@ -31,10 +31,10 @@ namespace Microsoft.Windows.Shell
 {
     public class SystemParameters2 : INotifyPropertyChanged
     {
-        private delegate void _SystemMetricUpdate(WPARAM wParam, LPARAM lParam);
+        private delegate void SystemMetricUpdate(WPARAM wParam, LPARAM lParam);
 
         [ThreadStatic]
-        private static readonly SystemParameters2 _threadLocalSingleton;
+        private static readonly SystemParameters2 ThreadLocalSingleton;
 
         private MessageWindow _messageHwnd;
 
@@ -51,24 +51,24 @@ namespace Microsoft.Windows.Shell
         private CornerRadius _windowCornerRadius;
         private Rect _captionButtonLocation;
 
-        private readonly Dictionary<uint, List<_SystemMetricUpdate>> _UpdateTable;
+        private readonly Dictionary<uint, List<SystemMetricUpdate>> _updateTable;
 
         // Most properties exposed here have a way of being queried directly
         // and a way of being notified of updates via a window message.
         // This region is a grouping of both, for each of the exposed properties.
 
-        private void _InitializeIsGlassEnabled()
+        private void InitializeIsGlassEnabled()
         {
             IsGlassEnabled = NativeMethods.DwmIsCompositionEnabled();
         }
 
-        private void _UpdateIsGlassEnabled(WPARAM wParam, LPARAM lParam)
+        private void UpdateIsGlassEnabled(WPARAM wParam, LPARAM lParam)
         {
             // Neither the wParam or lParam are used in this case.
-            _InitializeIsGlassEnabled();
+            InitializeIsGlassEnabled();
         }
 
-        private void _InitializeGlassColor()
+        private void InitializeGlassColor()
         {
             NativeMethods.DwmGetColorizationColor(out var color, out var isOpaque);
             color |= isOpaque ? 0xFF000000 : 0;
@@ -78,7 +78,7 @@ namespace Microsoft.Windows.Shell
             WindowGlassBrush = glassBrush;
         }
 
-        private void _UpdateGlassColor(WPARAM wParam, LPARAM lParam)
+        private void UpdateGlassColor(WPARAM wParam, LPARAM lParam)
         {
             var isOpaque = lParam != default;
             var color = unchecked((uint)(int)wParam.Value);
@@ -89,7 +89,7 @@ namespace Microsoft.Windows.Shell
             WindowGlassBrush = glassBrush;
         }
 
-        private void _InitializeCaptionHeight()
+        private void InitializeCaptionHeight()
         {
             var ptCaption = new Point(
                 0,
@@ -98,12 +98,12 @@ namespace Microsoft.Windows.Shell
             WindowCaptionHeight = DpiHelper.DevicePixelsToLogical(ptCaption).Y;
         }
 
-        private void _UpdateCaptionHeight(WPARAM wParam, LPARAM lParam)
+        private void UpdateCaptionHeight(WPARAM wParam, LPARAM lParam)
         {
-            _InitializeCaptionHeight();
+            InitializeCaptionHeight();
         }
 
-        private void _InitializeWindowResizeBorderThickness()
+        private void InitializeWindowResizeBorderThickness()
         {
             var frameSize = new Size(
                 PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
@@ -112,12 +112,12 @@ namespace Microsoft.Windows.Shell
             WindowResizeBorderThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height, frameSizeInDips.Width, frameSizeInDips.Height);
         }
 
-        private void _UpdateWindowResizeBorderThickness(WPARAM wParam, LPARAM lParam)
+        private void UpdateWindowResizeBorderThickness(WPARAM wParam, LPARAM lParam)
         {
-            _InitializeWindowResizeBorderThickness();
+            InitializeWindowResizeBorderThickness();
         }
 
-        private void _InitializeWindowNonClientFrameThickness()
+        private void InitializeWindowNonClientFrameThickness()
         {
             var frameSize = new Size(
                 PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME),
@@ -129,24 +129,24 @@ namespace Microsoft.Windows.Shell
             WindowNonClientFrameThickness = new Thickness(frameSizeInDips.Width, frameSizeInDips.Height + captionHeightInDips, frameSizeInDips.Width, frameSizeInDips.Height);
         }
 
-        private void _UpdateWindowNonClientFrameThickness(WPARAM wParam, LPARAM lParam)
+        private void UpdateWindowNonClientFrameThickness(WPARAM wParam, LPARAM lParam)
         {
-            _InitializeWindowNonClientFrameThickness();
+            InitializeWindowNonClientFrameThickness();
         }
 
-        private void _InitializeSmallIconSize()
+        private void InitializeSmallIconSize()
         {
             SmallIconSize = new Size(
                 PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSMICON),
                 PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSMICON));
         }
 
-        private void _UpdateSmallIconSize(WPARAM wParam, LPARAM lParam)
+        private void UpdateSmallIconSize(WPARAM wParam, LPARAM lParam)
         {
-            _InitializeSmallIconSize();
+            InitializeSmallIconSize();
         }
 
-        private void _LegacyInitializeCaptionButtonLocation()
+        private void LegacyInitializeCaptionButtonLocation()
         {
             // This calculation isn't quite right, but it's pretty close.
             // I expect this is good enough for the scenarios where this is expected to be used.
@@ -167,12 +167,12 @@ namespace Microsoft.Windows.Shell
             WindowCaptionButtonsLocation = captionRect;
         }
 
-        private void _InitializeCaptionButtonLocation()
+        private void InitializeCaptionButtonLocation()
         {
             // There is a completely different way to do this on XP.
             if (!Utility.IsOSVistaOrNewer || !PInvoke.IsThemeActive())
             {
-                _LegacyInitializeCaptionButtonLocation();
+                LegacyInitializeCaptionButtonLocation();
                 return;
             }
 
@@ -215,23 +215,23 @@ namespace Microsoft.Windows.Shell
             WindowCaptionButtonsLocation = logicalCaptionLocation;
         }
 
-        private void _UpdateCaptionButtonLocation(WPARAM wParam, LPARAM lParam)
+        private void UpdateCaptionButtonLocation(WPARAM wParam, LPARAM lParam)
         {
-            _InitializeCaptionButtonLocation();
+            InitializeCaptionButtonLocation();
         }
 
-        private void _InitializeHighContrast()
+        private void InitializeHighContrast()
         {
             var hc = NativeMethods.SystemParameterInfoGetHighContrast();
             HighContrast = (hc.dwFlags & HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON) != 0;
         }
 
-        private void _UpdateHighContrast(WPARAM wParam, LPARAM lParam)
+        private void UpdateHighContrast(WPARAM wParam, LPARAM lParam)
         {
-            _InitializeHighContrast();
+            InitializeHighContrast();
         }
 
-        private void _InitializeThemeInfo()
+        private void InitializeThemeInfo()
         {
             if (!PInvoke.IsThemeActive())
             {
@@ -247,62 +247,38 @@ namespace Microsoft.Windows.Shell
             UxThemeColor = color;
         }
 
-        private void _UpdateThemeInfo(WPARAM wParam, LPARAM lParam)
+        private void UpdateThemeInfo(WPARAM wParam, LPARAM lParam)
         {
-            _InitializeThemeInfo();
+            InitializeThemeInfo();
         }
 
-        private void _InitializeWindowCornerRadius()
+        private void InitializeWindowCornerRadius()
         {
             // The radius of window corners isn't exposed as a true system parameter.
             // It instead is a logical size that we're approximating based on the current theme.
             // There aren't any known variations based on theme color.
             Assert.IsNeitherNullNorEmpty(UxThemeName);
 
+            // TODO: Probably need to make this available/adaptable by themes outside the main library
             // These radii are approximate.  The way WPF does rounding is different than how
             //     rounded-rectangle HRGNs are created, which is also different than the actual
             //     round corners on themed Windows.  For now we're not exposing anything to
             //     mitigate the differences.
-            CornerRadius cornerRadius;
-
-            // This list is known to be incomplete and very much not future-proof.
-            // On XP there are at least a couple of shipped themes that this won't catch,
-            // "Zune" and "Royale", but WPF doesn't know about these either.
-            // If a new theme was to replace Aero, then this will fall back on "classic" behaviors.
-            // This isn't ideal, but it's not the end of the world.  WPF will generally have problems anyways.
-            switch (UxThemeName.ToUpperInvariant())
+            var cornerRadius = UxThemeName.ToUpperInvariant() switch
             {
-                case "LUNA":
-                    cornerRadius = new CornerRadius(6, 6, 0, 0);
-                    break;
-
-                case "AERO":
-                    // Aero has two cases.  One with glass and one without...
-                    if (NativeMethods.DwmIsCompositionEnabled())
-                    {
-                        cornerRadius = new CornerRadius(8);
-                    }
-                    else
-                    {
-                        cornerRadius = new CornerRadius(6, 6, 0, 0);
-                    }
-                    break;
-
-                case "CLASSIC":
-                case "ZUNE":
-                case "ROYALE":
-                default:
-                    cornerRadius = new CornerRadius(0);
-                    break;
-            }
-
+                "LUNA" => new CornerRadius(6, 6, 0, 0),
+                "AERO" => NativeMethods.DwmIsCompositionEnabled() ?
+                                        new CornerRadius(8)
+                                        : new CornerRadius(6, 6, 0, 0),// Aero has two cases.  One with glass and one without...
+                _ => new CornerRadius(0),
+            };
             WindowCornerRadius = cornerRadius;
         }
 
-        private void _UpdateWindowCornerRadius(WPARAM wParam, LPARAM lParam)
+        private void UpdateWindowCornerRadius(WPARAM wParam, LPARAM lParam)
         {
             // Neither the wParam or lParam are used in this case.
-            _InitializeWindowCornerRadius();
+            InitializeWindowCornerRadius();
         }
 
         /// <summary>
@@ -319,57 +295,57 @@ namespace Microsoft.Windows.Shell
                 0,
                 new Rect(-16000, -16000, 100, 100),
                 "",
-                _WndProc);
+                WndProc);
             _messageHwnd.Dispatcher.ShutdownStarted += (sender, e) => Utility.SafeDispose(ref _messageHwnd);
 
             // Fixup the default values of the DPs.
-            _InitializeIsGlassEnabled();
-            _InitializeGlassColor();
-            _InitializeCaptionHeight();
-            _InitializeWindowNonClientFrameThickness();
-            _InitializeWindowResizeBorderThickness();
-            _InitializeCaptionButtonLocation();
-            _InitializeSmallIconSize();
-            _InitializeHighContrast();
-            _InitializeThemeInfo();
+            InitializeIsGlassEnabled();
+            InitializeGlassColor();
+            InitializeCaptionHeight();
+            InitializeWindowNonClientFrameThickness();
+            InitializeWindowResizeBorderThickness();
+            InitializeCaptionButtonLocation();
+            InitializeSmallIconSize();
+            InitializeHighContrast();
+            InitializeThemeInfo();
             // WindowCornerRadius isn't exposed by true system parameters, so it requires the theme to be initialized first.
-            _InitializeWindowCornerRadius();
+            InitializeWindowCornerRadius();
 
-            _UpdateTable = new Dictionary<uint, List<_SystemMetricUpdate>>
+            _updateTable = new Dictionary<uint, List<SystemMetricUpdate>>
             {
                 { PInvoke.WM_THEMECHANGED,
-                    new List<_SystemMetricUpdate>
+                    new List<SystemMetricUpdate>
                     {
-                        _UpdateThemeInfo,
-                        _UpdateHighContrast,
-                        _UpdateWindowCornerRadius,
-                        _UpdateCaptionButtonLocation, } },
+                        UpdateThemeInfo,
+                        UpdateHighContrast,
+                        UpdateWindowCornerRadius,
+                        UpdateCaptionButtonLocation, } },
                 { PInvoke.WM_SETTINGCHANGE,
-                    new List<_SystemMetricUpdate>
+                    new List<SystemMetricUpdate>
                     {
-                        _UpdateCaptionHeight,
-                        _UpdateWindowResizeBorderThickness,
-                        _UpdateSmallIconSize,
-                        _UpdateHighContrast,
-                        _UpdateWindowNonClientFrameThickness,
-                        _UpdateCaptionButtonLocation, } },
-                { PInvoke.WM_DWMNCRENDERINGCHANGED, new List<_SystemMetricUpdate> { _UpdateIsGlassEnabled } },
-                { PInvoke.WM_DWMCOMPOSITIONCHANGED, new List<_SystemMetricUpdate> { _UpdateIsGlassEnabled } },
-                { PInvoke.WM_DWMCOLORIZATIONCOLORCHANGED, new List<_SystemMetricUpdate> { _UpdateGlassColor } },
+                        UpdateCaptionHeight,
+                        UpdateWindowResizeBorderThickness,
+                        UpdateSmallIconSize,
+                        UpdateHighContrast,
+                        UpdateWindowNonClientFrameThickness,
+                        UpdateCaptionButtonLocation, } },
+                { PInvoke.WM_DWMNCRENDERINGCHANGED, new List<SystemMetricUpdate> { UpdateIsGlassEnabled } },
+                { PInvoke.WM_DWMCOMPOSITIONCHANGED, new List<SystemMetricUpdate> { UpdateIsGlassEnabled } },
+                { PInvoke.WM_DWMCOLORIZATIONCOLORCHANGED, new List<SystemMetricUpdate> { UpdateGlassColor } },
             };
         }
 
-        public static SystemParameters2 Current => _threadLocalSingleton ?? new SystemParameters2();
+        public static SystemParameters2 Current => ThreadLocalSingleton ?? new SystemParameters2();
 
-        private LRESULT _WndProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
+        private LRESULT WndProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
         {
             // Don't do this if called within the SystemParameters2 constructor
-            if (_UpdateTable == null)
+            if (_updateTable == null)
             {
                 return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
             }
 
-            if (!_UpdateTable.TryGetValue(msg, out var handlers))
+            if (!_updateTable.TryGetValue(msg, out var handlers))
             {
                 return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
             }
@@ -397,7 +373,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _isGlassEnabled = value;
-                _NotifyPropertyChanged(nameof(IsGlassEnabled));
+                NotifyPropertyChanged(nameof(IsGlassEnabled));
             }
         }
 
@@ -412,7 +388,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _glassColor = value;
-                _NotifyPropertyChanged(nameof(WindowGlassColor));
+                NotifyPropertyChanged(nameof(WindowGlassColor));
             }
         }
 
@@ -429,7 +405,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _glassColorBrush = value;
-                _NotifyPropertyChanged(nameof(WindowGlassBrush));
+                NotifyPropertyChanged(nameof(WindowGlassBrush));
             }
         }
 
@@ -444,7 +420,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _windowResizeBorderThickness = value;
-                _NotifyPropertyChanged(nameof(WindowResizeBorderThickness));
+                NotifyPropertyChanged(nameof(WindowResizeBorderThickness));
             }
         }
 
@@ -459,7 +435,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _windowNonClientFrameThickness = value;
-                _NotifyPropertyChanged(nameof(WindowNonClientFrameThickness));
+                NotifyPropertyChanged(nameof(WindowNonClientFrameThickness));
             }
         }
 
@@ -474,13 +450,13 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _captionHeight = value;
-                _NotifyPropertyChanged(nameof(WindowCaptionHeight));
+                NotifyPropertyChanged(nameof(WindowCaptionHeight));
             }
         }
 
         public Size SmallIconSize
         {
-            get => new Size(_smallIconSize.Width, _smallIconSize.Height);
+            get => new(_smallIconSize.Width, _smallIconSize.Height);
             private set
             {
                 if (value == _smallIconSize)
@@ -489,7 +465,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _smallIconSize = value;
-                _NotifyPropertyChanged(nameof(SmallIconSize));
+                NotifyPropertyChanged(nameof(SmallIconSize));
             }
         }
 
@@ -504,7 +480,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _uxThemeName = value;
-                _NotifyPropertyChanged(nameof(UxThemeName));
+                NotifyPropertyChanged(nameof(UxThemeName));
             }
         }
 
@@ -519,7 +495,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _uxThemeColor = value;
-                _NotifyPropertyChanged(nameof(UxThemeColor));
+                NotifyPropertyChanged(nameof(UxThemeColor));
             }
         }
 
@@ -534,7 +510,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _isHighContrast = value;
-                _NotifyPropertyChanged(nameof(HighContrast));
+                NotifyPropertyChanged(nameof(HighContrast));
             }
         }
 
@@ -549,7 +525,7 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _windowCornerRadius = value;
-                _NotifyPropertyChanged(nameof(WindowCornerRadius));
+                NotifyPropertyChanged(nameof(WindowCornerRadius));
             }
         }
 
@@ -564,11 +540,11 @@ namespace Microsoft.Windows.Shell
                 }
 
                 _captionButtonLocation = value;
-                _NotifyPropertyChanged(nameof(WindowCaptionButtonsLocation));
+                NotifyPropertyChanged(nameof(WindowCaptionButtonsLocation));
             }
         }
 
-        private void _NotifyPropertyChanged(string propertyName)
+        private void NotifyPropertyChanged(string propertyName)
         {
             Assert.IsNeitherNullNorEmpty(propertyName);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
