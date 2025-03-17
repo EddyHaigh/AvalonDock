@@ -90,7 +90,7 @@ namespace AvalonDock.Controls
         /// <summary><see cref="OwnedByDockingManagerWindow"/> dependency property.</summary>
         public static readonly DependencyProperty OwnedByDockingManagerWindowProperty =
             DependencyProperty.Register(
-                "OwnedByDockingManagerWindow",
+                nameof(OwnedByDockingManagerWindow),
                 typeof(bool),
                 typeof(LayoutFloatingWindowControl),
                 new PropertyMetadata(true, OnOwnedByDockingManagerWindowChanged));
