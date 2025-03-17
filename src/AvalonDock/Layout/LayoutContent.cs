@@ -40,7 +40,7 @@ namespace AvalonDock.Layout
                 nameof(Title),
                 typeof(string),
                 typeof(LayoutContent),
-                new UIPropertyMetadata(null, OnTitleChanged, CoerceTitleValue));
+                new UIPropertyMetadata(null, OnTitleChanged, CoerceTitle));
 
         // BD: 14.08.2020 added _canCloseDefault to properly implement inverting _canClose default value in inheritors (e.g. LayoutAnchorable)
         //     Thus CanClose property will be serialized only when not equal to its default for given class
@@ -882,7 +882,7 @@ namespace AvalonDock.Layout
             base.OnParentChanging(oldValue, newValue);
         }
 
-        private static object CoerceTitleValue(DependencyObject obj, object value)
+        private static object CoerceTitle(DependencyObject obj, object value)
         {
             var lc = (LayoutContent)obj;
             if ((string)value != lc.Title)

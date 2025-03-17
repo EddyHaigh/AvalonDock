@@ -35,7 +35,7 @@ namespace AvalonDock.Controls
                 nameof(AutoHideCommand),
                 typeof(ICommand),
                 typeof(LayoutAnchorableItem),
-                new FrameworkPropertyMetadata(null, OnAutoHideCommandChanged, CoerceAutoHideCommandValue));
+                new FrameworkPropertyMetadata(null, OnAutoHideCommandChanged, CoerceAutoHideCommand));
 
         /// <summary><see cref="CanHide"/> dependency property.</summary>
         public static readonly DependencyProperty CanHideProperty
@@ -59,7 +59,7 @@ namespace AvalonDock.Controls
                 nameof(DockCommand),
                 typeof(ICommand),
                 typeof(LayoutAnchorableItem),
-                new FrameworkPropertyMetadata(null, OnDockCommandChanged, CoerceDockCommandValue));
+                new FrameworkPropertyMetadata(null, OnDockCommandChanged, CoerceDockCommand));
 
         /// <summary><see cref="HideCommand"/> dependency property.</summary>
         public static readonly DependencyProperty HideCommandProperty
@@ -67,7 +67,7 @@ namespace AvalonDock.Controls
                 nameof(HideCommand),
                 typeof(ICommand),
                 typeof(LayoutAnchorableItem),
-                new FrameworkPropertyMetadata(null, OnHideCommandChanged, CoerceHideCommandValue));
+                new FrameworkPropertyMetadata(null, OnHideCommandChanged, CoerceHideCommand));
 
         private readonly ReentrantFlag _anchorableVisibilityReentrantFlag = new ReentrantFlag();
         private readonly ReentrantFlag _visibilityReentrantFlag = new ReentrantFlag();
@@ -268,13 +268,13 @@ namespace AvalonDock.Controls
         }
 
         /// <summary>Coerces the <see cref="AutoHideCommand"/> value.</summary>
-        private static object CoerceAutoHideCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceAutoHideCommand(DependencyObject d, object value) => value;
 
         /// <summary>Coerces the <see cref="DockCommand"/> value.</summary>
-        private static object CoerceDockCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceDockCommand(DependencyObject d, object value) => value;
 
         /// <summary>Coerces the <see cref="HideCommand"/> value.</summary>
-        private static object CoerceHideCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceHideCommand(DependencyObject d, object value) => value;
 
         /// <summary>Handles changes to the <see cref="AutoHideCommand"/> property.</summary>
         private static void OnAutoHideCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -133,7 +133,7 @@ namespace AvalonDock.Controls
         static LayoutFloatingWindowControl()
         {
             AllowsTransparencyProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(false));
-            ContentProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(null, null, CoerceContentValue));
+            ContentProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(null, null, CoerceContent));
             ShowInTaskbarProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(false));
 
             ContentMinHeightProperty = ContentMinHeightPropertyKey.DependencyProperty;
@@ -482,7 +482,7 @@ namespace AvalonDock.Controls
         /// <param name="value">The new value for the property.</param>
         protected void SetIsDragging(bool value) => SetValue(IsDraggingPropertyKey, value);
 
-        private static object CoerceContentValue(DependencyObject sender, object content)
+        private static object CoerceContent(DependencyObject sender, object content)
         {
             if (sender is not LayoutFloatingWindowControl lfwc)
             {

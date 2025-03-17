@@ -37,7 +37,7 @@ namespace AvalonDock.Controls
                 nameof(ActivateCommand),
                 typeof(ICommand),
                 typeof(LayoutItem),
-                new FrameworkPropertyMetadata(null, OnActivateCommandChanged, CoerceActivateCommandValue));
+                new FrameworkPropertyMetadata(null, OnActivateCommandChanged, CoerceActivateCommand));
 
         /// <summary>
         /// <see cref="CanClose"/> dependency property.
@@ -65,7 +65,7 @@ namespace AvalonDock.Controls
                 nameof(CloseAllButThisCommand),
                 typeof(ICommand),
                 typeof(LayoutItem),
-                new FrameworkPropertyMetadata(null, OnCloseAllButThisCommandChanged, CoerceCloseAllButThisCommandValue));
+                new FrameworkPropertyMetadata(null, OnCloseAllButThisCommandChanged, CoerceCloseAllButThisCommand));
 
         /// <summary>
         /// <see cref="CloseAllCommand"/> dependency property.
@@ -75,7 +75,7 @@ namespace AvalonDock.Controls
                 nameof(CloseAllCommand),
                 typeof(ICommand),
                 typeof(LayoutItem),
-                new FrameworkPropertyMetadata(null, OnCloseAllCommandChanged, CoerceCloseAllCommandValue));
+                new FrameworkPropertyMetadata(null, OnCloseAllCommandChanged, CoerceCloseAllCommand));
 
         /// <summary>
         /// <see cref="CloseCommand"/> dependency property.
@@ -85,7 +85,7 @@ namespace AvalonDock.Controls
                 nameof(CloseCommand),
                 typeof(ICommand),
                 typeof(LayoutItem),
-                new FrameworkPropertyMetadata(null, OnCloseCommandChanged, CoerceCloseCommandValue));
+                new FrameworkPropertyMetadata(null, OnCloseCommandChanged, CoerceCloseCommand));
 
         /// <summary>
         /// <see cref="ContentId"/> dependency property.
@@ -105,7 +105,7 @@ namespace AvalonDock.Controls
                 nameof(DockAsDocumentCommand),
                 typeof(ICommand),
                 typeof(LayoutItem),
-                new FrameworkPropertyMetadata(null, OnDockAsDocumentCommandChanged, CoerceDockAsDocumentCommandValue));
+                new FrameworkPropertyMetadata(null, OnDockAsDocumentCommandChanged, CoerceDockAsDocumentCommand));
 
         /// <summary>
         /// <see cref="FloatCommand"/> dependency property.
@@ -115,7 +115,7 @@ namespace AvalonDock.Controls
                 nameof(FloatCommand),
                 typeof(ICommand),
                 typeof(LayoutItem),
-                new FrameworkPropertyMetadata(null, OnFloatCommandChanged, CoerceFloatCommandValue));
+                new FrameworkPropertyMetadata(null, OnFloatCommandChanged, CoerceFloatCommand));
 
         /// <summary>
         /// <see cref="IconSource"/> dependency property.
@@ -745,32 +745,32 @@ namespace AvalonDock.Controls
         /// <summary>
         /// Coerces the <see cref="ActivateCommand"/> value.
         /// </summary>
-        private static object CoerceActivateCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceActivateCommand(DependencyObject d, object value) => value;
 
         /// <summary>
         /// Coerces the <see cref="CloseAllButThisCommand"/> value.
         /// </summary>
-        private static object CoerceCloseAllButThisCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceCloseAllButThisCommand(DependencyObject d, object value) => value;
 
         /// <summary>
         /// Coerces the <see cref="CloseAllCommand"/> value.
         /// </summary>
-        private static object CoerceCloseAllCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceCloseAllCommand(DependencyObject d, object value) => value;
 
         /// <summary>
         /// Coerces the <see cref="CloseCommand"/>  value.
         /// </summary>
-        private static object CoerceCloseCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceCloseCommand(DependencyObject d, object value) => value;
 
         /// <summary>
         /// Coerces the <see cref="DockAsDocumentCommand"/> value.
         /// </summary>
-        private static object CoerceDockAsDocumentCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceDockAsDocumentCommand(DependencyObject d, object value) => value;
 
         /// <summary>
         /// Coerces the <see cref="FloatCommand"/> value.
         /// </summary>
-        private static object CoerceFloatCommandValue(DependencyObject d, object value) => value;
+        private static object CoerceFloatCommand(DependencyObject d, object value) => value;
 
         /// <summary>
         /// Handles changes to the <see cref="ActivateCommand"/> property.

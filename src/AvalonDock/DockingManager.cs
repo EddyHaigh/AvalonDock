@@ -148,7 +148,7 @@ namespace AvalonDock
                 nameof(Layout),
                 typeof(LayoutRoot),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata(null, OnLayoutChanged, CoerceLayoutValue));
+                new FrameworkPropertyMetadata(null, OnLayoutChanged, CoerceLayout));
 
         /// <summary>Gets/sets the layout root of the layout tree managed in this framework.</summary>
         [Bindable(true)]
@@ -161,7 +161,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="Layout"/> value.</summary>
-        private static object CoerceLayoutValue(DependencyObject d, object value)
+        private static object CoerceLayout(DependencyObject d, object value)
         {
             if (value == null)
             {
@@ -469,7 +469,7 @@ namespace AvalonDock
                 nameof(DocumentHeaderTemplate),
                 typeof(DataTemplate),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata((DataTemplate)null, OnDocumentHeaderTemplateChanged, CoerceDocumentHeaderTemplateValue));
+                new FrameworkPropertyMetadata((DataTemplate)null, OnDocumentHeaderTemplateChanged, CoerceDocumentHeaderTemplate));
 
         /// <summary>Gets/sets the <see cref="DataTemplate"/> to use for document headers.</summary>
         [Bindable(true)]
@@ -491,7 +491,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="DocumentHeaderTemplate"/> value.</summary>
-        private static object CoerceDocumentHeaderTemplateValue(DependencyObject d, object value)
+        private static object CoerceDocumentHeaderTemplate(DependencyObject d, object value)
         {
             if (value != null && d.GetValue(DocumentHeaderTemplateSelectorProperty) != null)
             {
@@ -507,7 +507,7 @@ namespace AvalonDock
                 nameof(DocumentHeaderTemplateSelector),
                 typeof(DataTemplateSelector),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata(null, OnDocumentHeaderTemplateSelectorChanged, CoerceDocumentHeaderTemplateSelectorValue));
+                new FrameworkPropertyMetadata(null, OnDocumentHeaderTemplateSelectorChanged, CoerceDocumentHeaderTemplateSelector));
 
         /// <summary>Gets /sets the <see cref="DataTemplateSelector"/> that can be used for selecting a <see cref="DataTemplate"/> for a document header.</summary>
         [Bindable(true)]
@@ -535,7 +535,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="DocumentHeaderTemplateSelector"/> value.</summary>
-        private static object CoerceDocumentHeaderTemplateSelectorValue(DependencyObject d, object value) => value;
+        private static object CoerceDocumentHeaderTemplateSelector(DependencyObject d, object value) => value;
 
         /// <summary><see cref="DocumentTitleTemplate"/> dependency property.</summary>
         public static readonly DependencyProperty DocumentTitleTemplateProperty
@@ -543,7 +543,7 @@ namespace AvalonDock
                 nameof(DocumentTitleTemplate),
                 typeof(DataTemplate),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata(null, OnDocumentTitleTemplateChanged, CoerceDocumentTitleTemplateValue));
+                new FrameworkPropertyMetadata(null, OnDocumentTitleTemplateChanged, CoerceDocumentTitleTemplate));
 
         /// <summary>Gets/sets the <see cref="DataTemplate"/> to use for displaying the title of a document.</summary>
         [Bindable(true)]
@@ -565,7 +565,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="DocumentTitleTemplate"/> value.</summary>
-        private static object CoerceDocumentTitleTemplateValue(DependencyObject d, object value)
+        private static object CoerceDocumentTitleTemplate(DependencyObject d, object value)
         {
             if (value != null && d.GetValue(DocumentTitleTemplateSelectorProperty) != null)
             {
@@ -581,7 +581,7 @@ namespace AvalonDock
                 nameof(DocumentTitleTemplateSelector),
                 typeof(DataTemplateSelector),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata(null, OnDocumentTitleTemplateSelectorChanged, CoerceDocumentTitleTemplateSelectorValue));
+                new FrameworkPropertyMetadata(null, OnDocumentTitleTemplateSelectorChanged, CoerceDocumentTitleTemplateSelector));
 
         /// <summary>Gets/sets the <see cref="DataTemplateSelector"/> to use for displaying the <see cref="DataTemplate"/> of a document's title.</summary>
         [Bindable(true)]
@@ -607,7 +607,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="DocumentTitleTemplateSelector"/> value.</summary>
-        private static object CoerceDocumentTitleTemplateSelectorValue(DependencyObject d, object value) => value;
+        private static object CoerceDocumentTitleTemplateSelector(DependencyObject d, object value) => value;
 
         /// <summary><see cref="AnchorableTitleTemplate"/> dependency property.</summary>
         public static readonly DependencyProperty AnchorableTitleTemplateProperty
@@ -615,7 +615,7 @@ namespace AvalonDock
                 nameof(AnchorableTitleTemplate),
                 typeof(DataTemplate),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata((DataTemplate)null, OnAnchorableTitleTemplateChanged, CoerceAnchorableTitleTemplateValue));
+                new FrameworkPropertyMetadata((DataTemplate)null, OnAnchorableTitleTemplateChanged, CoerceAnchorableTitleTemplate));
 
         /// <summary>Gets/sets the <see cref="DataTemplate"/> to use for the title of an anchorable.</summary>
         [Bindable(true)]
@@ -637,7 +637,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="AnchorableTitleTemplate"/> value.</summary>
-        private static object CoerceAnchorableTitleTemplateValue(DependencyObject d, object value)
+        private static object CoerceAnchorableTitleTemplate(DependencyObject d, object value)
         {
             if (value != null && d.GetValue(AnchorableTitleTemplateSelectorProperty) != null)
             {
@@ -683,7 +683,7 @@ namespace AvalonDock
                 nameof(AnchorableHeaderTemplate),
                 typeof(DataTemplate),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata(null, OnAnchorableHeaderTemplateChanged, CoerceAnchorableHeaderTemplateValue));
+                new FrameworkPropertyMetadata(null, OnAnchorableHeaderTemplateChanged, CoerceAnchorableHeaderTemplate));
 
         /// <summary>Gets/sets the <see cref="DataTemplate"/> to use for a header of an anchorable.</summary>
         [Bindable(true)]
@@ -705,7 +705,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="AnchorableHeaderTemplate"/> value.</summary>
-        private static object CoerceAnchorableHeaderTemplateValue(DependencyObject d, object value)
+        private static object CoerceAnchorableHeaderTemplate(DependencyObject d, object value)
         {
             if (value != null && d.GetValue(AnchorableHeaderTemplateSelectorProperty) != null)
             {
@@ -1344,7 +1344,7 @@ namespace AvalonDock
                 nameof(DocumentPaneMenuItemHeaderTemplate),
                 typeof(DataTemplate),
                 typeof(DockingManager),
-                new FrameworkPropertyMetadata(null, OnDocumentPaneMenuItemHeaderTemplateChanged, CoerceDocumentPaneMenuItemHeaderTemplateValue));
+                new FrameworkPropertyMetadata(null, OnDocumentPaneMenuItemHeaderTemplateChanged, CoerceDocumentPaneMenuItemHeaderTemplate));
 
         /// <summary>Gets/sets the <see cref="DataTemplate"/> for the header to display menu dropdown items on a document pane.</summary>
         [Bindable(true)]
@@ -1365,7 +1365,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="DocumentPaneMenuItemHeaderTemplate"/> value.</summary>
-        private static object CoerceDocumentPaneMenuItemHeaderTemplateValue(DependencyObject d, object value)
+        private static object CoerceDocumentPaneMenuItemHeaderTemplate(DependencyObject d, object value)
         {
             if (value != null && d.GetValue(DocumentPaneMenuItemHeaderTemplateSelectorProperty) != null)
             {
@@ -1384,7 +1384,7 @@ namespace AvalonDock
                 new FrameworkPropertyMetadata(
                     null,
                     OnDocumentPaneMenuItemHeaderTemplateSelectorChanged,
-                    CoerceDocumentPaneMenuItemHeaderTemplateSelectorValue));
+                    CoerceDocumentPaneMenuItemHeaderTemplateSelector));
 
         /// <summary>Gets/sets the <see cref="DataTemplateSelector"/> to select a <see cref="DataTemplate"/> for the menu items shown when user selects the <see cref="LayoutDocumentPaneControl"/> context menu switch.</summary>
         [Bindable(true)]
@@ -1410,7 +1410,7 @@ namespace AvalonDock
         }
 
         /// <summary>Coerces the <see cref="DocumentPaneMenuItemHeaderTemplateSelector"/> value.</summary>
-        private static object CoerceDocumentPaneMenuItemHeaderTemplateSelectorValue(DependencyObject d, object value) => value;
+        private static object CoerceDocumentPaneMenuItemHeaderTemplateSelector(DependencyObject d, object value) => value;
 
 
         /// <summary><see cref="IconContentTemplate"/> dependency property.</summary>
