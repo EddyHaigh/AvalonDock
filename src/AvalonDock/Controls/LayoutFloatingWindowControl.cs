@@ -846,7 +846,11 @@ namespace AvalonDock.Controls
                 return Content.DesiredSize;
             }
 
-            /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Content"/> property.</summary>
+            /// <summary>
+            /// This method is invoked when the <see cref="ContentProperty"/> changes.
+            /// </summary>
+            /// <param name="oldValue">The old value of <see cref="ContentProperty"/>.</param>
+            /// <param name="newValue">The new value of <see cref="ContentProperty"/>.</param>
             protected virtual void OnContentChanged(UIElement oldValue, UIElement newValue)
             {
                 if (_rootPresenter != null)
@@ -865,7 +869,11 @@ namespace AvalonDock.Controls
                 }
             }
 
-            /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="SizeToContent"/> property.</summary>
+            /// <summary>
+            /// This method is invoked when the <see cref="SizeToContentProperty"/> changes.
+            /// </summary>
+            /// <param name="oldValue">The old value of <see cref="SizeToContentProperty"/>.</param>
+            /// <param name="newValue">The new value of <see cref="SizeToContentProperty"/>.</param>
             protected virtual void OnSizeToContentChanged(SizeToContent oldValue, SizeToContent newValue)
             {
                 if (_wpfContentHost != null)
