@@ -9,6 +9,7 @@
 
 using System;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Markup;
 
 using AvalonDock.Layout;
@@ -22,6 +23,7 @@ namespace AvalonDock.Converters
     /// Returns null or Binding.DoNothing otherwise.
     /// </summary>
     [MarkupExtensionReturnType(typeof(ActivateCommandLayoutItemFromLayoutModelConverter))]
+    [ValueConversion(typeof(LayoutContent), typeof(ICommand))]
     public class ActivateCommandLayoutItemFromLayoutModelConverter : MarkupExtension, IValueConverter
     {
         /// <summary>
