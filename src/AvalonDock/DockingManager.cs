@@ -971,7 +971,7 @@ namespace AvalonDock
         /// </summary>
         public static readonly DependencyProperty AutoHideDelayProperty
             = DependencyProperty.Register(
-                "AutoHideDelay",
+                nameof(AutoHideDelay),
                 typeof(int),
                 typeof(DockingManager),
                 new UIPropertyMetadata(500));
@@ -1291,7 +1291,7 @@ namespace AvalonDock
         /// </summary>
         public static readonly DependencyProperty GridSplitterVerticalStyleProperty
             = DependencyProperty.Register(
-                "GridSplitterVerticalStyle",
+                nameof(GridSplitterVerticalStyle),
                 typeof(Style),
                 typeof(DockingManager),
                 new FrameworkPropertyMetadata((Style)null));
@@ -1317,7 +1317,7 @@ namespace AvalonDock
         /// </summary>
         public static readonly DependencyProperty GridSplitterHorizontalStyleProperty
             = DependencyProperty.Register(
-                "GridSplitterHorizontalStyle",
+                nameof(GridSplitterHorizontalStyle),
                 typeof(Style),
                 typeof(DockingManager),
                 new FrameworkPropertyMetadata((Style)null));
@@ -1564,7 +1564,7 @@ namespace AvalonDock
 
         public static readonly DependencyProperty AutoWindowSizeWhenOpenedProperty
             = DependencyProperty.Register(
-                "AutoWindowSizeWhenOpened",
+                nameof(AutoWindowSizeWhenOpened),
                 typeof(bool),
                 typeof(DockingManager),
                 new PropertyMetadata(false));

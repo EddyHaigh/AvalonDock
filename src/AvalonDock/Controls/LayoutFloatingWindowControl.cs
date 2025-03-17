@@ -47,7 +47,7 @@ namespace AvalonDock.Controls
         /// <summary><see cref="AllowMinimize"/> dependency property.</summary>
         public static readonly DependencyProperty AllowMinimizeProperty =
             DependencyProperty.Register(
-                "AllowMinimize",
+                nameof(AllowMinimize),
                 typeof(bool),
                 typeof(LayoutFloatingWindowControl),
                 new PropertyMetadata(false));
