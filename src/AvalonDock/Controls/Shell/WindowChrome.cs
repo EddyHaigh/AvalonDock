@@ -95,6 +95,7 @@ namespace Microsoft.Windows.Shell
         /// </summary>
         /// <param name="window"><see cref="Window"/> to read <see cref="WindowChromeProperty"/> from.</param>
         /// <returns>WindowChrome property value.</returns>
+        [AttachedPropertyBrowsableForType(typeof(Window))]
         public static WindowChrome GetWindowChrome(Window window)
         {
             Verify.IsNotNull(window, nameof(window));

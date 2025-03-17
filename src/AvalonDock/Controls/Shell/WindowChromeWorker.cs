@@ -218,6 +218,7 @@ namespace Microsoft.Windows.Shell
         /// Helper for getting <see cref="WindowChromeWorkerProperty"/> from <paramref name="window"/>.</summary>
         /// <param name="window"><see cref="Window"/> to read <see cref="WindowChromeWorkerProperty"/> from.</param>
         /// <returns>WindowChromeWorker property value.</returns>
+        [AttachedPropertyBrowsableForType(typeof(Window))]
         public static WindowChromeWorker GetWindowChromeWorker(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
