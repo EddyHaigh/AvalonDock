@@ -90,12 +90,22 @@ namespace Microsoft.Windows.Shell
             chromeWorker.SetWindowChrome(newChrome);
         }
 
+        /// <summary>
+        /// Helper for getting <see cref="WindowChromeProperty"/> from <paramref name="window"/>.
+        /// </summary>
+        /// <param name="window"><see cref="Window"/> to read <see cref="WindowChromeProperty"/> from.</param>
+        /// <returns>WindowChrome property value.</returns>
         public static WindowChrome GetWindowChrome(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
             return (WindowChrome)window.GetValue(WindowChromeProperty);
         }
 
+        /// <summary>
+        /// Helper for setting <see cref="WindowChromeProperty"/> on <paramref name="window"/>.
+        /// </summary>
+        /// <param name="window"><see cref="Window"/> to set <see cref="WindowChromeProperty"/> on.</param>
+        /// <param name="chrome">WindowChrome property value.</param>
         public static void SetWindowChrome(Window window, WindowChrome chrome)
         {
             Verify.IsNotNull(window, nameof(window));
