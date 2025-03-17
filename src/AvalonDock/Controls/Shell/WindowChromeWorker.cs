@@ -139,9 +139,9 @@ namespace Microsoft.Windows.Shell
         private void OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e) => UpdateFrameState(true);
 
         public static readonly DependencyProperty WindowChromeWorkerProperty = DependencyProperty.RegisterAttached(nameof(WindowChromeWorker), typeof(WindowChromeWorker), typeof(WindowChromeWorker),
-            new PropertyMetadata(null, OnChromeWorkerChanged));
+            new PropertyMetadata(null, OnWindowChromeWorkerChanged));
 
-        private static void OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnWindowChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var w = (Window)d;
             var cw = (WindowChromeWorker)e.NewValue;

@@ -93,7 +93,7 @@ namespace AvalonDock.Controls
                 "OwnedByDockingManagerWindow",
                 typeof(bool),
                 typeof(LayoutFloatingWindowControl),
-                new PropertyMetadata(true, OwnedByDockingManagerWindowPropertyChanged));
+                new PropertyMetadata(true, OnOwnedByDockingManagerWindowChanged));
 
         public static readonly DependencyProperty TotalMarginProperty;
 
@@ -501,7 +501,7 @@ namespace AvalonDock.Controls
         private static void OnIsDraggingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
             => ((LayoutFloatingWindowControl)d).OnIsDraggingChanged(e);
 
-        private static void OwnedByDockingManagerWindowPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnOwnedByDockingManagerWindowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is LayoutFloatingWindowControl w && w.IsLoaded)
             {

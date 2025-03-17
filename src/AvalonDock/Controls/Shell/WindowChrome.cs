@@ -60,9 +60,9 @@ namespace Microsoft.Windows.Shell
         public static Thickness GlassFrameCompleteThickness => new(-1);
 
         public static readonly DependencyProperty WindowChromeProperty = DependencyProperty.RegisterAttached("WindowChrome", typeof(WindowChrome), typeof(WindowChrome),
-            new PropertyMetadata(null, OnChromeChanged));
+            new PropertyMetadata(null, OnWindowChromeChanged));
 
-        private static void OnChromeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnWindowChromeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             // The different design tools handle drawing outside their custom window objects differently.
             // Rather than try to support this concept in the design surface let the designer draw its own
