@@ -174,7 +174,11 @@ namespace AvalonDock
         private static void OnLayoutChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
             => ((DockingManager)d).OnLayoutChanged(e.OldValue as LayoutRoot, e.NewValue as LayoutRoot);
 
-        /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Layout"/> property.</summary>
+        /// <summary>
+        /// This method is invoked when the <see cref="LayoutProperty"/> changes.
+        /// </summary>
+        /// <param name="oldLayout">The old value of <see cref="LayoutProperty"/>.</param>
+        /// <param name="newLayout">The new value of <see cref="LayoutProperty"/>.</param>
         protected virtual void OnLayoutChanged(LayoutRoot oldLayout, LayoutRoot newLayout)
         {
             if (oldLayout != null)

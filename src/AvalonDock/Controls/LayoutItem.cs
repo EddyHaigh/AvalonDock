@@ -713,6 +713,9 @@ namespace AvalonDock.Controls
             }
         }
 
+        /// <summary>
+        /// This method is invoked when the <see cref="VisibilityProperty"/> changes.
+        /// </summary>
         protected virtual void OnVisibilityChanged()
         {
             if (LayoutElement != null && Visibility == Visibility.Collapsed)
