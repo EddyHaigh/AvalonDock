@@ -21,6 +21,7 @@ namespace AvalonDock.Converters
     ///
     /// Returns null or Binding.DoNothing otherwise.
     /// </summary>
+    [MarkupExtensionReturnType(typeof(ActivateCommandLayoutItemFromLayoutModelConverter))]
     public class ActivateCommandLayoutItemFromLayoutModelConverter : MarkupExtension, IValueConverter
     {
         /// <summary>
