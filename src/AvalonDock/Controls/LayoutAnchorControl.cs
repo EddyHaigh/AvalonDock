@@ -30,7 +30,7 @@ namespace AvalonDock.Controls
         /// </summary>
         private static readonly DependencyPropertyKey SidePropertyKey
             = DependencyProperty.RegisterReadOnly(
-                "Side",
+                nameof(Side),
                 typeof(AnchorSide),
                 typeof(LayoutAnchorControl),
                 new FrameworkPropertyMetadata(AnchorSide.Left));

@@ -33,14 +33,14 @@ namespace AvalonDock.Layout
                         nameof(ContentId),
                         typeof(string),
                         typeof(LayoutContent),
-                        new UIPropertyMetadata(null, OnContentIdPropertyChanged));
+                        new UIPropertyMetadata(null, OnContentIdChanged));
 
         public static readonly DependencyProperty TitleProperty
             = DependencyProperty.Register(
                 nameof(Title),
                 typeof(string),
                 typeof(LayoutContent),
-                new UIPropertyMetadata(null, OnTitlePropertyChanged, CoerceTitleValue));
+                new UIPropertyMetadata(null, OnTitleChanged, CoerceTitle));
 
         // BD: 14.08.2020 added _canCloseDefault to properly implement inverting _canClose default value in inheritors (e.g. LayoutAnchorable)
         //     Thus CanClose property will be serialized only when not equal to its default for given class
@@ -882,7 +882,7 @@ namespace AvalonDock.Layout
             base.OnParentChanging(oldValue, newValue);
         }
 
-        private static object CoerceTitleValue(DependencyObject obj, object value)
+        private static object CoerceTitle(DependencyObject obj, object value)
         {
             var lc = (LayoutContent)obj;
             if ((string)value != lc.Title)
@@ -893,7 +893,7 @@ namespace AvalonDock.Layout
             return value;
         }
 
-        private static void OnContentIdPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
+        private static void OnContentIdChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
             if (obj is LayoutContent layoutContent)
             {
@@ -901,7 +901,7 @@ namespace AvalonDock.Layout
             }
         }
 
-        private static void OnTitlePropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) => ((LayoutContent)obj).RaisePropertyChanged(TitleProperty.Name);
+        private static void OnTitleChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) => ((LayoutContent)obj).RaisePropertyChanged(TitleProperty.Name);
         private void OnContentIdPropertyChanged(string oldValue, string newValue)
         {
             if (oldValue != newValue)

@@ -47,7 +47,7 @@ namespace AvalonDock.Controls
         /// <summary><see cref="AllowMinimize"/> dependency property.</summary>
         public static readonly DependencyProperty AllowMinimizeProperty =
             DependencyProperty.Register(
-                "AllowMinimize",
+                nameof(AllowMinimize),
                 typeof(bool),
                 typeof(LayoutFloatingWindowControl),
                 new PropertyMetadata(false));
@@ -90,10 +90,10 @@ namespace AvalonDock.Controls
         /// <summary><see cref="OwnedByDockingManagerWindow"/> dependency property.</summary>
         public static readonly DependencyProperty OwnedByDockingManagerWindowProperty =
             DependencyProperty.Register(
-                "OwnedByDockingManagerWindow",
+                nameof(OwnedByDockingManagerWindow),
                 typeof(bool),
                 typeof(LayoutFloatingWindowControl),
-                new PropertyMetadata(true, OwnedByDockingManagerWindowPropertyChanged));
+                new PropertyMetadata(true, OnOwnedByDockingManagerWindowChanged));
 
         public static readonly DependencyProperty TotalMarginProperty;
 
@@ -133,7 +133,7 @@ namespace AvalonDock.Controls
         static LayoutFloatingWindowControl()
         {
             AllowsTransparencyProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(false));
-            ContentProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(null, null, CoerceContentValue));
+            ContentProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(null, null, CoerceContent));
             ShowInTaskbarProperty.OverrideMetadata(typeof(LayoutFloatingWindowControl), new FrameworkPropertyMetadata(false));
 
             ContentMinHeightProperty = ContentMinHeightPropertyKey.DependencyProperty;
@@ -482,7 +482,7 @@ namespace AvalonDock.Controls
         /// <param name="value">The new value for the property.</param>
         protected void SetIsDragging(bool value) => SetValue(IsDraggingPropertyKey, value);
 
-        private static object CoerceContentValue(DependencyObject sender, object content)
+        private static object CoerceContent(DependencyObject sender, object content)
         {
             if (sender is not LayoutFloatingWindowControl lfwc)
             {
@@ -501,7 +501,7 @@ namespace AvalonDock.Controls
         private static void OnIsDraggingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
             => ((LayoutFloatingWindowControl)d).OnIsDraggingChanged(e);
 
-        private static void OwnedByDockingManagerWindowPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnOwnedByDockingManagerWindowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is LayoutFloatingWindowControl w && w.IsLoaded)
             {
@@ -846,7 +846,11 @@ namespace AvalonDock.Controls
                 return Content.DesiredSize;
             }
 
-            /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="Content"/> property.</summary>
+            /// <summary>
+            /// This method is invoked when the <see cref="ContentProperty"/> changes.
+            /// </summary>
+            /// <param name="oldValue">The old value of <see cref="ContentProperty"/>.</param>
+            /// <param name="newValue">The new value of <see cref="ContentProperty"/>.</param>
             protected virtual void OnContentChanged(UIElement oldValue, UIElement newValue)
             {
                 if (_rootPresenter != null)
@@ -865,7 +869,11 @@ namespace AvalonDock.Controls
                 }
             }
 
-            /// <summary>Provides derived classes an opportunity to handle changes to the <see cref="SizeToContent"/> property.</summary>
+            /// <summary>
+            /// This method is invoked when the <see cref="SizeToContentProperty"/> changes.
+            /// </summary>
+            /// <param name="oldValue">The old value of <see cref="SizeToContentProperty"/>.</param>
+            /// <param name="newValue">The new value of <see cref="SizeToContentProperty"/>.</param>
             protected virtual void OnSizeToContentChanged(SizeToContent oldValue, SizeToContent newValue)
             {
                 if (_wpfContentHost != null)

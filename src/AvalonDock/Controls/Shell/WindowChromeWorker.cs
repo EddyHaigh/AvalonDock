@@ -139,9 +139,9 @@ namespace Microsoft.Windows.Shell
         private void OnChromePropertyChangedThatRequiresRepaint(object sender, EventArgs e) => UpdateFrameState(true);
 
         public static readonly DependencyProperty WindowChromeWorkerProperty = DependencyProperty.RegisterAttached(nameof(WindowChromeWorker), typeof(WindowChromeWorker), typeof(WindowChromeWorker),
-            new PropertyMetadata(null, OnChromeWorkerChanged));
+            new PropertyMetadata(null, OnWindowChromeWorkerChanged));
 
-        private static void OnChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnWindowChromeWorkerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var w = (Window)d;
             var cw = (WindowChromeWorker)e.NewValue;
@@ -214,12 +214,22 @@ namespace Microsoft.Windows.Shell
             RestoreStandardChromeState(true);
         }
 
+        /// <summary>
+        /// Helper for getting <see cref="WindowChromeWorkerProperty"/> from <paramref name="window"/>.</summary>
+        /// <param name="window"><see cref="Window"/> to read <see cref="WindowChromeWorkerProperty"/> from.</param>
+        /// <returns>WindowChromeWorker property value.</returns>
+        [AttachedPropertyBrowsableForType(typeof(Window))]
         public static WindowChromeWorker GetWindowChromeWorker(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
             return (WindowChromeWorker)window.GetValue(WindowChromeWorkerProperty);
         }
 
+        /// <summary>
+        /// Helper for setting <see cref="WindowChromeWorkerProperty"/> on <paramref name="window"/>.
+        /// </summary>
+        /// <param name="window"><see cref="Window"/> to set <see cref="WindowChromeWorkerProperty"/> on.</param>
+        /// <param name="chrome">WindowChromeWorker property value.</param>
         public static void SetWindowChromeWorker(Window window, WindowChromeWorker chrome)
         {
             Verify.IsNotNull(window, nameof(window));

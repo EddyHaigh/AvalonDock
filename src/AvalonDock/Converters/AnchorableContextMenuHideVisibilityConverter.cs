@@ -24,6 +24,7 @@ namespace AvalonDock.Converters
     /// The actual <see cref="Visibility"/> value returned is 1) if 2) is true,
     /// <see cref="Visibility.Collapsed"/>  is returned otherwise.
     /// </summary>
+    [MarkupExtensionReturnType(typeof(AnchorableContextMenuHideVisibilityConverter))]
     public class AnchorableContextMenuHideVisibilityConverter : MarkupExtension, IMultiValueConverter
     {
         /// <summary>

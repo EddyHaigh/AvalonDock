@@ -60,9 +60,9 @@ namespace Microsoft.Windows.Shell
         public static Thickness GlassFrameCompleteThickness => new(-1);
 
         public static readonly DependencyProperty WindowChromeProperty = DependencyProperty.RegisterAttached("WindowChrome", typeof(WindowChrome), typeof(WindowChrome),
-            new PropertyMetadata(null, OnChromeChanged));
+            new PropertyMetadata(null, OnWindowChromeChanged));
 
-        private static void OnChromeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnWindowChromeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             // The different design tools handle drawing outside their custom window objects differently.
             // Rather than try to support this concept in the design surface let the designer draw its own
@@ -90,12 +90,23 @@ namespace Microsoft.Windows.Shell
             chromeWorker.SetWindowChrome(newChrome);
         }
 
+        /// <summary>
+        /// Helper for getting <see cref="WindowChromeProperty"/> from <paramref name="window"/>.
+        /// </summary>
+        /// <param name="window"><see cref="Window"/> to read <see cref="WindowChromeProperty"/> from.</param>
+        /// <returns>WindowChrome property value.</returns>
+        [AttachedPropertyBrowsableForType(typeof(Window))]
         public static WindowChrome GetWindowChrome(Window window)
         {
             Verify.IsNotNull(window, nameof(window));
             return (WindowChrome)window.GetValue(WindowChromeProperty);
         }
 
+        /// <summary>
+        /// Helper for setting <see cref="WindowChromeProperty"/> on <paramref name="window"/>.
+        /// </summary>
+        /// <param name="window"><see cref="Window"/> to set <see cref="WindowChromeProperty"/> on.</param>
+        /// <param name="chrome">WindowChrome property value.</param>
         public static void SetWindowChrome(Window window, WindowChrome chrome)
         {
             Verify.IsNotNull(window, nameof(window));
